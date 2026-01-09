@@ -41,6 +41,25 @@ export async function POST(req: Request) {
             return new NextResponse("Missing required fields", { status: 400 })
         }
 
+        // Check for cooldown (10 minutes)
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000)
+        const lastNotification = await db.notification.findFirst({
+            where: {
+                vehicleId,
+                createdAt: {
+                    gte: tenMinutesAgo
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        })
+
+        if (lastNotification) {
+            const timeLeft = Math.ceil((lastNotification.createdAt.getTime() + 10 * 60 * 1000 - Date.now()) / 1000 / 60)
+            return new NextResponse(`Este vehículo ya recibió un mensaje recientemente. Por favor, espera ${timeLeft} minuto(s) antes de enviar otro.`, { status: 429 })
+        }
+
         const notification = await db.notification.create({
             data: {
                 vehicleId,

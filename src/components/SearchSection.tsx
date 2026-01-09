@@ -13,7 +13,7 @@ export default function SearchSection() {
     const [successMsg, setSuccessMsg] = useState<string | null>(null)
 
     const [templates, setTemplates] = useState<any[]>([])
-    const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
+    const [selectedTemplates, setSelectedTemplates] = useState<string[]>([])
 
     useEffect(() => {
         fetch("/api/templates")
@@ -30,7 +30,7 @@ export default function SearchSection() {
         setError(null)
         setResult(null)
         setSuccessMsg(null)
-        setSelectedTemplate(null)
+        setSelectedTemplates([]);
 
         try {
             const res = await fetch(`/api/search?plate=${plate}`)
@@ -58,14 +58,23 @@ export default function SearchSection() {
     }
 
     const toggleTemplate = (id: string) => {
-        setSelectedTemplate(prev => prev === id ? null : id)
+        if (result?.isElectric) {
+            setSelectedTemplates(prev =>
+                prev.includes(id) ? prev.filter(tid => tid !== id) : [...prev, id]
+            );
+        } else {
+            // For non-electric vehicles, only one template can be selected
+            setSelectedTemplates([id]);
+        }
     }
 
     const handleNotify = async () => {
-        if (!result || !selectedTemplate) return
+        if (!result || selectedTemplates.length === 0) return
 
-        const template = templates.find(t => t.id === selectedTemplate)
-        if (!template) return
+        const selected = templates.filter(t => selectedTemplates.includes(t.id))
+        if (selected.length === 0) return
+
+        const combinedContent = selected.map(t => t.content).join('\n')
 
         setNotifying(true)
         setError(null)
@@ -76,16 +85,17 @@ export default function SearchSection() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     vehicleId: result.id,
-                    content: template.content,
+                    content: combinedContent,
                     type: "APP"
                 })
             })
 
             if (res.ok) {
                 setSuccessMsg("¡Notificación enviada correctamente!")
-                setSelectedTemplate(null)
+                setSelectedTemplates([])
             } else {
-                setError("Error al enviar la notificación.")
+                const errorText = await res.text()
+                setError(errorText || "Error al enviar la notificación.")
             }
         } catch (error) {
             setError("Error de conexión.")
@@ -192,18 +202,19 @@ export default function SearchSection() {
                                                     onClick={() => toggleTemplate(t.id)}
                                                     className={cn(
                                                         "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all border text-left h-full",
-                                                        selectedTemplate === t.id
+                                                        selectedTemplates.includes(t.id)
                                                             ? "bg-green-50 border-green-200 text-green-900 shadow-sm"
                                                             : "bg-white border-gray-100 text-gray-600 hover:border-green-200 hover:bg-green-50/30"
                                                     )}
                                                 >
-                                                    <div className={cn(
-                                                        "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                        selectedTemplate === t.id
-                                                            ? "border-green-500 bg-green-500"
-                                                            : "border-gray-300 bg-white"
-                                                    )}>
-                                                        {selectedTemplate === t.id && (
+                                                    <div
+                                                        className={cn(
+                                                            "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                            selectedTemplates.includes(t.id)
+                                                                ? "border-green-500 bg-green-500"
+                                                                : "border-gray-300 bg-white"
+                                                        )}>
+                                                        {selectedTemplates.includes(t.id) && (
                                                             <div className="h-2 w-2 rounded-full bg-white" />
                                                         )}
                                                     </div>
@@ -229,18 +240,18 @@ export default function SearchSection() {
                                                 onClick={() => toggleTemplate(t.id)}
                                                 className={cn(
                                                     "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all border text-left h-full",
-                                                    selectedTemplate === t.id
+                                                    selectedTemplates.includes(t.id)
                                                         ? "bg-brand/5 border-brand text-gray-900 shadow-sm"
                                                         : "bg-white border-gray-100 text-gray-600 hover:border-brand/40 hover:bg-gray-50/50"
                                                 )}
                                             >
                                                 <div className={cn(
                                                     "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                    selectedTemplate === t.id
+                                                    selectedTemplates.includes(t.id)
                                                         ? "border-brand bg-brand"
                                                         : "border-gray-300 bg-white"
                                                 )}>
-                                                    {selectedTemplate === t.id && (
+                                                    {selectedTemplates.includes(t.id) && (
                                                         <div className="h-2 w-2 rounded-full bg-white" />
                                                     )}
                                                 </div>
@@ -253,7 +264,7 @@ export default function SearchSection() {
                         </div>
 
                         <button
-                            disabled={!selectedTemplate || notifying}
+                            disabled={selectedTemplates.length === 0 || notifying}
                             onClick={handleNotify}
                             className="w-full bg-gray-900 hover:bg-black text-white py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:grayscale group"
                         >
