@@ -7,6 +7,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Install pnpm (fast package manager)
+RUN apk add --no-cache openssl
 RUN npm install -g pnpm
 
 # Copy package manifests
@@ -27,6 +28,9 @@ RUN pnpm run build
 # Production stage
 FROM node:20-alpine AS runner
 WORKDIR /app
+
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl
 
 # Copy built assets from builder
 COPY --from=builder /app/.next ./.next
