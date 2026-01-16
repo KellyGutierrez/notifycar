@@ -51,4 +51,4 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 # Start the application
-CMD sh -c "pnpm exec prisma migrate deploy && pnpm start"
+CMD sh -c "pnpm exec prisma db push && pnpm start"
