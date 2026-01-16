@@ -82,6 +82,35 @@ export default function AdminSettingsPage() {
         }
     }
 
+    const [testingSmtp, setTestingSmtp] = useState(false)
+
+    const handleTestSmtp = async () => {
+        setTestingSmtp(true)
+        try {
+            const res = await fetch("/api/admin/settings/test-smtp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    smtpHost: settings.smtpHost,
+                    smtpPort: settings.smtpPort,
+                    smtpUser: settings.smtpUser,
+                    smtpPass: settings.smtpPass,
+                    smtpFrom: settings.smtpFrom
+                })
+            })
+            if (res.ok) {
+                alert("¡Conexión exitosa! Revisa tu bandeja de entrada.")
+            } else {
+                const err = await res.text()
+                alert(`Error: ${err}`)
+            }
+        } catch (error) {
+            alert("Error al intentar conectar con el servidor.")
+        } finally {
+            setTestingSmtp(false)
+        }
+    }
+
     if (fetching) {
         return (
             <div className="flex h-[60vh] items-center justify-center">
@@ -232,7 +261,13 @@ export default function AdminSettingsPage() {
                                     <div className="space-y-6">
                                         <div className="flex items-center justify-between">
                                             <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Servidor SMTP</h4>
-                                            <button className="text-[10px] font-black uppercase text-cyan-400 hover:text-cyan-300 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 transition-all">
+                                            <button
+                                                type="button"
+                                                onClick={handleTestSmtp}
+                                                disabled={testingSmtp}
+                                                className="text-[10px] font-black uppercase text-cyan-400 hover:text-cyan-300 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 transition-all flex items-center gap-2"
+                                            >
+                                                {testingSmtp && <Loader2 className="h-3 w-3 animate-spin" />}
                                                 Test de Conexión
                                             </button>
                                         </div>
