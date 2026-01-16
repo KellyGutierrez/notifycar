@@ -35,7 +35,11 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json()
-        const { systemName, maintenanceMode, allowRegistration, googleAnalyticsId } = body
+        const {
+            systemName, maintenanceMode, allowRegistration, googleAnalyticsId, webhookUrl,
+            smtpHost, smtpPort, smtpUser, smtpPass, smtpFrom,
+            emailRegistration, emailRecovery, emailNotification
+        } = body
 
         const settings = await db.systemSetting.upsert({
             where: { id: "default" },
@@ -43,14 +47,32 @@ export async function POST(req: Request) {
                 systemName,
                 maintenanceMode,
                 allowRegistration,
-                googleAnalyticsId
+                googleAnalyticsId,
+                webhookUrl,
+                smtpHost,
+                smtpPort: smtpPort ? parseInt(smtpPort) : undefined,
+                smtpUser,
+                smtpPass,
+                smtpFrom,
+                emailRegistration,
+                emailRecovery,
+                emailNotification
             },
             create: {
                 id: "default",
                 systemName,
                 maintenanceMode,
                 allowRegistration,
-                googleAnalyticsId
+                googleAnalyticsId,
+                webhookUrl,
+                smtpHost,
+                smtpPort: smtpPort ? parseInt(smtpPort) : undefined,
+                smtpUser,
+                smtpPass,
+                smtpFrom,
+                emailRegistration,
+                emailRecovery,
+                emailNotification
             }
         })
 

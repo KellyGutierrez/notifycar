@@ -83,8 +83,17 @@ export async function POST(req: Request) {
             }
         })
 
-        // Send to n8n Webhook
-        const webhookUrl = process.env.NOTIFICATION_WEBHOOK_URL;
+        // Fetch webhook from DB settings first, then env
+        let webhookUrl = process.env.NOTIFICATION_WEBHOOK_URL;
+        try {
+            const settings = await db.systemSetting.findUnique({ where: { id: "default" } });
+            if (settings?.webhookUrl) {
+                webhookUrl = settings.webhookUrl;
+            }
+        } catch (e) {
+            console.error("Error fetching system settings for webhook:", e);
+        }
+
         if (webhookUrl) {
             try {
                 const fullPhone = `${notification.vehicle.user.phonePrefix}${notification.vehicle.user.phoneNumber}`.replace(/\+/g, '');

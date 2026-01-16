@@ -76,5 +76,29 @@ model SystemSetting {
   maintenanceMode   Boolean  @default(false)
   allowRegistration Boolean  @default(true)
   googleAnalyticsId String?
+  webhookUrl        String?
+  
+  // SMTP Settings
+  smtpHost          String?
+  smtpPort          Int?     @default(587)
+  smtpUser          String?
+  smtpPass          String?
+  smtpFrom          String?  @default("noreply@notifycar.com")
+  
+  // Email Toggles
+  emailRegistration Boolean  @default(true)
+  emailRecovery     Boolean  @default(true)
+  emailNotification Boolean  @default(true)
+  
+  createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  slug      String   @unique // registration, recovery, notification
+  subject   String
+  body      String   @db.Text
+  active    Boolean  @default(true)
+  updatedAt DateTime @updatedAt
 }
