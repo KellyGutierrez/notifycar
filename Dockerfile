@@ -1,13 +1,15 @@
 # Dockerfile for NotifyCar (Next.js) application
 # ---------------------------------------------------
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 # Set working directory
 WORKDIR /app
 
+# Install openssl and required tools
+RUN apt-get update -y && apt-get install -y openssl ca-certificates
+
 # Install pnpm (fast package manager)
-RUN apk add --no-cache openssl
 RUN npm install -g pnpm
 
 # Copy package manifests
@@ -26,11 +28,11 @@ RUN pnpm exec prisma generate
 RUN pnpm run build
 
 # Production stage
-FROM node:20-alpine AS runner
+FROM node:20-slim AS runner
 WORKDIR /app
 
-# Install OpenSSL for Prisma
-RUN apk add --no-cache openssl
+# Install OpenSSL for Prisma in production
+RUN apt-get update -y && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Copy built assets from builder
 COPY --from=builder /app/.next ./.next
