@@ -60,14 +60,52 @@ export async function POST(req: Request) {
             return new NextResponse(`Este vehículo ya recibió un mensaje recientemente. Por favor, espera ${timeLeft} minuto(s) antes de enviar otro.`, { status: 429 })
         }
 
+        // Create the notification in DB
         const notification = await db.notification.create({
             data: {
                 vehicleId,
                 content,
-                type: type || "APP", // Default type
-                status: "SENT" // For now mark as sent
+                type: type || "APP",
+                status: "SENT"
+            },
+            include: {
+                vehicle: {
+                    include: {
+                        user: {
+                            select: {
+                                phonePrefix: true,
+                                phoneNumber: true,
+                                name: true
+                            }
+                        }
+                    }
+                }
             }
         })
+
+        // Send to n8n Webhook
+        const webhookUrl = process.env.NOTIFICATION_WEBHOOK_URL;
+        if (webhookUrl) {
+            try {
+                const fullPhone = `${notification.vehicle.user.phonePrefix}${notification.vehicle.user.phoneNumber}`.replace(/\+/g, '');
+
+                // Fetch call to n8n (async)
+                fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        notificationId: notification.id,
+                        plate: notification.vehicle.plate,
+                        ownerName: notification.vehicle.user.name,
+                        phoneNumber: fullPhone,
+                        message: notification.content,
+                        timestamp: notification.createdAt
+                    })
+                }).catch(err => console.error("Webhook fetch error:", err));
+            } catch (err) {
+                console.error("Error preparing webhook data:", err);
+            }
+        }
 
         return NextResponse.json(notification)
     } catch (error) {
