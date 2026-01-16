@@ -120,7 +120,7 @@ export default async function AdminDashboardPage() {
 
                     <div className="space-y-4">
                         {stats.recentUsers.length > 0 ? (
-                            stats.recentUsers.map((user) => (
+                            stats.recentUsers.map((user: any) => (
                                 <div key={user.id} className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5">
                                     <div className="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white shadow-lg">
                                         {user.name?.charAt(0) || user.email.charAt(0).toUpperCase()}

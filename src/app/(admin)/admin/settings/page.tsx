@@ -1,22 +1,35 @@
 "use client"
 
-import { useState } from "react"
-import { Settings, Shield, Bell, Globe, Database, Save, Loader2, Power, Lock, Mail, Users } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Settings, Shield, Bell, Globe, Database, Save, Loader2, Power, Lock, Mail, Users, BarChart } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export default function AdminSettingsPage() {
     const [loading, setLoading] = useState(false)
+    const [fetching, setFetching] = useState(true)
     const [success, setSuccess] = useState(false)
 
     const [settings, setSettings] = useState({
         systemName: "NotifyCar",
         maintenanceMode: false,
         allowRegistration: true,
-        emailNotifications: true,
-        pushNotifications: false,
-        requireEmailVerification: true,
-        maxVehiclesPerUser: "5",
+        googleAnalyticsId: "",
     })
+
+    useEffect(() => {
+        fetch("/api/admin/settings")
+            .then(res => res.json())
+            .then(data => {
+                setSettings({
+                    systemName: data.systemName || "NotifyCar",
+                    maintenanceMode: data.maintenanceMode || false,
+                    allowRegistration: data.allowRegistration || true,
+                    googleAnalyticsId: data.googleAnalyticsId || "",
+                })
+            })
+            .catch(err => console.error("Error fetching settings:", err))
+            .finally(() => setFetching(false))
+    }, [])
 
     const handleToggle = (key: keyof typeof settings) => {
         if (typeof settings[key] === 'boolean') {
@@ -30,14 +43,28 @@ export default function AdminSettingsPage() {
         setSuccess(false)
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            setSuccess(true)
-            setTimeout(() => setSuccess(false), 3000)
+            const res = await fetch("/api/admin/settings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(settings)
+            })
+            if (res.ok) {
+                setSuccess(true)
+                setTimeout(() => setSuccess(false), 3000)
+            }
         } catch (error) {
             console.error(error)
         } finally {
             setLoading(false)
         }
+    }
+
+    if (fetching) {
+        return (
+            <div className="flex h-[60vh] items-center justify-center">
+                <Loader2 className="h-8 w-8 text-cyan-500 animate-spin" />
+            </div>
+        )
     }
 
     return (
@@ -93,7 +120,7 @@ export default function AdminSettingsPage() {
                         </div>
 
                         <div className="p-8 space-y-8">
-                            <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-gray-400">Nombre del Sistema</label>
                                     <div className="relative">
@@ -102,6 +129,19 @@ export default function AdminSettingsPage() {
                                             type="text"
                                             value={settings.systemName}
                                             onChange={(e) => setSettings({ ...settings, systemName: e.target.value })}
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-white focus:outline-none focus:border-cyan-500/50 transition-all font-medium"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-400">Google Analytics (ID)</label>
+                                    <div className="relative">
+                                        <BarChart className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
+                                        <input
+                                            type="text"
+                                            placeholder="G-XXXXXXXXXX"
+                                            value={settings.googleAnalyticsId}
+                                            onChange={(e) => setSettings({ ...settings, googleAnalyticsId: e.target.value })}
                                             className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-white focus:outline-none focus:border-cyan-500/50 transition-all font-medium"
                                         />
                                     </div>
@@ -115,7 +155,6 @@ export default function AdminSettingsPage() {
                                     {[
                                         { id: 'maintenanceMode' as const, name: "Modo Mantenimiento", desc: "Desactiva el acceso a todos los usuarios excepto admins.", icon: Power },
                                         { id: 'allowRegistration' as const, name: "Permitir Registros", desc: "Habilita la creación de nuevas cuentas.", icon: Users },
-                                        { id: 'emailNotifications' as const, name: "Notificaciones por Email", desc: "Envía alertas automáticas a los correos registrados.", icon: Mail },
                                     ].map((item) => (
                                         <div key={item.id} className="flex items-center justify-between group p-4 rounded-2xl hover:bg-white/5 transition-all">
                                             <div className="flex gap-4">

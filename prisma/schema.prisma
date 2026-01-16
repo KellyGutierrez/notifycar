@@ -69,3 +69,12 @@ model NotificationTemplate {
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
 }
+
+model SystemSetting {
+  id                String   @id @default("default")
+  systemName        String   @default("NotifyCar")
+  maintenanceMode   Boolean  @default(false)
+  allowRegistration Boolean  @default(true)
+  googleAnalyticsId String?
+  updatedAt         DateTime @updatedAt
+}
