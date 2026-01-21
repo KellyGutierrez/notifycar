@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: notifycar-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: notifycaruser
+      POSTGRES_PASSWORD: notifycarpass
+      POSTGRES_DB: notifycar
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U notifycaruser -d notifycar" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: notifycar-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://notifycaruser:notifycarpass@db:5432/notifycar
+      - NEXTAUTH_SECRET=supersecretkey123
+      - NEXTAUTH_URL=http://localhost:3000
+      - NODE_ENV=production
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # Opcional: para desarrollo con hot-reload
+      # - ./src:/app/src
+      # - ./public:/app/public
+      - app_data:/app/.next
+
+volumes:
+  postgres_data:
+    driver: local
+  app_data:
+    driver: local
