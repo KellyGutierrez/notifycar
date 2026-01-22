@@ -60,11 +60,22 @@ export async function POST(req: Request) {
             return new NextResponse(`Este vehículo ya recibió un mensaje recientemente. Por favor, espera ${timeLeft} minuto(s) antes de enviar otro.`, { status: 429 })
         }
 
+        // Obtener el vehículo para incluir la placa en el mensaje
+        const vehicle = await db.vehicle.findUnique({
+            where: { id: vehicleId }
+        });
+
+        if (!vehicle) {
+            return new NextResponse("Vehículo no encontrado", { status: 404 });
+        }
+
+        const finalMessage = `*Vehículo [${vehicle.plate.toUpperCase()}]*\n\n${content}`;
+
         // Create the notification in DB
         const notification = await db.notification.create({
             data: {
                 vehicleId,
-                content,
+                content: finalMessage,
                 type: type || "APP",
                 status: "SENT"
             },
@@ -98,6 +109,8 @@ export async function POST(req: Request) {
             try {
                 const fullPhone = `${notification.vehicle.user.phonePrefix}${notification.vehicle.user.phoneNumber}`.replace(/\+/g, '');
 
+                console.log("🚀 Enviando a n8n:", finalMessage);
+
                 // Fetch call to n8n (async)
                 fetch(webhookUrl, {
                     method: 'POST',
@@ -107,7 +120,8 @@ export async function POST(req: Request) {
                         plate: notification.vehicle.plate,
                         ownerName: notification.vehicle.user.name,
                         phoneNumber: fullPhone,
-                        message: `Alerta para el vehículo con placa ${notification.vehicle.plate}: ${notification.content}`,
+                        message: finalMessage,
+                        content: finalMessage, // Doble seguridad para n8n
                         timestamp: notification.createdAt
                     })
                 }).catch(err => console.error("Webhook fetch error:", err));
