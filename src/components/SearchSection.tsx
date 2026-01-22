@@ -28,18 +28,22 @@ export default function SearchSection() {
 
         // MODO MOCK PARA PRUEBAS (PC ANTIGUO SIN DB)
         if (plate.toUpperCase() === "TEST") {
+            setError(null)
+            setSuccessMsg(null)
             setResult({
                 id: "test-id",
                 plate: "TEST-123",
                 type: "CAR",
                 brand: "Vehículo",
                 model: "De Prueba",
-                color: "Azul"
+                color: "Azul",
+                isElectric: false
             });
             setTemplates([
                 { id: "1", name: "Luces encendidas", content: "Su carro se quedó con las luces encendidas", vehicleType: "ALL" },
                 { id: "2", name: "Mal estacionado", content: "Su vehículo se encuentra mal estacionado y obstruye el paso", vehicleType: "ALL" }
             ]);
+            setSelectedTemplates([]);
             return;
         }
 
@@ -80,7 +84,6 @@ export default function SearchSection() {
                 prev.includes(id) ? prev.filter(tid => tid !== id) : [...prev, id]
             );
         } else {
-            // For non-electric vehicles, only one template can be selected
             setSelectedTemplates([id]);
         }
     }
@@ -172,7 +175,7 @@ export default function SearchSection() {
                             </div>
                             <div>
                                 <div className="flex items-center gap-2 mb-1">
-                                    <h4 className="text-2xl font-black text-gray-900 tracking-tighter uppercase">{plate}</h4>
+                                    <h4 className="text-2xl font-black text-gray-900 tracking-tighter uppercase">{result.plate}</h4>
                                     <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                                         {result.type === "MOTORCYCLE" ? "Moto" : "Auto"}
                                     </span>
@@ -280,12 +283,15 @@ export default function SearchSection() {
                             </div>
                         </div>
 
-                        {/* Vista Previa Simplificada */}
+                        {/* Vista Previa del Mensaje */}
                         {selectedTemplates.length > 0 && (
-                            <div className="my-6 p-4 rounded-xl border-2 border-dashed border-brand/30 bg-gray-50">
-                                <p className="text-[10px] font-black text-brand uppercase tracking-tighter mb-2">Vista previa del mensaje:</p>
-                                <div className="text-sm text-gray-700 font-medium whitespace-pre-wrap">
-                                    <span className="font-bold">*Vehículo [{result.plate.toUpperCase()}]*</span>
+                            <div className="my-6 p-4 rounded-xl border-2 border-dashed border-brand/30 bg-gray-50 animate-in fade-in slide-in-from-top-2 duration-300">
+                                <p className="text-[10px] font-black text-brand uppercase tracking-tighter mb-2 flex items-center gap-2">
+                                    <Info className="h-3 w-3" />
+                                    Vista previa del mensaje:
+                                </p>
+                                <div className="text-sm text-gray-700 font-medium whitespace-pre-wrap leading-relaxed">
+                                    <span className="font-bold text-brand">*Vehículo [{result.plate.toUpperCase()}]*</span>
                                     {"\n\n"}
                                     {templates
                                         .filter(t => selectedTemplates.includes(t.id))
@@ -312,6 +318,7 @@ export default function SearchSection() {
                     </div>
                 </div>
             )}
+            <p className="text-[9px] text-gray-300 text-center uppercase tracking-[0.2em] font-bold">NotifyCar v2.2 - Preview Loaded</p>
         </div>
     )
 }
