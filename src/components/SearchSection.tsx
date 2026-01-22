@@ -263,6 +263,27 @@ export default function SearchSection() {
                             </div>
                         </div>
 
+                        {/* Vista Previa del Mensaje */}
+                        {selectedTemplates.length > 0 && (
+                            <div className="bg-brand/5 border border-brand/20 rounded-2xl p-4 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                                <div className="flex items-center gap-2 text-brand text-[10px] font-black uppercase tracking-widest">
+                                    <Info className="h-3 w-3" />
+                                    Vista previa del mensaje
+                                </div>
+                                <div className="bg-white/50 rounded-xl p-3 border border-white">
+                                    <p className="text-xs text-gray-400 italic mb-2">Así lo recibirá el usuario en WhatsApp:</p>
+                                    <div className="text-sm text-gray-800 font-medium leading-relaxed whitespace-pre-wrap">
+                                        <span className="font-bold text-brand">*Vehículo [{result.plate.toUpperCase()}]*</span>
+                                        {"\n\n"}
+                                        {templates
+                                            .filter(t => selectedTemplates.includes(t.id))
+                                            .map(t => t.content)
+                                            .join('\n')}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         <button
                             disabled={selectedTemplates.length === 0 || notifying}
                             onClick={handleNotify}
