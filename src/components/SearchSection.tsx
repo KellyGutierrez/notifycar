@@ -26,6 +26,23 @@ export default function SearchSection() {
         e.preventDefault()
         if (!plate) return
 
+        // MODO MOCK PARA PRUEBAS (PC ANTIGUO SIN DB)
+        if (plate.toUpperCase() === "TEST") {
+            setResult({
+                id: "test-id",
+                plate: "TEST-123",
+                type: "CAR",
+                brand: "Vehículo",
+                model: "De Prueba",
+                color: "Azul"
+            });
+            setTemplates([
+                { id: "1", name: "Luces encendidas", content: "Su carro se quedó con las luces encendidas", vehicleType: "ALL" },
+                { id: "2", name: "Mal estacionado", content: "Su vehículo se encuentra mal estacionado y obstruye el paso", vehicleType: "ALL" }
+            ]);
+            return;
+        }
+
         setLoading(true)
         setError(null)
         setResult(null)
