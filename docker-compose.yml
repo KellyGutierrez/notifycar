@@ -37,11 +37,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      # Opcional: para desarrollo con hot-reload
-      # - ./src:/app/src
-      # - ./public:/app/public
-      - app_data:/app/.next
 
   # Adminer - Database Management UI
   adminer:
