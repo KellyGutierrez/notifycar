@@ -107,7 +107,7 @@ export async function POST(req: Request) {
                         plate: notification.vehicle.plate,
                         ownerName: notification.vehicle.user.name,
                         phoneNumber: fullPhone,
-                        message: notification.content,
+                        message: `Alerta para el vehículo con placa ${notification.vehicle.plate}: ${notification.content}`,
                         timestamp: notification.createdAt
                     })
                 }).catch(err => console.error("Webhook fetch error:", err));
