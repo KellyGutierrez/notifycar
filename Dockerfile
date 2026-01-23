@@ -51,5 +51,5 @@ EXPOSE 3000
 # Set environment to production
 ENV NODE_ENV=production
 
-# Start the application with DB sync and automated seeding
+# Start the application with automated DB sync and seeding
 CMD sh -c "pnpm exec prisma db push --accept-data-loss && node scripts/seed-emergencies.js && node scripts/migrate-templates.js && pnpm start"
