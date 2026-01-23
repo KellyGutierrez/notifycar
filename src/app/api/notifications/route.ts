@@ -60,16 +60,38 @@ export async function POST(req: Request) {
             return new NextResponse(`Este vehículo ya recibió un mensaje recientemente. Por favor, espera ${timeLeft} minuto(s) antes de enviar otro.`, { status: 429 })
         }
 
-        // Obtener el vehículo para incluir la placa en el mensaje
+        // Obtener el vehículo para incluir la placa en el mensaje y saber de qué país es el dueño
         const vehicle = await db.vehicle.findUnique({
-            where: { id: vehicleId }
+            where: { id: vehicleId },
+            include: {
+                user: {
+                    select: {
+                        country: true
+                    }
+                }
+            }
         });
 
         if (!vehicle) {
             return new NextResponse("Vehículo no encontrado", { status: 404 });
         }
 
-        const finalMessage = `🚗 *NotifyCar*\n\nAlguien cerca de tu vehículo quiso avisarte lo siguiente:\n“${vehicle.plate.toUpperCase()} - ${content}”\n\nℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo. No se compartió tu número ni ningún dato personal.\n\n🔐 *Recomendación de seguridad:*\nVerifica la situación con calma, revisa el entorno antes y evita confrontaciones directas.\n\n📞 *Números de emergencia:*\n• Policía: 123\n• Tránsito: 123\n• Emergencias: 123\n\n—\nNotifyCar · Comunicación inteligente en la vía\nwww.notifycar.com`;
+        // Buscar números de emergencia según el país
+        let emergency = { police: "123", transit: "123", general: "123" };
+        if (vehicle.user.country) {
+            const config = await db.emergencyConfig.findUnique({
+                where: { country: vehicle.user.country }
+            });
+            if (config) {
+                emergency = {
+                    police: config.police,
+                    transit: config.transit,
+                    general: config.emergency
+                };
+            }
+        }
+
+        const finalMessage = `🚗 *NotifyCar*\n\nAlguien cerca de tu vehículo quiso avisarte lo siguiente:\n“${vehicle.plate.toUpperCase()} - ${content}”\n\nℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo. No se compartió tu número ni ningún dato personal.\n\n🔐 *Recomendación de seguridad:*\nVerifica la situación con calma, revisa el entorno antes y evita confrontaciones directas.\n\n📞 *Números de emergencia:*\n• Policía: ${emergency.police}\n• Tránsito: ${emergency.transit}\n• Emergencias: ${emergency.general}\n\n—\nNotifyCar · Comunicación inteligente en la vía\nwww.notifycar.com`;
 
         // Create the notification in DB
         const notification = await db.notification.create({
