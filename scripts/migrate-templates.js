@@ -42,7 +42,12 @@ async function main() {
         { name: "Mal parqueo cargador", content: "Tu vehículo está mal parqueado y no permite usar uno de los cargadores", vehicleType: "ELECTRIC", category: "COMMON" },
 
         // SOLO MOTOS (MOTORCYCLE)
-        { name: "Riesgo de caída", content: "Tu vehículo podría caerse o moverse.", vehicleType: "MOTORCYCLE", category: "URGENT" },
+        { name: "Riesgo de caída", content: "Tu moto podría caerse o moverse.", vehicleType: "MOTORCYCLE", category: "URGENT" },
+        { name: "Casco olvidado", content: "Dejaste un casco sobre la moto o colgado, podrías perderlo.", vehicleType: "MOTORCYCLE", category: "COMMON" },
+        { name: "Llaves pegadas", content: "Olvidaste las llaves puestas en el encendido o en el seguro del asiento.", vehicleType: "MOTORCYCLE", category: "URGENT" },
+        { name: "Pata mal puesta", content: "La pata de apoyo se está hundiendo o está mal puesta, hay riesgo de caída.", vehicleType: "MOTORCYCLE", category: "URGENT" },
+        { name: "Fuga de líquidos", content: "Parece que tu moto está goteando gasolina o aceite.", vehicleType: "MOTORCYCLE", category: "URGENT" },
+        { name: "Luces encendidas", content: "Dejaste las luces de tu moto encendidas, podrías quedarte sin batería.", vehicleType: "MOTORCYCLE", category: "COMMON" },
 
         // 💰 COMERCIAL (COMMERCIAL)
         { name: "Interés en compra", content: "Estoy interesado en comprar tu vehículo.", vehicleType: "ALL", category: "COMMERCIAL" },
