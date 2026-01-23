@@ -69,7 +69,7 @@ export async function POST(req: Request) {
             return new NextResponse("Vehículo no encontrado", { status: 404 });
         }
 
-        const finalMessage = `*Vehículo [${vehicle.plate.toUpperCase()}]*\n\n${content}`;
+        const finalMessage = `🚗 *NotifyCar*\n\nAlguien cerca de tu vehículo quiso avisarte lo siguiente:\n“${vehicle.plate.toUpperCase()} - ${content}”\n\nℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo. No se compartió tu número ni ningún dato personal.\n\n🔐 *Recomendación de seguridad:*\nVerifica la situación con calma, revisa el entorno antes y evita confrontaciones directas.\n\n📞 *Números de emergencia:*\n• Policía: 123\n• Tránsito: 123\n• Emergencias: 123\n\n—\nNotifyCar · Comunicación inteligente en la vía\nwww.notifycar.com`;
 
         // Create the notification in DB
         const notification = await db.notification.create({
@@ -109,7 +109,7 @@ export async function POST(req: Request) {
             try {
                 const fullPhone = `${notification.vehicle.user.phonePrefix}${notification.vehicle.user.phoneNumber}`.replace(/\+/g, '');
 
-                console.log("🚀 Enviando a n8n:", finalMessage);
+                console.log("🚀 Enviando a n8n:", vehicle.plate);
 
                 // Fetch call to n8n (async)
                 fetch(webhookUrl, {
@@ -120,8 +120,9 @@ export async function POST(req: Request) {
                         plate: notification.vehicle.plate,
                         ownerName: notification.vehicle.user.name,
                         phoneNumber: fullPhone,
+                        raw_message: content,
                         message: finalMessage,
-                        content: finalMessage, // Doble seguridad para n8n
+                        content: finalMessage,
                         timestamp: notification.createdAt
                     })
                 }).catch(err => console.error("Webhook fetch error:", err));
