@@ -307,7 +307,7 @@ export default function SearchSection() {
                                     Vista previa del mensaje:
                                 </p>
                                 <div className="text-sm text-gray-700 font-medium whitespace-pre-wrap leading-relaxed">
-                                    <span className="font-bold text-brand">*Vehículo [{result.plate.toUpperCase()}]*</span>
+                                    <span className="font-bold text-brand">*Vehículo [{(result.plate || '').toUpperCase()}]*</span>
                                     {"\n\n"}
                                     {templates
                                         .filter(t => selectedTemplates.includes(t.id))

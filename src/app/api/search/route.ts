@@ -24,6 +24,7 @@ export async function GET(req: Request) {
             found: true,
             vehicle: {
                 id: vehicle.id,
+                plate: vehicle.plate,
                 brand: vehicle.brand,
                 model: vehicle.model,
                 color: vehicle.color,
