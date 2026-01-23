@@ -23,15 +23,15 @@ const prisma = new PrismaClient()
 
 async function main() {
     const configs = [
-        { country: "Colombia", police: "123", transit: "127", emergency: "123" },
-        { country: "México", police: "911", transit: "911", emergency: "911" },
-        { country: "España", police: "091", transit: "092", emergency: "112" },
-        { country: "Argentina", police: "911", transit: "911", emergency: "911" },
-        { country: "Chile", police: "133", transit: "133", emergency: "133" },
-        { country: "Perú", police: "105", transit: "105", emergency: "911" },
-        { country: "Panamá", police: "104", transit: "104", emergency: "911" },
-        { country: "Estados Unidos", police: "911", transit: "911", emergency: "911" },
-        { country: "Ecuador", police: "911", transit: "911", emergency: "911" },
+        { country: "CO", police: "123", transit: "127", emergency: "123" }, // Colombia
+        { country: "MX", police: "911", transit: "911", emergency: "911" }, // México
+        { country: "ES", police: "091", transit: "092", emergency: "112" }, // España
+        { country: "AR", police: "911", transit: "911", emergency: "911" }, // Argentina
+        { country: "CL", police: "133", transit: "133", emergency: "133" }, // Chile
+        { country: "PE", police: "105", transit: "105", emergency: "911" }, // Perú
+        { country: "PA", police: "104", transit: "104", emergency: "911" }, // Panamá
+        { country: "US", police: "911", transit: "911", emergency: "911" }, // Estados Unidos
+        { country: "EC", police: "911", transit: "911", emergency: "911" }, // Ecuador
     ]
 
     console.log('Sembrando números de emergencia...')
