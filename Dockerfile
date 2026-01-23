@@ -40,6 +40,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/pnpm-lock.yaml ./
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/scripts ./scripts
 
 # Install only production dependencies
 RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile && pnpm exec prisma generate

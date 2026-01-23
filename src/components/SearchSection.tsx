@@ -40,8 +40,11 @@ export default function SearchSection() {
                 isElectric: false
             });
             setTemplates([
-                { id: "1", name: "Luces encendidas", content: "Su carro se quedó con las luces encendidas", vehicleType: "ALL" },
-                { id: "2", name: "Mal estacionado", content: "Su vehículo se encuentra mal estacionado y obstruye el paso", vehicleType: "ALL" }
+                { id: "1", name: "Luces encendidas", content: "Hola, te informo que dejaste las luces de tu vehículo encendidas.", vehicleType: "CAR", category: "COMMON" },
+                { id: "2", name: "Mal estacionado", content: "Hola, tu vehículo está obstruyendo el paso o mal estacionado.", vehicleType: "ALL", category: "COMMON" },
+                { id: "3", name: "Obstrucción garaje", content: "Hola, su vehículo está obstruyendo la salida de un garaje.", vehicleType: "ALL", category: "URGENT" },
+                { id: "4", name: "Carga terminada", content: "Hola, tu vehículo ha completado su carga. Por favor, considera moverlo para liberar el espacio.", vehicleType: "ELECTRIC", category: "COMMON" },
+                { id: "5", name: "Cargador desconectado", content: "Hola, te informo que el cargador de tu vehículo ha sido desconectado.", vehicleType: "ELECTRIC", category: "URGENT" }
             ]);
             setSelectedTemplates([]);
             return;
@@ -80,9 +83,22 @@ export default function SearchSection() {
 
     const toggleTemplate = (id: string) => {
         if (result?.isElectric) {
-            setSelectedTemplates(prev =>
-                prev.includes(id) ? prev.filter(tid => tid !== id) : [...prev, id]
-            );
+            const template = templates.find(t => t.id === id);
+            const isElectricType = template?.vehicleType === "ELECTRIC";
+
+            setSelectedTemplates(prev => {
+                const isSelected = prev.includes(id);
+                if (isSelected) return prev.filter(tid => tid !== id);
+
+                // Si es eléctrico, permitimos seleccionar uno normal Y uno eléctrico al mismo tiempo.
+                // Filtramos para quitar otros mensajes del mismo tipo (reemplazo inteligente)
+                const othersOfDifferentType = prev.filter(tid => {
+                    const t = templates.find(temp => temp.id === tid);
+                    return (t?.vehicleType === "ELECTRIC") !== isElectricType;
+                });
+
+                return [...othersOfDifferentType, id];
+            });
         } else {
             setSelectedTemplates([id]);
         }
