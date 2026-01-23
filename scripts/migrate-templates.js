@@ -23,48 +23,46 @@ const prisma = new PrismaClient()
 
 async function main() {
     const templates = [
-        // COMUNES (ALL)
-        { name: "Mal estacionado", content: "Hola, tu vehículo está obstruyendo el paso o mal estacionado.", vehicleType: "ALL", category: "COMMON" },
-        { name: "Alarma sonando", content: "Hola, la alarma de tu vehículo se ha activado.", vehicleType: "ALL", category: "COMMON" },
-        { name: "Grúa/Peligro", content: "¡Atención! Tu vehículo corre peligro de ser remolcado o está en una situación de riesgo.", vehicleType: "ALL", category: "URGENT" },
-        { name: "Obstrucción garaje", content: "Hola, su vehículo está obstruyendo la salida de un garaje.", vehicleType: "ALL", category: "URGENT" },
-        { name: "Puerta mal cerrada", content: "Hola, una de las puertas de su vehículo parece estar mal cerrada o sin seguro.", vehicleType: "ALL", category: "COMMON" },
-        { name: "Baúl abierto", content: "Hola, el baúl o cajuela de su vehículo se encuentra abierto.", vehicleType: "ALL", category: "COMMON" },
-        { name: "Mascota/Niño solo", content: "¡AVISO URGENTE! Hay un niño o mascota dentro del vehículo y parece estar en riesgo.", vehicleType: "ALL", category: "URGENT" },
-        { name: "Fuga de líquido", content: "Hola, parece haber una fuga de líquido bajo su vehículo.", vehicleType: "ALL", category: "URGENT" },
+        // TODOS (ALL) - Afecta a Combustión, Eléctricos y Motos
+        { name: "Bloqueo de vía", content: "Tu vehículo está bloqueando una salida. ¿Podrías revisarlo, por favor?", vehicleType: "ALL", category: "COMMON" },
+        { name: "Mal parqueado", content: "Tu vehículo está mal parqueado y podría ser remolcado.", vehicleType: "ALL", category: "COMMON" },
+        { name: "Frente a salida", content: "Parece que tu vehículo está mal parqueado en una salida de parqueadero", vehicleType: "ALL", category: "COMMON" },
+        { name: "Obstrucción paso", content: "Tu vehículo está obstruyendo el paso y está afectando la circulación.", vehicleType: "ALL", category: "COMMON" },
+        { name: "Alarma sonando", content: "La alarma de tu vehículo lleva un tiempo sonando.", vehicleType: "ALL", category: "COMMON" },
+        { name: "Llanta baja", content: "Una de las llantas de tu vehículo parece estar baja.", vehicleType: "ALL", category: "COMMON" },
+        { name: "Vandalismo", content: "Tu vehículo presenta señales de vandalismo.", vehicleType: "ALL", category: "URGENT" },
 
-        // AUTOS (CAR)
-        { name: "Luces encendidas", content: "Hola, te informo que dejaste las luces de tu vehículo encendidas.", vehicleType: "CAR", category: "COMMON" },
-        { name: "Ventana abierta", content: "Hola, tienes una ventana de tu vehículo abierta.", vehicleType: "CAR", category: "COMMON" },
-        { name: "Neumático bajo", content: "Hola, uno de los neumáticos de tu vehículo parece estar bajo de aire.", vehicleType: "CAR", category: "COMMON" },
-        { name: "Espejo golpeado", content: "Aviso: El espejo retrovisor de su vehículo ha sido golpeado o está doblado.", vehicleType: "CAR", category: "COMMON" },
+        // COMBUSTIÓN - ELÉCTRICOS (CAR)
+        { name: "Puerta abierta", content: "Una de las puertas de tu vehículo está abierta.", vehicleType: "CAR", category: "COMMON" },
+        { name: "Vidrio roto", content: "Uno de los vidrios de tu vehículo parece estar roto.", vehicleType: "CAR", category: "URGENT" },
 
-        // MOTOS (MOTORCYCLE)
-        { name: "Llaves puestas", content: "Hola, olvidaste las llaves puestas en el switch de tu moto.", vehicleType: "MOTORCYCLE", category: "URGENT" },
-        { name: "Casco olvidado", content: "Hola, dejaste el casco colgado o sobre la moto.", vehicleType: "MOTORCYCLE", category: "COMMON" },
-        { name: "Posición inestable", content: "Tu moto está en una posición inestable o mal apoyada.", vehicleType: "MOTORCYCLE", category: "URGENT" },
-        { name: "Funda suelta", content: "La funda o carpa de tu moto se está soltando por el viento.", vehicleType: "MOTORCYCLE", category: "COMMON" },
-        { name: "Derrame/Aceite", content: "Parece que tu moto está goteando aceite o algún líquido.", vehicleType: "MOTORCYCLE", category: "URGENT" },
+        // SOLO ELÉCTRICO (ELECTRIC)
+        { name: "Fin de carga", content: "Tu vehículo ya terminó de cargar y hay otros esperando el punto.", vehicleType: "ELECTRIC", category: "COMMON" },
+        { name: "Ocupando cargador", content: "Tu vehículo está ocupando un cargador y no está cargando.", vehicleType: "ELECTRIC", category: "COMMON" },
+        { name: "Mal parqueo cargador", content: "Tu vehículo está mal parqueado y no permite usar uno de los cargadores", vehicleType: "ELECTRIC", category: "COMMON" },
 
-        // ELÉCTRICOS (ELECTRIC)
-        { name: "Carga terminada", content: "Hola, tu vehículo ha completado su carga. Por favor, considera moverlo para liberar el espacio.", vehicleType: "ELECTRIC", category: "COMMON" },
-        { name: "Cargador desconectado", content: "Hola, te informo que el cargador de tu vehículo ha sido desconectado.", vehicleType: "ELECTRIC", category: "URGENT" },
-        { name: "Obstrucción en cargador", content: "Hola, tu vehículo está ocupando un espacio de carga sin estar conectado o ya terminó de cargar.", vehicleType: "ELECTRIC", category: "COMMON" },
-        { name: "Error de carga", content: "Atención: Parece haber un error en la estación y tu vehículo no está cargando correctamente.", vehicleType: "ELECTRIC", category: "URGENT" },
-        { name: "Carga interrumpida", content: "Atención: La carga de su vehículo se ha interrumpido inesperadamente.", vehicleType: "ELECTRIC", category: "URGENT" },
-        { name: "Cable mal conectado", content: "El cable de carga de su vehículo parece no estar bien asegurado o conectado.", vehicleType: "ELECTRIC", category: "COMMON" },
-        { name: "Puesto EV requerido", content: "Aviso: Otros conductores necesitan usar este puesto de carga si ya terminó su sesión.", vehicleType: "ELECTRIC", category: "COMMON" },
-        { name: "Protección de batería", content: "Aviso: Se recomienda desconectar el vehículo si ya llegó al límite de carga deseado.", vehicleType: "ELECTRIC", category: "COMMON" },
+        // SOLO MOTOS (MOTORCYCLE)
+        { name: "Riesgo de caída", content: "Tu vehículo podría caerse o moverse.", vehicleType: "MOTORCYCLE", category: "URGENT" },
+
+        // 💰 COMERCIAL (COMMERCIAL)
+        { name: "Interés en compra", content: "Estoy interesado en comprar tu vehículo.", vehicleType: "ALL", category: "COMMERCIAL" },
     ]
 
     console.log('Migrando plantillas...')
+
+    // Opcional: Desactivar plantillas antiguas que no estén en la nueva lista
+    const templateNames = templates.map(t => t.name)
+    await prisma.notificationTemplate.updateMany({
+        where: { NOT: { name: { in: templateNames } } },
+        data: { isActive: false }
+    })
 
     for (const t of templates) {
         const existing = await prisma.notificationTemplate.findFirst({ where: { name: t.name } })
         if (existing) {
             await prisma.notificationTemplate.update({
                 where: { id: existing.id },
-                data: t
+                data: { ...t, isActive: true }
             })
         } else {
             await prisma.notificationTemplate.create({
