@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     try {
         const body = await req.json()
         const {
-            systemName, maintenanceMode, allowRegistration, googleAnalyticsId, webhookUrl,
+            systemName, maintenanceMode, allowRegistration, gtmId, webhookUrl,
             smtpHost, smtpPort, smtpUser, smtpPass, smtpFrom,
             emailRegistration, emailRecovery, emailNotification
         } = body
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
                 systemName,
                 maintenanceMode,
                 allowRegistration,
-                googleAnalyticsId,
+                gtmId,
                 webhookUrl,
                 smtpHost,
                 smtpPort: smtpPort ? parseInt(smtpPort) : undefined,
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
                 systemName,
                 maintenanceMode,
                 allowRegistration,
-                googleAnalyticsId,
+                gtmId,
                 webhookUrl,
                 smtpHost,
                 smtpPort: smtpPort ? parseInt(smtpPort) : undefined,

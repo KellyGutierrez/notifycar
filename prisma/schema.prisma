@@ -75,7 +75,7 @@ model SystemSetting {
   systemName        String   @default("NotifyCar")
   maintenanceMode   Boolean  @default(false)
   allowRegistration Boolean  @default(true)
-  googleAnalyticsId String?
+  gtmId             String?
   webhookUrl        String?
   
   // SMTP Settings

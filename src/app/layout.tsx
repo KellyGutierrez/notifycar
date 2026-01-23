@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 import { Providers } from "@/components/Providers";
-import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { GoogleTagManager } from "@/components/GoogleTagManager";
 import { db } from "@/lib/db";
 
 export const metadata: Metadata = {
@@ -24,12 +24,12 @@ export const metadata: Metadata = {
   }
 };
 
-async function getGAId() {
+async function getGTMId() {
   try {
     const settings = await db.systemSetting.findUnique({
       where: { id: "default" }
     });
-    return settings?.googleAnalyticsId;
+    return settings?.gtmId; // We will rename this in schema
   } catch (e) {
     return null;
   }
@@ -40,15 +40,25 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const gaId = await getGAId();
+  const gtmId = await getGTMId();
 
   return (
     <html lang="es">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {gtmId && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+              height="0"
+              width="0"
+              style={{ display: 'none', visibility: 'hidden' }}
+            />
+          </noscript>
+        )}
         <Providers>
-          {gaId && <GoogleAnalytics gaId={gaId} />}
+          {gtmId && <GoogleTagManager gtmId={gtmId} />}
           {children}
         </Providers>
       </body>

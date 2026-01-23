@@ -16,7 +16,7 @@ export default function AdminSettingsPage() {
         systemName: "NotifyCar",
         maintenanceMode: false,
         allowRegistration: true,
-        googleAnalyticsId: "",
+        gtmId: "",
         webhookUrl: "",
         // SMTP
         smtpHost: "",
@@ -38,7 +38,7 @@ export default function AdminSettingsPage() {
                     systemName: data.systemName || "NotifyCar",
                     maintenanceMode: data.maintenanceMode || false,
                     allowRegistration: data.allowRegistration || true,
-                    googleAnalyticsId: data.googleAnalyticsId || "",
+                    gtmId: data.gtmId || "",
                     webhookUrl: data.webhookUrl || "",
                     smtpHost: data.smtpHost || "",
                     smtpPort: data.smtpPort || 587,
@@ -199,14 +199,14 @@ export default function AdminSettingsPage() {
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium text-gray-400">Google Analytics (ID)</label>
+                                            <label className="text-sm font-medium text-gray-400">Google Tag Manager (ID)</label>
                                             <div className="relative">
                                                 <BarChart className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
                                                 <input
                                                     type="text"
-                                                    placeholder="G-XXXXXXXXXX"
-                                                    value={settings.googleAnalyticsId}
-                                                    onChange={(e) => setSettings({ ...settings, googleAnalyticsId: e.target.value })}
+                                                    placeholder="GTM-XXXXXXX"
+                                                    value={settings.gtmId}
+                                                    onChange={(e) => setSettings({ ...settings, gtmId: e.target.value })}
                                                     className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-white focus:outline-none focus:border-cyan-500/50 transition-all font-medium"
                                                 />
                                             </div>
