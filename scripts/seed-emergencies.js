@@ -23,15 +23,20 @@ const prisma = new PrismaClient()
 
 async function main() {
     const configs = [
-        { country: "CO", police: "123", transit: "127", emergency: "123" }, // Colombia
-        { country: "MX", police: "911", transit: "911", emergency: "911" }, // México
-        { country: "ES", police: "091", transit: "092", emergency: "112" }, // España
-        { country: "AR", police: "911", transit: "911", emergency: "911" }, // Argentina
-        { country: "CL", police: "133", transit: "133", emergency: "133" }, // Chile
-        { country: "PE", police: "105", transit: "105", emergency: "911" }, // Perú
-        { country: "PA", police: "104", transit: "104", emergency: "911" }, // Panamá
-        { country: "US", police: "911", transit: "911", emergency: "911" }, // Estados Unidos
-        { country: "EC", police: "911", transit: "911", emergency: "911" }, // Ecuador
+        { country: "CO", police: "123", transit: "127", emergency: "123" },
+        { country: "COLOMBIA", police: "123", transit: "127", emergency: "123" },
+        { country: "MX", police: "911", transit: "911", emergency: "911" },
+        { country: "MEXICO", police: "911", transit: "911", emergency: "911" },
+        { country: "MÉXICO", police: "911", transit: "911", emergency: "911" },
+        { country: "ES", police: "091", transit: "092", emergency: "112" },
+        { country: "ESPAÑA", police: "091", transit: "092", emergency: "112" },
+        { country: "AR", police: "911", transit: "911", emergency: "911" },
+        { country: "ARGENTINA", police: "911", transit: "911", emergency: "911" },
+        { country: "CL", police: "133", transit: "133", emergency: "133" },
+        { country: "CHILE", police: "133", transit: "133", emergency: "133" },
+        { country: "US", police: "911", transit: "911", emergency: "911" },
+        { country: "UNITED STATES", police: "911", transit: "911", emergency: "911" },
+        { country: "ESTADOS UNIDOS", police: "911", transit: "911", emergency: "911" },
     ]
 
     console.log('Sembrando números de emergencia...')

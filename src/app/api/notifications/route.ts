@@ -78,16 +78,27 @@ export async function POST(req: Request) {
 
         // Buscar números de emergencia según el país
         let emergency = { police: "123", transit: "123", general: "123" };
-        if (vehicle.user.country) {
+        const userCountry = (vehicle.user.country || "").trim().toUpperCase();
+
+        if (userCountry) {
+            console.log(`🔍 Buscando emergencias para país: [${userCountry}]`);
             const config = await db.emergencyConfig.findUnique({
-                where: { country: vehicle.user.country }
+                where: { country: userCountry }
             });
+
             if (config) {
                 emergency = {
                     police: config.police,
                     transit: config.transit,
                     general: config.emergency
                 };
+            } else {
+                // Fallback manual por si el seed no ha corrido o el código es diferente
+                if (userCountry === "CO" || userCountry === "COLOMBIA") {
+                    emergency = { police: "123", transit: "127", general: "123" };
+                } else if (userCountry === "MX" || userCountry === "MEXICO" || userCountry === "MÉXICO") {
+                    emergency = { police: "911", transit: "911", general: "911" };
+                }
             }
         }
 
