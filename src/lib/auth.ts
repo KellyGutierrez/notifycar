@@ -31,7 +31,13 @@ export const authOptions: NextAuthOptions = {
                 const isPasswordValid = await compare(credentials.password, user.password)
                 if (!isPasswordValid) return null
 
-                return { id: user.id, email: user.email, name: user.name, role: user.role }
+                return {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    role: user.role,
+                    organizationId: user.organizationId
+                }
             }
         })
     ],
@@ -43,6 +49,7 @@ export const authOptions: NextAuthOptions = {
                     session.user.name = token.name
                     session.user.email = token.email
                     session.user.role = token.role as any
+                    session.user.organizationId = token.organizationId as string | null
                 }
             }
             return session
@@ -51,6 +58,7 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 token.id = user.id
                 token.role = user.role
+                token.organizationId = user.organizationId
             }
             return token
         }

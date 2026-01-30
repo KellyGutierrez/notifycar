@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: "NotifyCar | Sistema de Comunicación Vehicular",
   description: "La forma más rápida y segura de contactar al dueño de un vehículo por su placa.",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icon.png?v=1",
   }
 };
 

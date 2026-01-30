@@ -102,7 +102,28 @@ export async function POST(req: Request) {
             }
         }
 
-        const finalMessage = `🚗 *NotifyCar*\n\nAlguien cerca de tu vehículo quiso avisarte lo siguiente:\n“${vehicle.plate.toUpperCase()} - ${content}”\n\nℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo. No se compartió tu número ni ningún dato personal.\n\n🔐 *Recomendación de seguridad:*\nVerifica la situación con calma, revisa el entorno antes y evita confrontaciones directas.\n\n📞 *Números de emergencia:*\n• Policía: ${emergency.police}\n• Tránsito: ${emergency.transit}\n• Emergencias: ${emergency.general}\n\n—\nNotifyCar · Comunicación inteligente en la vía\nwww.notifycar.com`;
+        const finalMessage = `🚗 *NotifyCar*
+
+📢 *AVISO PARA TU VEHÍCULO*
+Placa: *${vehicle.plate.toUpperCase()}*
+
+*MENSAJE:*
+*“${content}”*
+
+______________________________
+
+ℹ️ _Este aviso fue enviado a través de NotifyCar de forma 100% anónima. Tus datos personales NO han sido compartidos._
+
+🔐 *Seguridad:* _Mantén la calma y verifica el entorno antes de acercarte al vehículo._
+
+📞 *Números de Emergencia:*
+• Policía: *${emergency.police}*
+• Tránsito: *${emergency.transit}*
+• Emergencias: *${emergency.general}*
+
+—
+*NotifyCar* · _Comunicación inteligente en la vía_
+www.notifycar.com`;
 
         // Create the notification in DB
         const notification = await db.notification.create({

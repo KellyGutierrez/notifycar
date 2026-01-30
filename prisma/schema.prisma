@@ -20,7 +20,7 @@ model User {
   email         String    @unique
   password      String?
   image         String?
-  role          String    @default("USER") // USER, ADMIN
+  role          String    @default("USER") // USER, ADMIN, CORPORATE
   country       String?
   phonePrefix   String?
   phoneNumber   String?
@@ -29,6 +29,22 @@ model User {
   updatedAt     DateTime  @updatedAt
   
   vehicles      Vehicle[]
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+}
+
+model Organization {
+  id            String    @id @default(cuid())
+  name          String
+  logo          String?
+  type          String    @default("PARKING") // PARKING, FLEET, BLUE_ZONE, OTHER
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  users         User[]
+  templates     NotificationTemplate[]
 }
 
 model Vehicle {
@@ -66,6 +82,10 @@ model NotificationTemplate {
   category      String             @default("COMMON") // COMMON, SEASONAL, URGENT
   type          String             @default("APP")    // APP, WHATSAPP, EMAIL
   isActive      Boolean            @default(true)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
 }

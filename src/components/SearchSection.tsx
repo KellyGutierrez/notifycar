@@ -250,7 +250,14 @@ export default function SearchSection() {
                                                                 <div className="h-2 w-2 rounded-full bg-white" />
                                                             )}
                                                         </div>
-                                                        <span className="leading-tight">{t.name}</span>
+                                                        <div className="flex flex-col flex-1">
+                                                            <span className="leading-tight">{t.name}</span>
+                                                            {t.organizationId && (
+                                                                <span className="text-[9px] text-green-700/60 font-black uppercase tracking-tighter mt-1">
+                                                                    Personalizado
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </button>
                                                     {selectedTemplates.includes(t.id) && (
                                                         <div className="px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-900 animate-in slide-in-from-top-2 duration-300 shadow-inner">
@@ -297,7 +304,14 @@ export default function SearchSection() {
                                                             <div className="h-2 w-2 rounded-full bg-white" />
                                                         )}
                                                     </div>
-                                                    <span className="leading-tight">{t.name}</span>
+                                                    <div className="flex flex-col flex-1">
+                                                        <span className="leading-tight">{t.name}</span>
+                                                        {t.organizationId && (
+                                                            <span className="text-[9px] text-brand/60 font-black uppercase tracking-tighter mt-1">
+                                                                Personalizado
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </button>
                                                 {selectedTemplates.includes(t.id) && (
                                                     <div className="px-4 py-3 bg-brand/5 border border-brand/20 rounded-xl text-sm text-gray-800 animate-in slide-in-from-top-2 duration-300 shadow-inner">
