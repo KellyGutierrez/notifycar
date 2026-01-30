@@ -1,8 +1,20 @@
 import Link from "next/link"
-import { Search, Bell, MessageSquare, Shield, ArrowRight } from "lucide-react"
+import { Search, Bell, MessageSquare, Shield, ArrowRight, User as UserIcon, LogOut } from "lucide-react"
 import SearchSection from "@/components/SearchSection"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await getServerSession(authOptions)
+  const user = session?.user
+
+  // Determine dashboard link based on role
+  const dashboardLink = user?.role === "ADMIN"
+    ? "/admin"
+    : user?.role === "CORPORATE"
+      ? "/corporate"
+      : "/dashboard"
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
       {/* Header */}
@@ -17,18 +29,33 @@ export default function LandingPage() {
           </Link>
 
           <nav className="flex items-center gap-4">
-            <Link
-              href="/account/signin"
-              className="text-gray-600 hover:text-gray-900 font-medium px-4 py-2 transition-colors"
-            >
-              Iniciar Sesión
-            </Link>
-            <Link
-              href="/account/signup"
-              className="bg-brand hover:bg-brand-dark text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-brand/20 transition-all hover:-translate-y-0.5"
-            >
-              Registrarse
-            </Link>
+            {user ? (
+              <div className="flex items-center gap-3">
+                <Link
+                  href={dashboardLink}
+                  className="flex items-center gap-2 bg-brand/10 text-brand px-4 py-2 rounded-full font-bold transition-all hover:bg-brand/20 border border-brand/10"
+                >
+                  <UserIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline">Hola, {user.name?.split(' ')[0]}</span>
+                  <span className="sm:hidden">Panel</span>
+                </Link>
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/account/signin"
+                  className="text-gray-600 hover:text-gray-900 font-medium px-4 py-2 transition-colors"
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link
+                  href="/account/signup"
+                  className="bg-brand hover:bg-brand-dark text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-brand/20 transition-all hover:-translate-y-0.5"
+                >
+                  Registrarse
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       </header>

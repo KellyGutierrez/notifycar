@@ -43,7 +43,7 @@ async function main() {
     const templates = [
         {
             name: 'Pago pendiente - Zona Azul',
-            content: 'Hola, notamos que te retiraste de la Zona Azul sin registrar el pago de tu parqueadero. Por favor acércate al operador más cercano.',
+            content: 'Hola, notamos que te retiraste sin cancelar el parqueo de la Zona Azul. Por favor acércate al operador o realiza el pago por la app.',
             vehicleType: 'ALL',
             category: 'URGENT',
         },
