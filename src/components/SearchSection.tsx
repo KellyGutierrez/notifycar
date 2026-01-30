@@ -17,9 +17,12 @@ export default function SearchSection() {
 
     useEffect(() => {
         fetch("/api/templates")
-            .then(res => res.json())
-            .then(data => setTemplates(data))
-            .catch(err => console.error("Error fetching templates:", err))
+            .then(res => res.ok ? res.json() : [])
+            .then(data => setTemplates(Array.isArray(data) ? data : []))
+            .catch(err => {
+                console.error("Error fetching templates:", err)
+                setTemplates([])
+            })
     }, [])
 
     const handleSearch = async (e: React.FormEvent) => {
@@ -62,43 +65,36 @@ export default function SearchSection() {
                 const data = await res.json()
                 if (data.found) {
                     setResult(data.vehicle)
-                    // Cargar plantillas basadas en el tipo de vehículo y si es eléctrico
                     const tRes = await fetch(`/api/templates?type=${data.vehicle.type}&isElectric=${data.vehicle.isElectric}`)
                     if (tRes.ok) {
                         const tData = await tRes.json()
-                        setTemplates(tData)
+                        setTemplates(Array.isArray(tData) ? tData : [])
+                    } else {
+                        setTemplates([])
                     }
                 } else {
                     setError("No se encontró ningún vehículo con esa placa.")
                 }
             } else {
-                setError("Ocurrió un error al buscar el vehículo.")
+                const text = await res.text();
+                if (text.includes("Internal Error")) {
+                    setError("Error de conexión con la base de datos. ¿Deseas usar el modo de prueba? Escribe 'TEST' en la placa.");
+                } else {
+                    setError("Ocurrió un error al buscar el vehículo.");
+                }
             }
         } catch (error) {
-            setError("Error de conexión.")
+            setError("Error de conexión. Verifica que el PC principal esté encendido y en la misma red.");
         } finally {
             setLoading(false)
         }
     }
 
     const toggleTemplate = (id: string) => {
-        if (result?.isElectric) {
-            const template = templates.find(t => t.id === id);
-            const isElectricType = template?.vehicleType === "ELECTRIC";
-
-            setSelectedTemplates(prev => {
-                const isSelected = prev.includes(id);
-                if (isSelected) return prev.filter(tid => tid !== id);
-
-                // Si es eléctrico, permitimos seleccionar uno normal Y uno eléctrico al mismo tiempo.
-                // Filtramos para quitar otros mensajes del mismo tipo (reemplazo inteligente)
-                const othersOfDifferentType = prev.filter(tid => {
-                    const t = templates.find(temp => temp.id === tid);
-                    return (t?.vehicleType === "ELECTRIC") !== isElectricType;
-                });
-
-                return [...othersOfDifferentType, id];
-            });
+        // Ahora, independientemente de si es eléctrico o no, solo permitimos seleccionar una opción
+        const isSelected = selectedTemplates.includes(id);
+        if (isSelected) {
+            setSelectedTemplates([]);
         } else {
             setSelectedTemplates([id]);
         }
@@ -141,7 +137,7 @@ export default function SearchSection() {
     }
 
     return (
-        <div className="w-full max-w-2xl mx-auto mt-10 space-y-6">
+        <div className="w-full max-w-2xl mx-auto mt-4 space-y-6">
             <form
                 onSubmit={handleSearch}
                 className="bg-white p-2 rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 flex items-center gap-2 group focus-within:ring-2 focus-within:ring-brand/20 transition-all"
@@ -224,38 +220,48 @@ export default function SearchSection() {
                                 Selecciona los mensajes
                             </label>
                             <div className="space-y-6">
-                                {result.isElectric && templates.some(t => t.vehicleType === "ELECTRIC") && (
+                                {Array.isArray(templates) && templates.some(t => t.vehicleType === "ELECTRIC") && (
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-2">
                                             <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
                                             <span className="text-[10px] font-bold text-green-700 uppercase tracking-widest">Mensajes Eléctricos</span>
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
                                             {templates.filter(t => t.vehicleType === "ELECTRIC").map(t => (
-                                                <button
-                                                    key={t.id}
-                                                    type="button"
-                                                    onClick={() => toggleTemplate(t.id)}
-                                                    className={cn(
-                                                        "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all border text-left h-full",
-                                                        selectedTemplates.includes(t.id)
-                                                            ? "bg-green-50 border-green-200 text-green-900 shadow-sm"
-                                                            : "bg-white border-gray-100 text-gray-600 hover:border-green-200 hover:bg-green-50/30"
-                                                    )}
-                                                >
-                                                    <div
+                                                <div key={t.id} className="flex flex-col gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => toggleTemplate(t.id)}
                                                         className={cn(
-                                                            "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                            "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all border text-left w-full h-full",
                                                             selectedTemplates.includes(t.id)
-                                                                ? "border-green-500 bg-green-500"
-                                                                : "border-gray-300 bg-white"
-                                                        )}>
-                                                        {selectedTemplates.includes(t.id) && (
-                                                            <div className="h-2 w-2 rounded-full bg-white" />
+                                                                ? "bg-green-50 border-green-200 text-green-900 shadow-sm"
+                                                                : "bg-white border-gray-100 text-gray-600 hover:border-green-200 hover:bg-green-50/30"
                                                         )}
-                                                    </div>
-                                                    <span className="leading-tight">{t.name}</span>
-                                                </button>
+                                                    >
+                                                        <div
+                                                            className={cn(
+                                                                "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                                selectedTemplates.includes(t.id)
+                                                                    ? "border-green-500 bg-green-500"
+                                                                    : "border-gray-300 bg-white"
+                                                            )}>
+                                                            {selectedTemplates.includes(t.id) && (
+                                                                <div className="h-2 w-2 rounded-full bg-white" />
+                                                            )}
+                                                        </div>
+                                                        <span className="leading-tight">{t.name}</span>
+                                                    </button>
+                                                    {selectedTemplates.includes(t.id) && (
+                                                        <div className="px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-900 animate-in slide-in-from-top-2 duration-300 shadow-inner">
+                                                            <div className="flex items-center gap-2 font-bold mb-1.5">
+                                                                <Info className="h-4 w-4" />
+                                                                Mensaje completo a enviar:
+                                                            </div>
+                                                            <p className="italic leading-relaxed font-medium bg-white/50 p-2 rounded-lg">"{t.content}"</p>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             ))}
                                         </div>
                                     </div>
@@ -268,54 +274,47 @@ export default function SearchSection() {
                                             {result.isElectric ? "Mensajes Generales" : "Mensajes Sugeridos"}
                                         </span>
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        {templates.filter(t => t.vehicleType !== "ELECTRIC").map(t => (
-                                            <button
-                                                key={t.id}
-                                                type="button"
-                                                onClick={() => toggleTemplate(t.id)}
-                                                className={cn(
-                                                    "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all border text-left h-full",
-                                                    selectedTemplates.includes(t.id)
-                                                        ? "bg-brand/5 border-brand text-gray-900 shadow-sm"
-                                                        : "bg-white border-gray-100 text-gray-600 hover:border-brand/40 hover:bg-gray-50/50"
-                                                )}
-                                            >
-                                                <div className={cn(
-                                                    "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                    selectedTemplates.includes(t.id)
-                                                        ? "border-brand bg-brand"
-                                                        : "border-gray-300 bg-white"
-                                                )}>
-                                                    {selectedTemplates.includes(t.id) && (
-                                                        <div className="h-2 w-2 rounded-full bg-white" />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
+                                        {Array.isArray(templates) && templates.filter(t => t.vehicleType !== "ELECTRIC").map(t => (
+                                            <div key={t.id} className="flex flex-col gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => toggleTemplate(t.id)}
+                                                    className={cn(
+                                                        "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all border text-left w-full h-full",
+                                                        selectedTemplates.includes(t.id)
+                                                            ? "bg-brand/5 border-brand text-gray-900 shadow-sm"
+                                                            : "bg-white border-gray-100 text-gray-600 hover:border-brand/40 hover:bg-gray-50/50"
                                                     )}
-                                                </div>
-                                                <span className="leading-tight">{t.name}</span>
-                                            </button>
+                                                >
+                                                    <div className={cn(
+                                                        "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                        selectedTemplates.includes(t.id)
+                                                            ? "border-brand bg-brand"
+                                                            : "border-gray-300 bg-white"
+                                                    )}>
+                                                        {selectedTemplates.includes(t.id) && (
+                                                            <div className="h-2 w-2 rounded-full bg-white" />
+                                                        )}
+                                                    </div>
+                                                    <span className="leading-tight">{t.name}</span>
+                                                </button>
+                                                {selectedTemplates.includes(t.id) && (
+                                                    <div className="px-4 py-3 bg-brand/5 border border-brand/20 rounded-xl text-sm text-gray-800 animate-in slide-in-from-top-2 duration-300 shadow-inner">
+                                                        <div className="flex items-center gap-2 font-bold mb-1.5 text-brand">
+                                                            <Info className="h-4 w-4" />
+                                                            Mensaje completo a enviar:
+                                                        </div>
+                                                        <p className="italic leading-relaxed font-medium bg-white/50 p-2 rounded-lg">"{t.content}"</p>
+                                                    </div>
+                                                )}
+                                            </div>
                                         ))}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Vista Previa del Mensaje */}
-                        {selectedTemplates.length > 0 && (
-                            <div className="my-6 p-4 rounded-xl border-2 border-dashed border-brand/30 bg-gray-50 animate-in fade-in slide-in-from-top-2 duration-300">
-                                <p className="text-[10px] font-black text-brand uppercase tracking-tighter mb-2 flex items-center gap-2">
-                                    <Info className="h-3 w-3" />
-                                    Vista previa del mensaje:
-                                </p>
-                                <div className="text-sm text-gray-700 font-medium whitespace-pre-wrap leading-relaxed">
-                                    <span className="font-bold text-brand">*Vehículo [{(result.plate || '').toUpperCase()}]*</span>
-                                    {"\n\n"}
-                                    {templates
-                                        .filter(t => selectedTemplates.includes(t.id))
-                                        .map(t => t.content)
-                                        .join('\n')}
-                                </div>
-                            </div>
-                        )}
 
                         <button
                             disabled={selectedTemplates.length === 0 || notifying}
