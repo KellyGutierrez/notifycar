@@ -52,4 +52,4 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 # Start the application with automated DB sync and seeding - FORCED
-CMD sh -c "npx prisma db push --accept-data-loss && node scripts/seed-emergencies.js && node scripts/migrate-templates.js && pnpm start"
+CMD sh -c "npx prisma db push --accept-data-loss && node scripts/seed-emergencies.js && node scripts/migrate-templates.js && node scripts/seed-corporate.js && pnpm start"
