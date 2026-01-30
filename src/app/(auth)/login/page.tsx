@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { signIn } from "next-auth/react"
+import { signIn, getSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Loader2, Mail, Lock, Car } from "lucide-react"
@@ -28,7 +28,16 @@ export default function LoginPage() {
             if (res?.error) {
                 setError("Credenciales inválidas")
             } else {
-                router.push("/dashboard")
+                const session = await getSession();
+                const role = session?.user?.role;
+
+                if (role === "ADMIN") {
+                    router.push("/admin");
+                } else if (role === "CORPORATE") {
+                    router.push("/corporate");
+                } else {
+                    router.push("/dashboard");
+                }
             }
         } catch {
             setError("Ocurrió un error inesperado")
