@@ -35,7 +35,7 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const body = await req.json()
-        const { vehicleId, content, type } = body
+        const { vehicleId, content, type, templateId } = body
 
         if (!vehicleId || !content) {
             return new NextResponse("Missing required fields", { status: 400 })
@@ -102,13 +102,41 @@ export async function POST(req: Request) {
             }
         }
 
-        const finalMessage = `🚗 *NotifyCar*
+        const vehicleIcon = vehicle.type === 'MOTORCYCLE' ? '🏍️' : '🚘';
+        const vehicleTypeLabel = vehicle.type === 'MOTORCYCLE' ? 'MOTOCICLETA' : 'VEHÍCULO';
+        const electricTag = vehicle.isElectric ? '⚡ *VEHÍCULO ELÉCTRICO*' : '';
 
-📢 *AVISO PARA TU VEHÍCULO*
-Placa: *${vehicle.plate.toUpperCase()}*
+        // 1. Intentar obtener wrapper de la organización vinculada a la plantilla
+        let wrapper = "";
+        if (templateId) {
+            const template = await db.notificationTemplate.findUnique({
+                where: { id: templateId },
+                include: { organization: true }
+            });
+            if (template?.organization?.messageWrapper) {
+                wrapper = template.organization.messageWrapper;
+            }
+        }
 
-*MENSAJE:*
-*“${content}”*
+        // 2. Si no hay wrapper de org, buscar el global en settings
+        const settings = await db.systemSetting.findUnique({ where: { id: "default" } });
+        if (!wrapper && settings?.messageWrapper) {
+            wrapper = settings.messageWrapper;
+        }
+
+        // 3. Fallback al diseño por defecto si todo lo anterior falla
+        if (!wrapper) {
+            wrapper = `🔔 *N O T I F Y C A R*
+______________________________
+
+📢 *AVISO PARA TU {{tipo}}*
+{{electrico}}
+{{icono}} *PLACA:* *${vehicle.plate.toUpperCase()}*
+
+______________________________
+
+💬 *MENSAJE:*
+*“{{mensaje}}”*
 
 ______________________________
 
@@ -117,13 +145,25 @@ ______________________________
 🔐 *Seguridad:* _Mantén la calma y verifica el entorno antes de acercarte al vehículo._
 
 📞 *Números de Emergencia:*
-• Policía: *${emergency.police}*
-• Tránsito: *${emergency.transit}*
-• Emergencias: *${emergency.general}*
+• Policía: *{{policia}}*
+• Tránsito: *{{transito}}*
+• Emergencias: *{{emergencia}}*
 
 —
 *NotifyCar* · _Comunicación inteligente en la vía_
 www.notifycar.com`;
+        }
+
+        // 4. Reemplazo de etiquetas
+        const finalMessage = wrapper
+            .replace(/{{tipo}}/g, vehicleTypeLabel)
+            .replace(/{{placa}}/g, vehicle.plate.toUpperCase()) // Soporte para {{placa}} manual
+            .replace(/{{mensaje}}/g, content)
+            .replace(/{{icono}}/g, vehicleIcon)
+            .replace(/{{electrico}}/g, electricTag ? `\n${electricTag}\n` : '')
+            .replace(/{{policia}}/g, emergency.police)
+            .replace(/{{transito}}/g, emergency.transit)
+            .replace(/{{emergencia}}/g, emergency.general);
 
         // Create the notification in DB
         const notification = await db.notification.create({

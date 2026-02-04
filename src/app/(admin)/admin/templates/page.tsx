@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import {
     Plus, Search, Edit2, Trash2, CheckCircle2, XCircle,
     MessageSquare, Car, Bike, Send, Calendar, AlertTriangle,
-    Loader2, Zap
+    Loader2, Zap, Building2
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -12,6 +12,7 @@ export default function AdminTemplatesPage() {
     const [templates, setTemplates] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [filterOrg, setFilterOrg] = useState("")
     const [editingTemplate, setEditingTemplate] = useState<any>(null)
     const [formData, setFormData] = useState({
         name: "",
@@ -19,13 +20,26 @@ export default function AdminTemplatesPage() {
         vehicleType: "ALL",
         category: "COMMON",
         type: "APP",
-        isActive: true
+        isActive: true,
+        organizationId: ""
     })
+    const [organizations, setOrganizations] = useState<any[]>([])
     const [saving, setSaving] = useState(false)
 
     useEffect(() => {
         fetchTemplates()
+        fetchOrganizations()
     }, [])
+
+    const fetchOrganizations = async () => {
+        try {
+            const res = await fetch("/api/admin/organizations")
+            const data = await res.json()
+            setOrganizations(data)
+        } catch (error) {
+            console.error("Error fetching organizations:", error)
+        }
+    }
 
     const fetchTemplates = async () => {
         try {
@@ -48,7 +62,8 @@ export default function AdminTemplatesPage() {
                 vehicleType: template.vehicleType,
                 category: template.category,
                 type: template.type,
-                isActive: template.isActive
+                isActive: template.isActive,
+                organizationId: template.organizationId || ""
             })
         } else {
             setEditingTemplate(null)
@@ -58,7 +73,8 @@ export default function AdminTemplatesPage() {
                 vehicleType: "ALL",
                 category: "COMMON",
                 type: "APP",
-                isActive: true
+                isActive: true,
+                organizationId: ""
             })
         }
         setIsModalOpen(true)
@@ -115,13 +131,29 @@ export default function AdminTemplatesPage() {
                     <h1 className="text-3xl font-bold tracking-tight">Gestión de Mensajes</h1>
                     <p className="text-gray-400">Personaliza los mensajes predefinidos y crea plantillas de temporada.</p>
                 </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-cyan-500/20 active:scale-95"
-                >
-                    <Plus className="h-5 w-5" />
-                    Nuevo Mensaje
-                </button>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                    <select
+                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 outline-none focus:border-cyan-500/50 transition-all font-medium appearance-none cursor-pointer"
+                        value={filterOrg}
+                        onChange={(e) => setFilterOrg(e.target.value)}
+                    >
+                        <option value="">Todas las organizaciones</option>
+                        <option value="GLOBAL" className="bg-gray-900">Global (Sin Organización)</option>
+                        {organizations.map(org => (
+                            <option key={org.id} value={org.id} className="bg-gray-900">
+                                {org.name}
+                            </option>
+                        ))}
+                    </select>
+
+                    <button
+                        onClick={() => handleOpenModal()}
+                        className="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-500/20 active:scale-95 whitespace-nowrap"
+                    >
+                        <Plus className="h-5 w-5" />
+                        Nuevo Mensaje
+                    </button>
+                </div>
             </div>
 
             {/* Content Area */}
@@ -131,71 +163,87 @@ export default function AdminTemplatesPage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {templates.map((template) => (
-                        <div
-                            key={template.id}
-                            className={cn(
-                                "group p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm transition-all hover:border-cyan-500/30 flex flex-col justify-between h-full",
-                                !template.isActive && "opacity-60 grayscale"
-                            )}
-                        >
-                            <div className="space-y-4">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className={cn(
-                                            "p-2 rounded-lg",
-                                            template.category === "SEASONAL" ? "bg-purple-500/10" :
-                                                template.category === "URGENT" ? "bg-red-500/10" : "bg-cyan-500/10"
-                                        )}>
-                                            <MessageSquare className={cn(
-                                                "h-5 w-5",
-                                                template.category === "SEASONAL" ? "text-purple-400" :
-                                                    template.category === "URGENT" ? "text-red-400" : "text-cyan-400"
-                                            )} />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-lg leading-tight">{template.name}</h3>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">
-                                                    {template.category}
-                                                </span>
-                                                <span className="h-1 w-1 rounded-full bg-gray-700" />
-                                                <div className="flex items-center gap-1">
-                                                    {template.vehicleType === "ALL" && <span className="text-[10px] text-gray-400">Todos</span>}
-                                                    {template.vehicleType === "CAR" && <Car className="h-3 w-3 text-gray-400" />}
-                                                    {template.vehicleType === "MOTORCYCLE" && <Bike className="h-3 w-3 text-gray-400" />}
-                                                    {template.vehicleType === "ELECTRIC" && <Zap className="h-3 w-3 text-green-400" />}
+                    {templates
+                        .filter(t => {
+                            if (!filterOrg) return true;
+                            if (filterOrg === "GLOBAL") return !t.organizationId;
+                            return t.organizationId === filterOrg;
+                        })
+                        .map((template) => (
+                            <div
+                                key={template.id}
+                                className={cn(
+                                    "group p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm transition-all hover:border-cyan-500/30 flex flex-col justify-between h-full",
+                                    !template.isActive && "opacity-60 grayscale"
+                                )}
+                            >
+                                <div className="space-y-4">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className={cn(
+                                                "p-2 rounded-lg",
+                                                template.category === "SEASONAL" ? "bg-purple-500/10" :
+                                                    template.category === "URGENT" ? "bg-red-500/10" : "bg-cyan-500/10"
+                                            )}>
+                                                <MessageSquare className={cn(
+                                                    "h-5 w-5",
+                                                    template.category === "SEASONAL" ? "text-purple-400" :
+                                                        template.category === "URGENT" ? "text-red-400" : "text-cyan-400"
+                                                )} />
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-lg leading-tight">{template.name}</h3>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                                        {template.category}
+                                                    </span>
+                                                    <span className="h-1 w-1 rounded-full bg-gray-700" />
+                                                    <div className="flex items-center gap-1">
+                                                        {template.vehicleType === "ALL" && <span className="text-[10px] text-gray-400">Todos</span>}
+                                                        {template.vehicleType === "CAR" && <Car className="h-3 w-3 text-gray-400" />}
+                                                        {template.vehicleType === "MOTORCYCLE" && <Bike className="h-3 w-3 text-gray-400" />}
+                                                        {template.vehicleType === "ELECTRIC" && <Zap className="h-3 w-3 text-green-400" />}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        {!template.isActive && (
+                                            <span className="bg-white/10 text-gray-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter">Inactivo</span>
+                                        )}
+                                        {template.organization ? (
+                                            <div className="flex items-center gap-1 bg-cyan-500/10 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter border border-cyan-500/20">
+                                                <Building2 className="h-3 w-3" />
+                                                {template.organization.name}
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-1 bg-gray-500/10 text-gray-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter border border-white/5">
+                                                Global
+                                            </div>
+                                        )}
                                     </div>
-                                    {!template.isActive && (
-                                        <span className="bg-white/10 text-gray-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter">Inactivo</span>
-                                    )}
+                                    <p className="text-gray-400 text-sm italic leading-relaxed">
+                                        "{template.content}"
+                                    </p>
                                 </div>
-                                <p className="text-gray-400 text-sm italic leading-relaxed">
-                                    "{template.content}"
-                                </p>
-                            </div>
 
-                            <div className="mt-6 flex items-center justify-end gap-2 pt-4 border-t border-white/5">
-                                <button
-                                    onClick={() => handleOpenModal(template)}
-                                    className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all"
-                                    title="Editar"
-                                >
-                                    <Edit2 className="h-5 w-5" />
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(template.id)}
-                                    className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
-                                    title="Eliminar"
-                                >
-                                    <Trash2 className="h-5 w-5" />
-                                </button>
+                                <div className="mt-6 flex items-center justify-end gap-2 pt-4 border-t border-white/5">
+                                    <button
+                                        onClick={() => handleOpenModal(template)}
+                                        className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all"
+                                        title="Editar"
+                                    >
+                                        <Edit2 className="h-5 w-5" />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(template.id)}
+                                        className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                                        title="Eliminar"
+                                    >
+                                        <Trash2 className="h-5 w-5" />
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
                 </div>
             )}
 
@@ -261,6 +309,25 @@ export default function AdminTemplatesPage() {
                                             <option value="SEASONAL" className="bg-gray-900">Temporada</option>
                                         </select>
                                     </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-400 mb-2">Asignar a Organización (Rol)</label>
+                                    <select
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan-500/50 transition-all font-medium appearance-none cursor-pointer"
+                                        value={formData.organizationId}
+                                        onChange={(e) => setFormData({ ...formData, organizationId: e.target.value })}
+                                    >
+                                        <option value="">Global (Todos)</option>
+                                        {organizations.map(org => (
+                                            <option key={org.id} value={org.id} className="bg-gray-900">
+                                                {org.name} ({org.type})
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <p className="text-[10px] text-gray-500 mt-2">
+                                        Si seleccionas una organización, este mensaje solo aparecerá para los usuarios vinculados a ella (ej: Zonas Azules).
+                                    </p>
                                 </div>
 
                                 <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5">

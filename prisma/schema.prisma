@@ -43,6 +43,9 @@ model Organization {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // Custom WhatsApp layout for this organization
+  messageWrapper String?   @db.Text
+
   users         User[]
   templates     NotificationTemplate[]
 }
@@ -108,8 +111,11 @@ model SystemSetting {
   // Email Toggles
   emailRegistration Boolean  @default(true)
   emailRecovery     Boolean  @default(true)
-  emailNotification Boolean  @default(true)
-  
+  emailVehicles     Boolean  @default(true)
+
+  // WhatsApp Layout
+  messageWrapper    String?  @db.Text
+
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }

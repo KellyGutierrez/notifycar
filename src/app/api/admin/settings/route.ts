@@ -38,7 +38,8 @@ export async function POST(req: Request) {
         const {
             systemName, maintenanceMode, allowRegistration, gtmId, webhookUrl,
             smtpHost, smtpPort, smtpUser, smtpPass, smtpFrom,
-            emailRegistration, emailRecovery, emailNotification
+            emailRegistration, emailRecovery, emailNotification,
+            messageWrapper
         } = body
 
         const settings = await db.systemSetting.upsert({
@@ -56,7 +57,8 @@ export async function POST(req: Request) {
                 smtpFrom,
                 emailRegistration,
                 emailRecovery,
-                emailNotification
+                emailNotification,
+                messageWrapper
             },
             create: {
                 id: "default",
@@ -72,7 +74,8 @@ export async function POST(req: Request) {
                 smtpFrom,
                 emailRegistration,
                 emailRecovery,
-                emailNotification
+                emailNotification,
+                messageWrapper
             }
         })
 

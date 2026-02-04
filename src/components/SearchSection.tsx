@@ -29,35 +29,36 @@ export default function SearchSection() {
         e.preventDefault()
         if (!plate) return
 
-        // MODO MOCK PARA PRUEBAS (PC ANTIGUO SIN DB)
-        if (plate.toUpperCase() === "TEST") {
-            setError(null)
-            setSuccessMsg(null)
-            setResult({
-                id: "test-id",
-                plate: "TEST-123",
-                type: "CAR",
-                brand: "Vehículo",
-                model: "De Prueba",
-                color: "Azul",
-                isElectric: false
-            });
-            setTemplates([
-                { id: "1", name: "Luces encendidas", content: "Hola, te informo que dejaste las luces de tu vehículo encendidas.", vehicleType: "CAR", category: "COMMON" },
-                { id: "2", name: "Mal estacionado", content: "Hola, tu vehículo está obstruyendo el paso o mal estacionado.", vehicleType: "ALL", category: "COMMON" },
-                { id: "3", name: "Obstrucción garaje", content: "Hola, su vehículo está obstruyendo la salida de un garaje.", vehicleType: "ALL", category: "URGENT" },
-                { id: "4", name: "Carga terminada", content: "Hola, tu vehículo ha completado su carga. Por favor, considera moverlo para liberar el espacio.", vehicleType: "ELECTRIC", category: "COMMON" },
-                { id: "5", name: "Cargador desconectado", content: "Hola, te informo que el cargador de tu vehículo ha sido desconectado.", vehicleType: "ELECTRIC", category: "URGENT" }
-            ]);
-            setSelectedTemplates([]);
-            return;
-        }
-
         setLoading(true)
         setError(null)
         setResult(null)
         setSuccessMsg(null)
         setSelectedTemplates([]);
+
+        // MODO MOCK PARA PRUEBAS (PC ANTIGUO SIN DB)
+        if (plate.toUpperCase() === "TEST") {
+            setTimeout(() => { // Simulamos un pequeño delay para que se sienta natural
+                setResult({
+                    id: "test-id",
+                    plate: "TEST-123",
+                    type: "CAR",
+                    brand: "Vehículo",
+                    model: "De Prueba",
+                    color: "Azul",
+                    isElectric: false
+                });
+                setTemplates([
+                    { id: "1", name: "Luces encendidas", content: "Hola, te informo que dejaste las luces de tu vehículo encendidas.", vehicleType: "CAR", category: "COMMON" },
+                    { id: "2", name: "Mal estacionado", content: "Hola, tu vehículo está obstruyendo el paso o mal estacionado.", vehicleType: "ALL", category: "COMMON" },
+                    { id: "6", name: "Estacionarias encendidas", content: "Dejaste las luces estacionarias de tu vehículo encendidas.", vehicleType: "ALL", category: "COMMON" },
+                    { id: "3", name: "Obstrucción garaje", content: "Hola, su vehículo está obstruyendo la salida de un garaje.", vehicleType: "ALL", category: "URGENT" },
+                    { id: "4", name: "Carga terminada", content: "Hola, tu vehículo ha completado su carga. Por favor, considera moverlo para liberar el espacio.", vehicleType: "ELECTRIC", category: "COMMON" },
+                    { id: "5", name: "Cargador desconectado", content: "Hola, te informo que el cargador de tu vehículo ha sido desconectado.", vehicleType: "ELECTRIC", category: "URGENT" }
+                ]);
+                setLoading(false);
+            }, 500);
+            return;
+        }
 
         try {
             const res = await fetch(`/api/search?plate=${plate}`)
@@ -118,6 +119,7 @@ export default function SearchSection() {
                 body: JSON.stringify({
                     vehicleId: result.id,
                     content: combinedContent,
+                    templateId: selected[0]?.id,
                     type: "APP"
                 })
             })

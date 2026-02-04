@@ -14,7 +14,7 @@ export async function PUT(
 
     try {
         const body = await request.json()
-        const { name, content, vehicleType, category, type, isActive } = body
+        const { name, content, vehicleType, category, type, isActive, organizationId } = body
 
         const template = await db.notificationTemplate.update({
             where: { id },
@@ -24,7 +24,8 @@ export async function PUT(
                 vehicleType,
                 category,
                 type,
-                isActive
+                isActive,
+                organizationId: organizationId || null
             }
         })
 

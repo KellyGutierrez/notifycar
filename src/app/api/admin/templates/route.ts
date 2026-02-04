@@ -12,6 +12,9 @@ export async function GET() {
 
     try {
         const templates = await db.notificationTemplate.findMany({
+            include: {
+                organization: true
+            },
             orderBy: { createdAt: 'desc' }
         })
         return NextResponse.json(templates)
@@ -28,7 +31,7 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json()
-        const { name, content, vehicleType, category, type, isActive } = body
+        const { name, content, vehicleType, category, type, isActive, organizationId } = body
 
         if (!name || !content) {
             return NextResponse.json({ error: "Nombre y contenido son obligatorios" }, { status: 400 })
@@ -41,7 +44,8 @@ export async function POST(request: Request) {
                 vehicleType: vehicleType || "ALL",
                 category: category || "COMMON",
                 type: type || "APP",
-                isActive: isActive !== undefined ? isActive : true
+                isActive: isActive !== undefined ? isActive : true,
+                organizationId: organizationId || null
             }
         })
 

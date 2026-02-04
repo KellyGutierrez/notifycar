@@ -30,6 +30,7 @@ async function main() {
         { name: "Obstrucción paso", content: "Tu vehículo está obstruyendo el paso y está afectando la circulación.", vehicleType: "ALL", category: "COMMON" },
         { name: "Alarma sonando", content: "La alarma de tu vehículo lleva un tiempo sonando.", vehicleType: "ALL", category: "COMMON" },
         { name: "Llanta baja", content: "Una de las llantas de tu vehículo parece estar baja.", vehicleType: "ALL", category: "COMMON" },
+        { name: "Estacionarias encendidas", content: "Dejaste las luces estacionarias de tu vehículo encendidas.", vehicleType: "ALL", category: "COMMON" },
         { name: "Vandalismo", content: "Tu vehículo presenta señales de vandalismo.", vehicleType: "ALL", category: "URGENT" },
 
         // COMBUSTIÓN - ELÉCTRICOS (CAR)

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Settings, Shield, Bell, Globe, Database, Save, Loader2, Power, Lock, Mail, Users, BarChart, Server, Key, Terminal } from "lucide-react"
+import { Settings, Shield, Bell, Globe, Database, Save, Loader2, Power, Lock, Mail, Users, BarChart, Server, Key, Terminal, MessageSquare } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type SettingTab = "General" | "Seguridad" | "Correo" | "Notificaciones" | "Base de Datos"
@@ -28,6 +28,7 @@ export default function AdminSettingsPage() {
         emailRegistration: true,
         emailRecovery: true,
         emailNotification: true,
+        messageWrapper: "",
     })
 
     useEffect(() => {
@@ -48,6 +49,7 @@ export default function AdminSettingsPage() {
                     emailRegistration: data.emailRegistration ?? true,
                     emailRecovery: data.emailRecovery ?? true,
                     emailNotification: data.emailNotification ?? true,
+                    messageWrapper: data.messageWrapper || "",
                 })
             })
             .catch(err => console.error("Error fetching settings:", err))
@@ -431,6 +433,33 @@ export default function AdminSettingsPage() {
                                             />
                                         </div>
                                         <p className="text-[10px] text-gray-500 italic">Esta URL recibirá un POST cada vez que se cree una notificación en el sistema.</p>
+                                    </div>
+
+                                    <div className="pt-6 border-t border-white/5 space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-sm font-medium text-gray-400 flex items-center gap-2">
+                                                <MessageSquare className="h-4 w-4 text-cyan-400" />
+                                                Formato Global de WhatsApp
+                                            </label>
+                                            <span className="text-[10px] font-bold text-gray-500 bg-white/5 px-2 py-0.5 rounded-full uppercase">Editable</span>
+                                        </div>
+                                        <div className="relative group">
+                                            <textarea
+                                                rows={12}
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 text-white focus:outline-none focus:border-cyan-500/50 transition-all font-mono text-xs leading-relaxed"
+                                                placeholder="Diseña tu mensaje aquí..."
+                                                value={settings.messageWrapper}
+                                                onChange={(e) => setSettings({ ...settings, messageWrapper: e.target.value })}
+                                            />
+                                            <div className="absolute top-2 right-2 flex flex-wrap justify-end gap-1 pointer-events-none group-focus-within:opacity-100 opacity-30 transition-opacity">
+                                                {["{{tipo}}", "{{placa}}", "{{mensaje}}", "{{icono}}", "{{policia}}", "{{transito}}", "{{emergencia}}"].map(tag => (
+                                                    <span key={tag} className="text-[9px] bg-black/60 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/20">{tag}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <p className="text-[10px] text-gray-500 leading-relaxed italic border-l-2 border-cyan-500/20 pl-3">
+                                            Usa las etiquetas como <strong>{"{{mensaje}}"}</strong> para insertar el contenido dinámico. Este formato se usará para todos los avisos, a menos que la organización tenga uno propio.
+                                        </p>
                                     </div>
 
                                     <div className="pt-6 border-t border-white/5 space-y-4">

@@ -11,7 +11,8 @@ import {
     LogOut,
     ShieldAlert,
     BarChart3,
-    MessageSquare
+    MessageSquare,
+    Building2
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { signOut } from "next-auth/react"
@@ -20,6 +21,7 @@ const adminNavigation = [
     { name: "Resumen", href: "/admin", icon: LayoutDashboard },
     { name: "Usuarios", href: "/admin/users", icon: Users },
     { name: "Vehículos", href: "/admin/vehicles", icon: Car },
+    { name: "Organizaciones", href: "/admin/organizations", icon: Building2 },
     { name: "Notificaciones", href: "/admin/notifications", icon: Bell },
     { name: "Mensajes", href: "/admin/templates", icon: MessageSquare },
     { name: "Reportes", href: "/admin/reports", icon: BarChart3 },

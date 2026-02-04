@@ -43,3 +43,5 @@ next-env.d.ts
 /src/generated/prisma
 
 release_build.tar.gz
+*.tar
+*.tar.gz
