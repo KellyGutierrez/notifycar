@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import {
     LayoutDashboard,
     MessageSquare,
@@ -13,7 +14,8 @@ import {
     Link as LinkIcon,
     Copy,
     Check,
-    Globe
+    Globe,
+    Settings
 } from "lucide-react"
 
 export default function InstitutionalDashboardPage() {
@@ -43,13 +45,21 @@ export default function InstitutionalDashboardPage() {
                     <h1 className="text-3xl font-black tracking-tight text-white mb-2">
                         Panel Institucional
                     </h1>
-                    <p className="text-gray-400">
+                    <p className="text-gray-400 font-medium tracking-tight">
                         Control de avisos y gestión de zonas azules / entidades gubernamentales.
                     </p>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                    <Shield className="h-4 w-4 text-emerald-400" />
-                    <span className="text-sm font-bold text-emerald-400">Modo Oficial</span>
+                <div className="flex items-center gap-3">
+                    <Link
+                        href="/institutional/settings"
+                        className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold text-gray-400 transition-all"
+                    >
+                        <Settings className="h-4 w-4" /> Configuración
+                    </Link>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                        <Shield className="h-4 w-4 text-emerald-400" />
+                        <span className="text-sm font-bold text-emerald-400">Modo Oficial</span>
+                    </div>
                 </div>
             </div>
 
@@ -104,11 +114,14 @@ export default function InstitutionalDashboardPage() {
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold flex items-center gap-2">
                             <MessageSquare className="h-5 w-5 text-emerald-400" />
-                            Mensajes de Zonas Azules
+                            Plantillas Activas
                         </h2>
-                        <button className="text-emerald-400 text-sm font-bold hover:underline flex items-center gap-1">
-                            Ver reportes <ArrowUpRight className="h-4 w-4" />
-                        </button>
+                        <Link
+                            href="/institutional/templates"
+                            className="text-emerald-400 text-sm font-bold hover:underline flex items-center gap-1"
+                        >
+                            Ver todas <ArrowUpRight className="h-4 w-4" />
+                        </Link>
                     </div>
                     <div className="space-y-4">
                         {[

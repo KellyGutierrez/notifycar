@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
 
+// GET: Fetch templates for the institutional organization
 export async function GET() {
     const session = await getServerSession(authOptions)
     if (!session || (session.user.role !== "INSTITUTIONAL" && session.user.role !== "ADMIN")) {
@@ -16,27 +17,26 @@ export async function GET() {
         })
 
         if (!user?.organizationId) {
-            return new NextResponse("No organization found", { status: 404 })
+            return NextResponse.json([])
         }
 
-        const org = await db.organization.findUnique({
-            where: { id: user.organizationId },
-            select: {
-                id: true,
-                name: true,
-                // @ts-ignore
-                publicToken: true,
-                messageWrapper: true
+        const templates = await db.notificationTemplate.findMany({
+            where: {
+                organizationId: user.organizationId
+            },
+            orderBy: {
+                createdAt: "desc"
             }
         })
 
-        return NextResponse.json(org)
+        return NextResponse.json(templates)
     } catch (error) {
-        console.error("[INSTITUTIONAL_SETTINGS_GET]", error)
+        console.error("[INSTITUTIONAL_TEMPLATES_GET]", error)
         return new NextResponse("Internal Error", { status: 500 })
     }
 }
 
+// POST: Create a new template for the organization
 export async function POST(req: Request) {
     const session = await getServerSession(authOptions)
     if (!session || (session.user.role !== "INSTITUTIONAL" && session.user.role !== "ADMIN")) {
@@ -50,22 +50,26 @@ export async function POST(req: Request) {
         })
 
         if (!user?.organizationId) {
-            return new NextResponse("No organization found", { status: 404 })
+            return new NextResponse("No organization found", { status: 400 })
         }
 
         const body = await req.json()
-        const { messageWrapper } = body
+        const { name, content, vehicleType, category, isActive } = body
 
-        const updatedOrg = await db.organization.update({
-            where: { id: user.organizationId },
+        const template = await db.notificationTemplate.create({
             data: {
-                messageWrapper
+                name,
+                content,
+                vehicleType: vehicleType || "ALL",
+                category: category || "COMMON",
+                isActive: isActive !== undefined ? isActive : true,
+                organizationId: user.organizationId
             }
         })
 
-        return NextResponse.json(updatedOrg)
+        return NextResponse.json(template)
     } catch (error) {
-        console.error("[INSTITUTIONAL_SETTINGS_POST]", error)
+        console.error("[INSTITUTIONAL_TEMPLATES_POST]", error)
         return new NextResponse("Internal Error", { status: 500 })
     }
 }
