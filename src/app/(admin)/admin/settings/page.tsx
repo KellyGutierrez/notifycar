@@ -27,7 +27,7 @@ export default function AdminSettingsPage() {
         // Toggles
         emailRegistration: true,
         emailRecovery: true,
-        emailNotification: true,
+        emailVehicles: true,
         messageWrapper: "",
     })
 
@@ -48,7 +48,7 @@ export default function AdminSettingsPage() {
                     smtpFrom: data.smtpFrom || "noreply@notifycar.com",
                     emailRegistration: data.emailRegistration ?? true,
                     emailRecovery: data.emailRecovery ?? true,
-                    emailNotification: data.emailNotification ?? true,
+                    emailVehicles: data.emailVehicles ?? true,
                     messageWrapper: data.messageWrapper || "",
                 })
             })
@@ -331,7 +331,7 @@ export default function AdminSettingsPage() {
                                             {[
                                                 { id: 'emailRegistration' as const, name: "Emails de Registro", desc: "Envía la bienvenida y verificación a nuevos usuarios." },
                                                 { id: 'emailRecovery' as const, name: "Recuperación de Contraseña", desc: "Permite a los usuarios resetear su acceso por mail." },
-                                                { id: 'emailNotification' as const, name: "Notificaciones de Vehículos", desc: "Copia por email de las alertas recibidas en el coche." },
+                                                { id: 'emailVehicles' as const, name: "Notificaciones de Vehículos", desc: "Copia por email de las alertas recibidas en el coche." },
                                             ].map((item) => (
                                                 <div key={item.id} className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-all">
                                                     <div className="space-y-0.5">
