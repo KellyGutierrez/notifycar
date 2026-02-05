@@ -17,10 +17,10 @@ import { signOut } from "next-auth/react"
 
 const institutionalNavigation = [
     { name: "Resumen", href: "/institutional", icon: LayoutDashboard },
-    { name: "Mis Vehículos", href: "/institutional/vehicles", icon: Car },
-    { name: "Plantillas WA", href: "/institutional/templates", icon: MessageSquare },
+    { name: "Vehículos", href: "/institutional/vehicles", icon: Car },
+    { name: "Mensajes", href: "/institutional/templates", icon: MessageSquare },
     { name: "Notificaciones", href: "/institutional/notifications", icon: Bell },
-    { name: "Configuración", href: "/institutional/settings", icon: Settings },
+    { name: "Plantilla Wpp", href: "/institutional/settings", icon: Settings },
 ]
 
 export function InstitutionalSidebar() {

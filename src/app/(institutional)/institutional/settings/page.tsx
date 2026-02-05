@@ -68,9 +68,9 @@ export default function InstitutionalSettingsPage() {
                 <div className="space-y-1 text-white">
                     <h1 className="text-3xl font-black tracking-tight text-white uppercase italic bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent flex items-center gap-3">
                         <SettingsIcon className="h-8 w-8 text-emerald-500" />
-                        Configuración de Mensajes
+                        Plantilla de WhatsApp
                     </h1>
-                    <p className="text-gray-400 font-medium">Personaliza el diseño oficial de WhatsApp para {orgName}.</p>
+                    <p className="text-gray-400 font-medium">Personaliza el diseño oficial (encabezado y pie de página) para {orgName}.</p>
                 </div>
             </div>
 
