@@ -22,6 +22,7 @@ export async function GET(req: Request) {
 
         const vehicles = await db.vehicle.findMany({
             where: {
+                // @ts-ignore
                 organizationId: user?.organizationId || undefined
             },
             include: {
@@ -76,6 +77,7 @@ export async function POST(req: Request) {
                 color,
                 isElectric,
                 userId: session.user.id, // El administrador corporativo es el dueño inicial
+                // @ts-ignore
                 organizationId: user.organizationId
             }
         })

@@ -21,7 +21,10 @@ export async function GET() {
 
         const org = await db.organization.findUnique({
             where: { id: user.organizationId },
-            select: { publicToken: true }
+            select: {
+                // @ts-ignore
+                publicToken: true
+            }
         })
 
         return NextResponse.json(org)

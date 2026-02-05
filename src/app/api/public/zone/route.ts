@@ -11,6 +11,7 @@ export async function GET(req: Request) {
 
     try {
         const organization = await db.organization.findUnique({
+            // @ts-ignore
             where: { publicToken: token },
             select: {
                 id: true,

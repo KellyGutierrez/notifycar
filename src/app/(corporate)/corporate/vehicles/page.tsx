@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Car, User, Hash, Plus, Loader2, X, Search, Zap, Bike, Save } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 export default function CorporateVehiclesPage() {
     const [vehicles, setVehicles] = useState<any[]>([])
