@@ -8,13 +8,15 @@ import {
     Settings,
     LogOut,
     MessageSquare,
-    Users
+    Users,
+    Car
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { signOut } from "next-auth/react"
 
 const corporateNavigation = [
     { name: "Resumen", href: "/corporate", icon: LayoutDashboard },
+    { name: "Mi Flota", href: "/corporate/vehicles", icon: Car },
     { name: "Mis Mensajes", href: "/corporate/templates", icon: MessageSquare },
     { name: "Notificaciones", href: "/corporate/notifications", icon: Bell },
     { name: "Mi Equipo", href: "/corporate/team", icon: Users },
