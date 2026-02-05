@@ -40,6 +40,7 @@ model Organization {
   logo          String?
   type          String    @default("PARKING") // PARKING, FLEET, BLUE_ZONE, INSTITUTIONAL, OTHER
   isActive      Boolean   @default(true)
+  publicToken   String?   @unique @default(cuid())
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
