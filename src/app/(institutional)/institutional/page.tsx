@@ -30,12 +30,23 @@ export default function InstitutionalDashboardPage() {
             .catch(err => console.error(err))
     }, [])
 
-    const publicLink = typeof window !== 'undefined' ? `${window.location.origin}/zone/${publicToken}` : ""
+    const publicLink = typeof window !== 'undefined' && publicToken ? `${window.location.origin}/zone/${publicToken}` : ""
 
     const copyLink = () => {
+        if (!publicToken || !publicLink) {
+            alert("El enlace aún no está disponible. Por favor espera un momento.")
+            return
+        }
+
         navigator.clipboard.writeText(publicLink)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
+            .then(() => {
+                setCopied(true)
+                setTimeout(() => setCopied(false), 2000)
+            })
+            .catch(err => {
+                console.error("Error al copiar:", err)
+                alert("No se pudo copiar el enlace. Inténtalo de nuevo.")
+            })
     }
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
