@@ -18,31 +18,22 @@ export async function GET() {
             settings = await db.systemSetting.create({
                 data: {
                     id: "default",
-                    messageWrapper: `🔔 *N O T I F Y C A R*
-______________________________
+                    messageWrapper: `🚗 *NotifyCar*
+Alguien cerca de tu vehículo quiso avisarte lo siguiente:
+“{{plate}} - {{raw_message}}”
 
-📢 *AVISO PARA TU {{tipo}}*
-{{electrico}}
-{{icono}} *PLACA:* *{{placa}}*
+ℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo. No se compartió tu número ni ningún dato personal.
 
-______________________________
+🔐 *Recomendación de seguridad:*
+Verifica la situación con calma, revisa el entorno antes y evita confrontaciones directas. Si notas algún riesgo, considera contactar a las autoridades.
 
-💬 *MENSAJE:*
-*“{{mensaje}}”*
-
-______________________________
-
-ℹ️ _Este aviso fue enviado a través de NotifyCar de forma 100% anónima. Tus datos personales NO han sido compartidos._
-
-🔐 *Seguridad:* _Mantén la calma y verifica el entorno antes de acercarte al vehículo._
-
-📞 *Números de Emergencia:*
-• Policía: *{{policia}}*
-• Tránsito: *{{transito}}*
-• Emergencias: *{{emergencia}}*
+📞 *Números de emergencia:*
+ - Policía: {{NUM_POLICIA}}
+ - Tránsito: {{NUM_TRANSITO}}
+ - Emergencias: {{NUM_EMERGENCIAS}}
 
 —
-*NotifyCar* · _Comunicación inteligente en la vía_
+NotifyCar · Comunicación inteligente en la vía
 www.notifycar.com`
                 }
             })

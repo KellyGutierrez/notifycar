@@ -126,44 +126,40 @@ export async function POST(req: Request) {
 
         // 3. Fallback al diseño por defecto si todo lo anterior falla
         if (!wrapper) {
-            wrapper = `🔔 *N O T I F Y C A R*
-______________________________
+            wrapper = `🚗 *NotifyCar*
+Alguien cerca de tu vehículo quiso avisarte lo siguiente:
+“{{plate}} - {{raw_message}}”
 
-📢 *AVISO PARA TU {{tipo}}*
-{{electrico}}
-{{icono}} *PLACA:* *${vehicle.plate.toUpperCase()}*
+ℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo. No se compartió tu número ni ningún dato personal.
 
-______________________________
+🔐 *Recomendación de seguridad:*
+Verifica la situación con calma, revisa el entorno antes y evita confrontaciones directas. Si notas algún riesgo, considera contactar a las autoridades.
 
-💬 *MENSAJE:*
-*“{{mensaje}}”*
-
-______________________________
-
-ℹ️ _Este aviso fue enviado a través de NotifyCar de forma 100% anónima. Tus datos personales NO han sido compartidos._
-
-🔐 *Seguridad:* _Mantén la calma y verifica el entorno antes de acercarte al vehículo._
-
-📞 *Números de Emergencia:*
-• Policía: *{{policia}}*
-• Tránsito: *{{transito}}*
-• Emergencias: *{{emergencia}}*
+📞 *Números de emergencia:*
+ - Policía: {{NUM_POLICIA}}
+ - Tránsito: {{NUM_TRANSITO}}
+ - Emergencias: {{NUM_EMERGENCIAS}}
 
 —
-*NotifyCar* · _Comunicación inteligente en la vía_
+NotifyCar · Comunicación inteligente en la vía
 www.notifycar.com`;
         }
 
         // 4. Reemplazo de etiquetas
         const finalMessage = wrapper
             .replace(/{{tipo}}/g, vehicleTypeLabel)
-            .replace(/{{placa}}/g, vehicle.plate.toUpperCase()) // Soporte para {{placa}} manual
+            .replace(/{{placa}}/g, vehicle.plate.toUpperCase())
+            .replace(/{{plate}}/g, vehicle.plate.toUpperCase()) // Nuevo tag pedido por usuario
             .replace(/{{mensaje}}/g, content)
+            .replace(/{{raw_message}}/g, content) // Nuevo tag pedido por usuario
             .replace(/{{icono}}/g, vehicleIcon)
             .replace(/{{electrico}}/g, electricTag ? `\n${electricTag}\n` : '')
             .replace(/{{policia}}/g, emergency.police)
+            .replace(/{{NUM_POLICIA}}/g, emergency.police) // Nuevo tag pedido por usuario
             .replace(/{{transito}}/g, emergency.transit)
-            .replace(/{{emergencia}}/g, emergency.general);
+            .replace(/{{NUM_TRANSITO}}/g, emergency.transit) // Nuevo tag pedido por usuario
+            .replace(/{{emergencia}}/g, emergency.general)
+            .replace(/{{NUM_EMERGENCIAS}}/g, emergency.general); // Nuevo tag pedido por usuario
 
         // Create the notification in DB
         const notification = await db.notification.create({
