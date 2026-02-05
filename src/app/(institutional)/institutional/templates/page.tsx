@@ -107,6 +107,7 @@ export default function InstitutionalTemplatesPage() {
 
     const toggleStatus = async (template: any) => {
         try {
+            console.log("Toggling template:", template.id, "to", !template.isActive)
             const res = await fetch(`/api/institutional/templates/${template.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -114,11 +115,18 @@ export default function InstitutionalTemplatesPage() {
                     isActive: !template.isActive
                 })
             })
+
             if (res.ok) {
+                console.log("Toggle success")
                 fetchTemplates()
+            } else {
+                const errorText = await res.text()
+                console.error("Toggle failed:", res.status, errorText)
+                alert(`Error ${res.status}: ${errorText || 'No se pudo actualizar el estado'}`)
             }
         } catch (error) {
             console.error("Error toggling template status:", error)
+            alert("Error de conexión al intentar activar/desactivar.")
         }
     }
 

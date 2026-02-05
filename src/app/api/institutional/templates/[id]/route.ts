@@ -6,8 +6,9 @@ import { NextResponse } from "next/server"
 // PUT: Update a template
 export async function PUT(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params
     const session = await getServerSession(authOptions)
     if (!session || (session.user.role !== "INSTITUTIONAL" && session.user.role !== "ADMIN")) {
         return new NextResponse("Unauthorized", { status: 401 })
@@ -21,7 +22,7 @@ export async function PUT(
 
         // Verify ownership
         const existing = await db.notificationTemplate.findUnique({
-            where: { id: params.id }
+            where: { id: id }
         })
 
         if (!existing || existing.organizationId !== user?.organizationId) {
@@ -32,7 +33,7 @@ export async function PUT(
         const { name, content, vehicleType, category, isActive } = body
 
         const updated = await db.notificationTemplate.update({
-            where: { id: params.id },
+            where: { id: id },
             data: {
                 ...(name !== undefined && { name }),
                 ...(content !== undefined && { content }),
@@ -52,8 +53,9 @@ export async function PUT(
 // DELETE: Delete a template
 export async function DELETE(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params
     const session = await getServerSession(authOptions)
     if (!session || (session.user.role !== "INSTITUTIONAL" && session.user.role !== "ADMIN")) {
         return new NextResponse("Unauthorized", { status: 401 })
@@ -67,7 +69,7 @@ export async function DELETE(
 
         // Verify ownership
         const existing = await db.notificationTemplate.findUnique({
-            where: { id: params.id }
+            where: { id: id }
         })
 
         if (!existing || existing.organizationId !== user?.organizationId) {
@@ -75,7 +77,7 @@ export async function DELETE(
         }
 
         await db.notificationTemplate.delete({
-            where: { id: params.id }
+            where: { id: id }
         })
 
         return new NextResponse(null, { status: 204 })
