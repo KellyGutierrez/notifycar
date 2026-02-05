@@ -21,7 +21,6 @@ const adminNavigation = [
     { name: "Resumen", href: "/admin", icon: LayoutDashboard },
     { name: "Usuarios", href: "/admin/users", icon: Users },
     { name: "Vehículos", href: "/admin/vehicles", icon: Car },
-    { name: "Organizaciones", href: "/admin/organizations", icon: Building2 },
     { name: "Mensajes WhatsApp", href: "/admin/whatsapp-layout", icon: MessageSquare },
     { name: "Notificaciones", href: "/admin/notifications", icon: Bell },
     { name: "Mensajes", href: "/admin/templates", icon: MessageSquare },
