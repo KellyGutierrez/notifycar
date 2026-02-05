@@ -452,7 +452,7 @@ export default function AdminSettingsPage() {
                                                 onChange={(e) => setSettings({ ...settings, messageWrapper: e.target.value })}
                                             />
                                             <div className="absolute top-2 right-2 flex flex-wrap justify-end gap-1 pointer-events-none group-focus-within:opacity-100 opacity-30 transition-opacity">
-                                                {["{{plate}}", "{{raw_message}}", "{{NUM_POLICIA}}", "{{NUM_TRANSITO}}", "{{NUM_EMERGENCIAS}}"].map(tag => (
+                                                {["{{name}}", "{{plate}}", "{{raw_message}}", "{{NUM_POLICIA}}", "{{NUM_TRANSITO}}", "{{NUM_EMERGENCIAS}}"].map(tag => (
                                                     <span key={tag} className="text-[9px] bg-black/60 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/20">{tag}</span>
                                                 ))}
                                             </div>

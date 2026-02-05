@@ -18,7 +18,7 @@ export async function GET() {
             settings = await db.systemSetting.create({
                 data: {
                     id: "default",
-                    messageWrapper: `🚗 *NotifyCar*
+                    messageWrapper: `🚗 *Hola {{name}}, NotifyCar te avisa:*
 Alguien cerca de tu vehículo quiso avisarte lo siguiente:
 “{{plate}} - {{raw_message}}”
 

@@ -66,6 +66,7 @@ export async function POST(req: Request) {
             include: {
                 user: {
                     select: {
+                        name: true,
                         country: true
                     }
                 }
@@ -149,17 +150,18 @@ www.notifycar.com`;
         const finalMessage = wrapper
             .replace(/{{tipo}}/g, vehicleTypeLabel)
             .replace(/{{placa}}/g, vehicle.plate.toUpperCase())
-            .replace(/{{plate}}/g, vehicle.plate.toUpperCase()) // Nuevo tag pedido por usuario
+            .replace(/{{plate}}/g, vehicle.plate.toUpperCase())
+            .replace(/{{name}}/g, vehicle.user.name || "Usuario") // Nuevo tag solicitado
             .replace(/{{mensaje}}/g, content)
-            .replace(/{{raw_message}}/g, content) // Nuevo tag pedido por usuario
+            .replace(/{{raw_message}}/g, content)
             .replace(/{{icono}}/g, vehicleIcon)
             .replace(/{{electrico}}/g, electricTag ? `\n${electricTag}\n` : '')
             .replace(/{{policia}}/g, emergency.police)
-            .replace(/{{NUM_POLICIA}}/g, emergency.police) // Nuevo tag pedido por usuario
+            .replace(/{{NUM_POLICIA}}/g, emergency.police)
             .replace(/{{transito}}/g, emergency.transit)
-            .replace(/{{NUM_TRANSITO}}/g, emergency.transit) // Nuevo tag pedido por usuario
+            .replace(/{{NUM_TRANSITO}}/g, emergency.transit)
             .replace(/{{emergencia}}/g, emergency.general)
-            .replace(/{{NUM_EMERGENCIAS}}/g, emergency.general); // Nuevo tag pedido por usuario
+            .replace(/{{NUM_EMERGENCIAS}}/g, emergency.general);
 
         // Create the notification in DB
         const notification = await db.notification.create({

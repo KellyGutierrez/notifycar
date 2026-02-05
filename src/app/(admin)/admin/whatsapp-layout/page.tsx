@@ -137,11 +137,12 @@ export default function AdminWhatsappLayoutPage() {
 
                         <div className="space-y-4">
                             {[
+                                { tag: "{{name}}", desc: "Nombre del dueño del vehículo." },
                                 { tag: "{{plate}}", desc: "La placa del vehículo (Ej: ABC-123)" },
                                 { tag: "{{raw_message}}", desc: "El texto seleccionado por el usuario." },
                                 { tag: "{{NUM_POLICIA}}", desc: "Número de la policía del país." },
                                 { tag: "{{NUM_TRANSITO}}", desc: "Número de tránsito local." },
-                                { tag: "{{NUM_EMERGENCIAS}}", desc: "Número de emergencias general." },
+                                { tag: "{{NUM_EMERGENCIAS}}", desc: "Número de emergencies general." },
                             ].map(item => (
                                 <div key={item.tag} className="space-y-1.5 p-3 rounded-xl bg-white/[0.03] border border-white/5 group hover:bg-white/5 transition-all">
                                     <code className="text-[11px] font-black text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">{item.tag}</code>

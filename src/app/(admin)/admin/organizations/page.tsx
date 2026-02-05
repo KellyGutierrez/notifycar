@@ -207,7 +207,7 @@ export default function AdminOrganizationsPage() {
                                         onChange={(e) => setFormData({ ...formData, messageWrapper: e.target.value })}
                                     />
                                     <div className="flex flex-wrap gap-1 mt-1">
-                                        {["{{plate}}", "{{raw_message}}", "{{NUM_POLICIA}}", "{{NUM_TRANSITO}}", "{{NUM_EMERGENCIAS}}"].map(tag => (
+                                        {["{{name}}", "{{plate}}", "{{raw_message}}", "{{NUM_POLICIA}}", "{{NUM_TRANSITO}}", "{{NUM_EMERGENCIAS}}"].map(tag => (
                                             <span key={tag} className="text-[10px] bg-white/5 text-cyan-500 px-1.5 py-0.5 rounded border border-white/5 font-mono">{tag}</span>
                                         ))}
                                     </div>

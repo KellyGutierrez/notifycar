@@ -55,7 +55,7 @@ async function main() {
     ]
 
     console.log('Sincronizando configuración global y formato de WhatsApp...')
-    const defaultWrapper = `🚗 *NotifyCar*
+    const defaultWrapper = `🚗 *Hola {{name}}, NotifyCar te avisa:*
 Alguien cerca de tu vehículo quiso avisarte lo siguiente:
 “{{plate}} - {{raw_message}}”
 
