@@ -35,6 +35,8 @@ export default function SignInPage() {
                     router.push("/admin");
                 } else if (role === "CORPORATE") {
                     router.push("/corporate");
+                } else if (role === "INSTITUTIONAL") {
+                    router.push("/institutional");
                 } else {
                     router.push("/dashboard");
                 }
