@@ -169,7 +169,9 @@ www.notifycar.com`;
                 vehicleId,
                 content: finalMessage,
                 type: type || "APP",
-                status: "SENT"
+                status: "SENT",
+                // @ts-ignore
+                organizationId: (templateId ? (await db.notificationTemplate.findUnique({ where: { id: templateId }, select: { organizationId: true } }))?.organizationId : null)
             },
             include: {
                 vehicle: {
