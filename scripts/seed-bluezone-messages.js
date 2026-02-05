@@ -40,6 +40,12 @@ async function main() {
             category: 'URGENT'
         },
         {
+            name: '⚠️ RESTRICCIÓN AMBIENTAL',
+            content: 'Su vehículo no cumple con el permiso de circulación ambiental para esta zona hoy.',
+            type: 'CAR',
+            category: 'URGENT'
+        },
+        {
             name: '🤝 RECORDATORIO DE PAGO',
             content: 'No registramos pago activo para su estancia en esta zona. Puede realizar el pago con el operario más cercano.',
             type: 'CAR',
@@ -50,18 +56,17 @@ async function main() {
     console.log('🚀 Insertando plantillas...')
 
     for (const t of templates) {
-        await prisma.notificationTemplate.upsert({
-            where: {
-                name_organizationId: {
-                    name: t.name,
-                    organizationId: instOrg.id
-                }
-            },
-            update: {
-                content: t.content,
-                isActive: true
-            },
-            create: {
+        // Borramos si ya existe para evitar errores sin ídice único
+        const existing = await prisma.notificationTemplate.findFirst({
+            where: { name: t.name, organizationId: instOrg.id }
+        })
+
+        if (existing) {
+            await prisma.notificationTemplate.delete({ where: { id: existing.id } })
+        }
+
+        await prisma.notificationTemplate.create({
+            data: {
                 name: t.name,
                 content: t.content,
                 type: t.type,
