@@ -11,11 +11,14 @@ async function main() {
     // 1. Crear Organización Corporativa (Flota)
     const corpOrg = await prisma.organization.upsert({
         where: { id: 'test-corp-id' },
-        update: {},
+        update: {
+            publicToken: 'link-corporativo-prueba'
+        },
         create: {
             id: 'test-corp-id',
             name: 'Gremio de Taxis Bogotá',
             type: 'FLEET',
+            publicToken: 'link-corporativo-prueba',
             messageWrapper: `🚗 *NOTIFICACIÓN CORPORATIVA (TAXIS)*
 Hola {{name}}, un operario de tu gremio te informa:
 "{{plate}} - {{raw_message}}"`
@@ -26,11 +29,14 @@ Hola {{name}}, un operario de tu gremio te informa:
     // 2. Crear Organización Institucional (Zonas Azules)
     const instOrg = await prisma.organization.upsert({
         where: { id: 'test-inst-id' },
-        update: {},
+        update: {
+            publicToken: 'link-institucional-prueba'
+        },
         create: {
             id: 'test-inst-id',
             name: 'Zonas Azules Centro',
             type: 'INSTITUTIONAL',
+            publicToken: 'link-institucional-prueba',
             messageWrapper: `🏛️ *AVISO OFICIAL - ZONAS AZULES*
 Estimado {{name}}, informamos sobre su vehículo {{plate}}:
 "{{raw_message}}"`
