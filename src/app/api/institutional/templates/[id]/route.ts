@@ -34,11 +34,11 @@ export async function PUT(
         const updated = await db.notificationTemplate.update({
             where: { id: params.id },
             data: {
-                name,
-                content,
-                vehicleType,
-                category,
-                isActive
+                ...(name !== undefined && { name }),
+                ...(content !== undefined && { content }),
+                ...(vehicleType !== undefined && { vehicleType }),
+                ...(category !== undefined && { category }),
+                ...(isActive !== undefined && { isActive })
             }
         })
 

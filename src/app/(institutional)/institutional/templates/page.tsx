@@ -111,7 +111,6 @@ export default function InstitutionalTemplatesPage() {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    ...template,
                     isActive: !template.isActive
                 })
             })
