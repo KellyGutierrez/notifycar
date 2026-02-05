@@ -20,7 +20,7 @@ model User {
   email         String    @unique
   password      String?
   image         String?
-  role          String    @default("USER") // USER, ADMIN, CORPORATE
+  role          String    @default("USER") // USER, ADMIN, CORPORATE, INSTITUTIONAL
   country       String?
   phonePrefix   String?
   phoneNumber   String?
@@ -38,7 +38,7 @@ model Organization {
   id            String    @id @default(cuid())
   name          String
   logo          String?
-  type          String    @default("PARKING") // PARKING, FLEET, BLUE_ZONE, OTHER
+  type          String    @default("PARKING") // PARKING, FLEET, BLUE_ZONE, INSTITUTIONAL, OTHER
   isActive      Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -48,6 +48,7 @@ model Organization {
 
   users         User[]
   templates     NotificationTemplate[]
+  vehicles      Vehicle[]
 }
 
 model Vehicle {
@@ -60,6 +61,11 @@ model Vehicle {
   isElectric    Boolean   @default(false)
   userId        String
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Fleet management: vehicle can belong to an organization
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
