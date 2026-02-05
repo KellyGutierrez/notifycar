@@ -32,6 +32,8 @@ services:
       - NEXTAUTH_SECRET=supersecretkey123
       - NEXTAUTH_URL=http://localhost:3000
       - NODE_ENV=production
+    volumes:
+      - ./scripts:/app/scripts
     depends_on:
       db:
         condition: service_healthy
