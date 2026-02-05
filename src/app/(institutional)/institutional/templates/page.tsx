@@ -105,6 +105,24 @@ export default function InstitutionalTemplatesPage() {
         }
     }
 
+    const toggleStatus = async (template: any) => {
+        try {
+            const res = await fetch(`/api/institutional/templates/${template.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...template,
+                    isActive: !template.isActive
+                })
+            })
+            if (res.ok) {
+                fetchTemplates()
+            }
+        } catch (error) {
+            console.error("Error toggling template status:", error)
+        }
+    }
+
     const filteredTemplates = templates.filter(t =>
         t.name.toLowerCase().includes(search.toLowerCase()) ||
         t.content.toLowerCase().includes(search.toLowerCase())
@@ -115,8 +133,8 @@ export default function InstitutionalTemplatesPage() {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-black tracking-tight text-white uppercase italic bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Plantillas Oficiales</h1>
-                    <p className="text-gray-400 font-medium">Gestiona los mensajes que tus operarios pueden enviar desde el link de bypass.</p>
+                    <h1 className="text-3xl font-black tracking-tight text-white uppercase italic bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Mensajes Predeterminados</h1>
+                    <p className="text-gray-400 font-medium tracking-tight">Gestiona los mensajes (botones) que tus operarios pueden enviar desde el link de bypass.</p>
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
@@ -151,11 +169,24 @@ export default function InstitutionalTemplatesPage() {
                             key={template.id}
                             className={cn(
                                 "group p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl transition-all hover:border-emerald-500/30 flex flex-col justify-between h-full relative overflow-hidden",
-                                !template.isActive && "opacity-60 grayscale"
+                                !template.isActive && "opacity-60 grayscale shadow-none"
                             )}
                         >
                             {!template.isActive && (
-                                <div className="absolute top-2 right-2 bg-red-500/20 text-red-400 text-[8px] font-black px-2 py-0.5 rounded-full uppercase">Inactivo</div>
+                                <button
+                                    onClick={() => toggleStatus(template)}
+                                    className="absolute top-3 right-3 bg-red-500/20 hover:bg-red-500/40 text-red-400 text-[8px] font-black px-2 py-1 rounded-full uppercase transition-all"
+                                >
+                                    Inactivo (Clic para activar)
+                                </button>
+                            )}
+                            {template.isActive && (
+                                <button
+                                    onClick={() => toggleStatus(template)}
+                                    className="absolute top-3 right-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-[8px] font-black px-2 py-1 rounded-full uppercase transition-all opacity-0 group-hover:opacity-100"
+                                >
+                                    Activo (Clic para desactivar)
+                                </button>
                             )}
 
                             <div className="space-y-4">
@@ -193,8 +224,18 @@ export default function InstitutionalTemplatesPage() {
 
                             <div className="mt-6 flex items-center justify-end gap-2 pt-4 border-t border-white/5">
                                 <button
+                                    onClick={() => toggleStatus(template)}
+                                    className={cn(
+                                        "p-2 rounded-lg transition-all",
+                                        template.isActive ? "text-emerald-500 hover:bg-emerald-500/10" : "text-gray-500 hover:text-emerald-400 hover:bg-emerald-400/10"
+                                    )}
+                                    title={template.isActive ? "Desactivar" : "Activar"}
+                                >
+                                    {template.isActive ? <CheckCircle2 className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
+                                </button>
+                                <button
                                     onClick={() => handleOpenModal(template)}
-                                    className="p-2 text-gray-500 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-lg transition-all"
+                                    className="p-2 text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all"
                                     title="Editar"
                                 >
                                     <Edit2 className="h-5 w-5" />
