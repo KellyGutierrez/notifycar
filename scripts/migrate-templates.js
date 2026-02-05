@@ -39,9 +39,8 @@ async function main() {
 
         // SOLO ELÉCTRICO (ELECTRIC)
         { name: "Fin de carga", content: "Tu vehículo ya terminó de cargar y hay otros esperando el punto.", vehicleType: "ELECTRIC", category: "COMMON" },
-        { name: "Ocupando cargador", content: "Tu vehículo está ocupando un cargador y no está cargando.", vehicleType: "ELECTRIC", category: "COMMON" },
+        { name: "Puesto de cargador ocupado", content: "Tu vehículo está ocupando un cargador y hay otros conductores esperando para cargar. ¿Podrías moverlo si ya terminó, por favor?", vehicleType: "ELECTRIC", category: "COMMON" },
         { name: "Mal parqueo cargador", content: "Tu vehículo está mal parqueado y no permite usar uno de los cargadores", vehicleType: "ELECTRIC", category: "COMMON" },
-        { name: "Espacio de carga solicitado", content: "Tu vehículo está ocupando un cargador y hay otros conductores esperando para cargar. ¿Podrías moverlo si ya terminó, por favor?", vehicleType: "ELECTRIC", category: "COMMON" },
 
         // SOLO MOTOS (MOTORCYCLE)
         { name: "Riesgo de caída", content: "Tu moto podría caerse o moverse.", vehicleType: "MOTORCYCLE", category: "URGENT" },

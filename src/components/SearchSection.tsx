@@ -52,9 +52,8 @@ export default function SearchSection() {
                     { id: "2", name: "Mal estacionado", content: "Hola, tu vehículo está obstruyendo el paso o mal estacionado.", vehicleType: "ALL", category: "COMMON" },
                     { id: "6", name: "Estacionarias encendidas", content: "Dejaste las luces estacionarias de tu vehículo encendidas.", vehicleType: "ALL", category: "COMMON" },
                     { id: "3", name: "Obstrucción garaje", content: "Hola, su vehículo está obstruyendo la salida de un garaje.", vehicleType: "ALL", category: "URGENT" },
-                    { id: "4", name: "Carga terminada", content: "Hola, tu vehículo ha completado su carga. Por favor, considera moverlo para liberar el espacio.", vehicleType: "ELECTRIC", category: "COMMON" },
-                    { id: "5", name: "Cargador desconectado", content: "Hola, te informo que el cargador de tu vehículo ha sido desconectado.", vehicleType: "ELECTRIC", category: "URGENT" },
-                    { id: "7", name: "Espacio de carga solicitado", content: "Tu vehículo está ocupando un cargador y hay otros conductores esperando para cargar. ¿Podrías moverlo si ya terminó, por favor?", vehicleType: "ELECTRIC", category: "COMMON" }
+                    { id: "4", name: "Puesto de cargador ocupado", content: "Tu vehículo está ocupando un cargador y hay otros conductores esperando para cargar. ¿Podrías moverlo si ya terminó, por favor?", vehicleType: "ELECTRIC", category: "COMMON" },
+                    { id: "5", name: "Cargador desconectado", content: "Hola, te informo que el cargador de tu vehículo ha sido desconectado.", vehicleType: "ELECTRIC", category: "URGENT" }
                 ]);
                 setLoading(false);
             }, 500);
