@@ -107,6 +107,8 @@ export async function PUT(req: Request) {
             return new NextResponse("Missing vehicle ID", { status: 400 })
         }
 
+        console.log("📝 [DEBUG] Updating vehicle:", id, { plate, ownerPhone, driverPhone });
+
         const vehicle = await db.vehicle.update({
             where: { id },
             data: {
@@ -123,9 +125,10 @@ export async function PUT(req: Request) {
             }
         })
 
+        console.log("✅ [DEBUG] Vehicle updated successfully");
         return NextResponse.json(vehicle)
-    } catch (error) {
+    } catch (error: any) {
         console.error("[CORPORATE_VEHICLES_PUT]", error)
-        return new NextResponse("Internal Error", { status: 500 })
+        return new NextResponse(`Error al actualizar: ${error.message}`, { status: 500 })
     }
 }

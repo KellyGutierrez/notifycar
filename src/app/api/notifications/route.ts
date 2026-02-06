@@ -80,6 +80,14 @@ export async function POST(req: Request) {
             return new NextResponse("Vehículo no encontrado", { status: 404 });
         }
 
+        console.log("🔍 [DEBUG] Recipient Role:", recipientRole);
+        console.log("🔍 [DEBUG] Vehicle Contacts:", {
+            ownerName: vehicle.ownerName,
+            ownerPhone: vehicle.ownerPhone,
+            driverName: vehicle.driverName,
+            driverPhone: vehicle.driverPhone
+        });
+
         // Determine target contact and name based on role
         let targetName = vehicle.user.name || "Usuario"
         let targetPhone = `${vehicle.user.phonePrefix || ""}${vehicle.user.phoneNumber || ""}`
@@ -87,9 +95,13 @@ export async function POST(req: Request) {
         if (recipientRole === "OWNER" && vehicle.ownerPhone) {
             targetPhone = vehicle.ownerPhone
             targetName = vehicle.ownerName || targetName
+            console.log("✅ Target: OWNER", targetPhone);
         } else if (recipientRole === "DRIVER" && vehicle.driverPhone) {
             targetPhone = vehicle.driverPhone
             targetName = vehicle.driverName || targetName
+            console.log("✅ Target: DRIVER", targetPhone);
+        } else {
+            console.log("ℹ️ Falling back to User phone:", targetPhone);
         }
 
         // Buscar números de emergencia según el país
@@ -184,6 +196,13 @@ export async function POST(req: Request) {
                 const fullPhone = targetPhone.replace(/\+/g, '').replace(/\s/g, '');
 
                 console.log("🚀 Enviando WhatsApp a:", fullPhone);
+                console.log("📦 Payload:", {
+                    notificationId: notification.id,
+                    plate: vehicle.plate,
+                    ownerName: targetName,
+                    phoneNumber: fullPhone,
+                    raw_message: content
+                });
 
                 fetch(webhookUrl, {
                     method: 'POST',
@@ -198,13 +217,14 @@ export async function POST(req: Request) {
                         content: finalMessage,
                         timestamp: notification.createdAt
                     })
-                }).catch(err => console.error("Webhook fetch error:", err));
+                }).then(r => console.log("📡 Webhook Response Status:", r.status))
+                    .catch(err => console.error("❌ Webhook fetch error:", err));
             } catch (err) {
                 console.error("Error preparing webhook data:", err);
             }
+        } else {
+            console.log("⚠️ Webhook skipped. URL:", !!webhookUrl, "Phone:", targetPhone);
         }
-
-        return NextResponse.json(notification)
 
         return NextResponse.json(notification)
     } catch (error) {
