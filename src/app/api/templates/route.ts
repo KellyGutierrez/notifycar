@@ -7,9 +7,13 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const type = searchParams.get("type") || "CAR"
     const isElectric = searchParams.get("isElectric") === "true"
+    const publicOrgId = searchParams.get("orgId") // OrgId del vehículo buscado públicamente
 
     const session = await getServerSession(authOptions)
-    const organizationId = session?.user?.organizationId
+    const sessionOrgId = session?.user?.organizationId
+
+    // Usamos el orgId del parámetro (público) o el de la sesión (dashboard)
+    const organizationId = publicOrgId || sessionOrgId
 
     try {
         const templates = await db.notificationTemplate.findMany({
@@ -25,7 +29,7 @@ export async function GET(request: Request) {
                         ]
                     },
                     ...(organizationId ? [{
-                        organizationId, // Organization specific templates
+                        organizationId: organizationId, // Organization specific templates
                         OR: [
                             { vehicleType: "ALL" },
                             { vehicleType: type },

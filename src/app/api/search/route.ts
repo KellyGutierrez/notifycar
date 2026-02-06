@@ -29,7 +29,8 @@ export async function GET(req: Request) {
                 model: vehicle.model,
                 color: vehicle.color,
                 type: vehicle.type,
-                isElectric: vehicle.isElectric
+                isElectric: vehicle.isElectric,
+                organizationId: vehicle.organizationId
             }
         })
     } catch (error) {

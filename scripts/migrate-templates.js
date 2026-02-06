@@ -32,6 +32,7 @@ async function main() {
         { name: "Llanta baja", content: "Una de las llantas de tu vehículo parece estar baja.", vehicleType: "ALL", category: "COMMON" },
         { name: "Estacionarias encendidas", content: "Dejaste las luces estacionarias de tu vehículo encendidas.", vehicleType: "ALL", category: "COMMON" },
         { name: "Vandalismo", content: "Tu vehículo presenta señales de vandalismo.", vehicleType: "ALL", category: "URGENT" },
+        { name: "Queja conductor", content: "Me trató mal el conductor del taxi.", vehicleType: "ALL", category: "COMMON" },
 
         // COMBUSTIÓN - ELÉCTRICOS (CAR)
         { name: "Puerta abierta", content: "Una de las puertas de tu vehículo está abierta.", vehicleType: "CAR", category: "COMMON" },
