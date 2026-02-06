@@ -9,7 +9,8 @@ import {
     LogOut,
     MessageSquare,
     Users,
-    Car
+    Car,
+    Layout
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { signOut } from "next-auth/react"
@@ -20,7 +21,7 @@ const corporateNavigation = [
     { name: "Mis Mensajes", href: "/corporate/templates", icon: MessageSquare },
     { name: "Notificaciones", href: "/corporate/notifications", icon: Bell },
     { name: "Mi Equipo", href: "/corporate/team", icon: Users },
-    { name: "Configuración", href: "/corporate/settings", icon: Settings },
+    { name: "Diseño WhatsApp", href: "/corporate/settings", icon: Layout },
 ]
 
 export function CorporateSidebar() {
