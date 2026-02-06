@@ -68,6 +68,12 @@ model Vehicle {
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id])
   
+  // Contact information for fleet management
+  ownerName     String?
+  ownerPhone    String?
+  driverName    String?
+  driverPhone   String?
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

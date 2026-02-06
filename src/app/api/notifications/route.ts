@@ -35,13 +35,14 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const body = await req.json()
-        const { vehicleId, content, type, templateId } = body
+        const { vehicleId, content, type, templateId, recipientRole } = body
 
         if (!vehicleId || !content) {
             return new NextResponse("Missing required fields", { status: 400 })
         }
 
         // Check for cooldown (10 minutes)
+        // ... (cooldown logic remains)
         const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000)
         const lastNotification = await db.notification.findFirst({
             where: {
@@ -67,7 +68,9 @@ export async function POST(req: Request) {
                 user: {
                     select: {
                         name: true,
-                        country: true
+                        country: true,
+                        phonePrefix: true,
+                        phoneNumber: true
                     }
                 }
             }
@@ -77,12 +80,23 @@ export async function POST(req: Request) {
             return new NextResponse("Vehículo no encontrado", { status: 404 });
         }
 
+        // Determine target contact and name based on role
+        let targetName = vehicle.user.name || "Usuario"
+        let targetPhone = `${vehicle.user.phonePrefix || ""}${vehicle.user.phoneNumber || ""}`
+
+        if (recipientRole === "OWNER" && vehicle.ownerPhone) {
+            targetPhone = vehicle.ownerPhone
+            targetName = vehicle.ownerName || targetName
+        } else if (recipientRole === "DRIVER" && vehicle.driverPhone) {
+            targetPhone = vehicle.driverPhone
+            targetName = vehicle.driverName || targetName
+        }
+
         // Buscar números de emergencia según el país
         let emergency = { police: "123", transit: "123", general: "123" };
         const userCountry = (vehicle.user.country || "").trim().toUpperCase();
 
         if (userCountry) {
-            console.log(`🔍 Buscando emergencias para país: [${userCountry}]`);
             const config = await db.emergencyConfig.findUnique({
                 where: { country: userCountry }
             });
@@ -94,7 +108,6 @@ export async function POST(req: Request) {
                     general: config.emergency
                 };
             } else {
-                // Fallback manual por si el seed no ha corrido o el código es diferente
                 if (userCountry === "CO" || userCountry === "COLOMBIA") {
                     emergency = { police: "123", transit: "127", general: "123" };
                 } else if (userCountry === "MX" || userCountry === "MEXICO" || userCountry === "MÉXICO") {
@@ -127,23 +140,7 @@ export async function POST(req: Request) {
 
         // 3. Fallback al diseño por defecto si todo lo anterior falla
         if (!wrapper) {
-            wrapper = `🚗 *NotifyCar*
-Alguien cerca de tu vehículo quiso avisarte lo siguiente:
-“{{plate}} - {{raw_message}}”
-
-ℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo. No se compartió tu número ni ningún dato personal.
-
-🔐 *Recomendación de seguridad:*
-Verifica la situación con calma, revisa el entorno antes y evita confrontaciones directas. Si notas algún riesgo, considera contactar a las autoridades.
-
-📞 *Números de emergencia:*
- - Policía: {{NUM_POLICIA}}
- - Tránsito: {{NUM_TRANSITO}}
- - Emergencias: {{NUM_EMERGENCIAS}}
-
-—
-NotifyCar · Comunicación inteligente en la vía
-www.notifycar.com`;
+            wrapper = `🚗 *NotifyCar*\nAlguien cerca de tu vehículo quiso avisarte lo siguiente:\n“{{plate}} - {{raw_message}}”\n\nℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo.\n\n📞 Emergencias: {{NUM_EMERGENCIAS}}`;
         }
 
         // 4. Reemplazo de etiquetas
@@ -151,7 +148,7 @@ www.notifycar.com`;
             .replace(/{{tipo}}/g, vehicleTypeLabel)
             .replace(/{{placa}}/g, vehicle.plate.toUpperCase())
             .replace(/{{plate}}/g, vehicle.plate.toUpperCase())
-            .replace(/{{name}}/g, vehicle.user.name || "Usuario") // Nuevo tag solicitado
+            .replace(/{{name}}/g, targetName)
             .replace(/{{mensaje}}/g, content)
             .replace(/{{raw_message}}/g, content)
             .replace(/{{icono}}/g, vehicleIcon)
@@ -172,47 +169,29 @@ www.notifycar.com`;
                 status: "SENT",
                 // @ts-ignore
                 organizationId: (templateId ? (await db.notificationTemplate.findUnique({ where: { id: templateId }, select: { organizationId: true } }))?.organizationId : null)
-            },
-            include: {
-                vehicle: {
-                    include: {
-                        user: {
-                            select: {
-                                phonePrefix: true,
-                                phoneNumber: true,
-                                name: true
-                            }
-                        }
-                    }
-                }
             }
         })
 
         // Fetch webhook from DB settings first, then env
         let webhookUrl = process.env.NOTIFICATION_WEBHOOK_URL;
-        try {
-            const settings = await db.systemSetting.findUnique({ where: { id: "default" } });
-            if (settings?.webhookUrl) {
-                webhookUrl = settings.webhookUrl;
-            }
-        } catch (e) {
-            console.error("Error fetching system settings for webhook:", e);
+        const systemSettings = await db.systemSetting.findUnique({ where: { id: "default" } });
+        if (systemSettings?.webhookUrl) {
+            webhookUrl = systemSettings.webhookUrl;
         }
 
-        if (webhookUrl) {
+        if (webhookUrl && targetPhone) {
             try {
-                const fullPhone = `${notification.vehicle.user.phonePrefix}${notification.vehicle.user.phoneNumber}`.replace(/\+/g, '');
+                const fullPhone = targetPhone.replace(/\+/g, '').replace(/\s/g, '');
 
-                console.log("🚀 Enviando a n8n:", vehicle.plate);
+                console.log("🚀 Enviando WhatsApp a:", fullPhone);
 
-                // Fetch call to n8n (async)
                 fetch(webhookUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         notificationId: notification.id,
-                        plate: notification.vehicle.plate,
-                        ownerName: notification.vehicle.user.name,
+                        plate: vehicle.plate,
+                        ownerName: targetName,
                         phoneNumber: fullPhone,
                         raw_message: content,
                         message: finalMessage,
@@ -224,6 +203,8 @@ www.notifycar.com`;
                 console.error("Error preparing webhook data:", err);
             }
         }
+
+        return NextResponse.json(notification)
 
         return NextResponse.json(notification)
     } catch (error) {

@@ -61,7 +61,7 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json()
-        const { plate, brand, model, color, type, isElectric } = body
+        const { plate, brand, model, color, type, isElectric, ownerName, ownerPhone, driverName, driverPhone } = body
 
         if (!plate || !brand || !model) {
             return new NextResponse("Missing required fields", { status: 400 })
@@ -76,6 +76,10 @@ export async function POST(req: Request) {
                 type: type || "CAR",
                 color,
                 isElectric,
+                ownerName,
+                ownerPhone,
+                driverName,
+                driverPhone,
                 userId: session.user.id, // El administrador corporativo es el dueño inicial
                 // @ts-ignore
                 organizationId: user.organizationId
@@ -85,6 +89,43 @@ export async function POST(req: Request) {
         return NextResponse.json(vehicle)
     } catch (error) {
         console.error("[CORPORATE_VEHICLES_POST]", error)
+        return new NextResponse("Internal Error", { status: 500 })
+    }
+}
+
+export async function PUT(req: Request) {
+    try {
+        const session = await getServerSession(authOptions)
+        if (!session || (session.user.role !== "CORPORATE" && session.user.role !== "ADMIN")) {
+            return new NextResponse("Unauthorized", { status: 401 })
+        }
+
+        const body = await req.json()
+        const { id, plate, brand, model, color, type, isElectric, ownerName, ownerPhone, driverName, driverPhone } = body
+
+        if (!id) {
+            return new NextResponse("Missing vehicle ID", { status: 400 })
+        }
+
+        const vehicle = await db.vehicle.update({
+            where: { id },
+            data: {
+                ...(plate && { plate: plate.toUpperCase() }),
+                ...(brand && { brand }),
+                ...(model && { model }),
+                ...(type && { type }),
+                ...(color !== undefined && { color }),
+                ...(isElectric !== undefined && { isElectric }),
+                ...(ownerName !== undefined && { ownerName }),
+                ...(ownerPhone !== undefined && { ownerPhone }),
+                ...(driverName !== undefined && { driverName }),
+                ...(driverPhone !== undefined && { driverPhone }),
+            }
+        })
+
+        return NextResponse.json(vehicle)
+    } catch (error) {
+        console.error("[CORPORATE_VEHICLES_PUT]", error)
         return new NextResponse("Internal Error", { status: 500 })
     }
 }
