@@ -21,7 +21,7 @@ const corporateNavigation = [
     { name: "Mis Mensajes", href: "/corporate/templates", icon: MessageSquare },
     { name: "Notificaciones", href: "/corporate/notifications", icon: Bell },
     { name: "Mi Equipo", href: "/corporate/team", icon: Users },
-    { name: "Diseño WhatsApp", href: "/corporate/settings", icon: Layout },
+    { name: "Plantilla Wpp", href: "/corporate/settings", icon: Layout },
 ]
 
 export function CorporateSidebar() {
@@ -74,7 +74,12 @@ export function CorporateSidebar() {
             </div>
 
             {/* User Section / Logout */}
-            <div className="p-4 border-t border-white/5">
+            <div className="p-4 border-t border-white/5 space-y-4">
+                <div className="p-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 hidden md:block">
+                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">MODO</p>
+                    <p className="text-sm font-bold text-indigo-400">Control Flotas</p>
+                </div>
+
                 <button
                     onClick={() => signOut({ callbackUrl: "/account/signin" })}
                     className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"

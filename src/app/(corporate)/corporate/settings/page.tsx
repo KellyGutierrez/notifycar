@@ -1,211 +1,180 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { MessageSquare, Layout, Save, Loader2, CheckCircle2, Info, Building2 } from "lucide-react"
+import { MessageSquare, Save, Loader2, Info, AlertCircle, Copy, Check, Settings as SettingsIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export default function CorporateSettingsPage() {
-    const [org, setOrg] = useState<any>(null)
-    const [loading, setLoading] = useState(true)
-    const [saving, setSaving] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [fetching, setFetching] = useState(true)
     const [success, setSuccess] = useState(false)
-    const [formData, setFormData] = useState({
-        name: "",
-        messageWrapper: ""
-    })
+    const [copied, setCopied] = useState(false)
+
+    const [messageWrapper, setMessageWrapper] = useState("")
+    const [orgName, setOrgName] = useState("")
 
     useEffect(() => {
-        fetchOrg()
+        fetch("/api/corporate/organization")
+            .then(res => res.json())
+            .then(data => {
+                setMessageWrapper(data.messageWrapper || "")
+                setOrgName(data.name || "")
+            })
+            .catch(err => console.error("Error fetching settings:", err))
+            .finally(() => setFetching(false))
     }, [])
 
-    const fetchOrg = async () => {
-        try {
-            const res = await fetch("/api/corporate/organization")
-            if (res.ok) {
-                const data = await res.json()
-                setOrg(data)
-                setFormData({
-                    name: data.name || "",
-                    messageWrapper: data.messageWrapper || ""
-                })
-            }
-        } catch (error) {
-            console.error("Error fetching org:", error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setSaving(true)
+    const handleSave = async () => {
+        setLoading(true)
         setSuccess(false)
 
         try {
             const res = await fetch("/api/corporate/organization", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({ messageWrapper })
             })
-
             if (res.ok) {
                 setSuccess(true)
                 setTimeout(() => setSuccess(false), 3000)
             }
         } catch (error) {
-            console.error("Error saving settings:", error)
+            console.error(error)
         } finally {
-            setSaving(false)
+            setLoading(false)
         }
     }
 
-    if (loading) {
+    const copyTags = () => {
+        const tags = "{{name}}, {{plate}}, {{raw_message}}";
+        navigator.clipboard.writeText(tags);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }
+
+    if (fetching) {
         return (
             <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <Loader2 className="h-12 w-12 text-indigo-400 animate-spin" />
-                <p className="text-gray-500 font-bold">Cargando configuración...</p>
+                <Loader2 className="h-10 w-10 text-indigo-400 animate-spin" />
+                <p className="text-gray-400 font-medium animate-pulse">Cargando configuración de flota...</p>
             </div>
         )
     }
 
     return (
-        <div className="max-w-4xl space-y-8 animate-in fade-in duration-700">
+        <div className="max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header */}
-            <div>
-                <h1 className="text-4xl font-black tracking-tight text-white mb-2 italic bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-                    Configuración de Flota
-                </h1>
-                <p className="text-gray-400 font-medium">
-                    Gestiona la identidad y el diseño de tus mensajes de WhatsApp.
-                </p>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1 text-white">
+                    <h1 className="text-3xl font-black tracking-tight text-white uppercase italic bg-gradient-to-r from-indigo-400 to-indigo-600 bg-clip-text text-transparent flex items-center gap-3">
+                        <SettingsIcon className="h-8 w-8 text-indigo-500" />
+                        Plantilla de WhatsApp
+                    </h1>
+                    <p className="text-gray-400 font-medium font-mono text-sm tracking-tighter">Personaliza el diseño oficial (encabezado y pie de página) para {orgName}.</p>
+                </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Organization Basic Info */}
-                <div className="bg-white/[0.03] border border-white/10 rounded-[2rem] p-8 space-y-6">
-                    <div className="flex items-center gap-3 mb-2">
-                        <Building2 className="h-6 w-6 text-indigo-400" />
-                        <h2 className="text-xl font-bold text-white uppercase tracking-tighter">Identidad</h2>
-                    </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Editor Section */}
+                <div className="lg:col-span-2 space-y-6">
+                    <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden shadow-2xl">
+                        <div className="p-1 bg-gradient-to-r from-indigo-500/20 via-transparent to-indigo-500/20" />
+                        <div className="p-8 space-y-6">
+                            <div className="flex items-center justify-between text-xs font-bold text-gray-500 uppercase tracking-widest px-1">
+                                <span>Marco de Mensaje (Aviso Operativo)</span>
+                                <span className="text-indigo-400/60 font-mono">Formato Personalizado</span>
+                            </div>
 
-                    <div className="space-y-2">
-                        <label className="text-xs font-black text-gray-500 uppercase tracking-widest px-1">Nombre de la Empresa / Gremio</label>
-                        <input
-                            required
-                            type="text"
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-indigo-500 transition-all font-bold text-white"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        />
-                    </div>
-                </div>
-
-                {/* WhatsApp Wrapper Design */}
-                <div className="bg-white/[0.03] border border-white/10 rounded-[2rem] p-8 space-y-6">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <MessageSquare className="h-6 w-6 text-emerald-400" />
-                            <h2 className="text-xl font-bold text-white uppercase tracking-tighter text-emerald-400">Diseño WhatsApp (Plantilla)</h2>
-                        </div>
-                        <div className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase border border-emerald-500/20">
-                            Personalizado
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-xs font-black text-gray-500 uppercase tracking-widest px-1 flex items-center justify-between">
-                                    Editor de Estilo
-                                    <span className="text-[9px] text-gray-600">Formato WhatsApp habilitado</span>
-                                </label>
+                            <div className="relative group">
                                 <textarea
-                                    className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-emerald-500/50 transition-all font-mono text-xs leading-relaxed text-white min-h-[400px]"
-                                    value={formData.messageWrapper}
-                                    onChange={(e) => setFormData({ ...formData, messageWrapper: e.target.value })}
-                                    placeholder="Construye tu mensaje aquí..."
+                                    rows={14}
+                                    className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-6 text-white text-sm font-mono leading-relaxed focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 transition-all resize-none shadow-inner"
+                                    placeholder="Escribe el formato del mensaje aquí..."
+                                    value={messageWrapper}
+                                    onChange={(e) => setMessageWrapper(e.target.value)}
                                 />
+                                <div className="absolute top-4 right-4 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none">
+                                    <div className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_8px_indigo]" />
+                                </div>
                             </div>
 
-                            <div className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-4 flex gap-3">
-                                <Info className="h-5 w-5 text-blue-400 shrink-0" />
-                                <div className="space-y-1">
-                                    <p className="text-[11px] font-bold text-blue-400 uppercase tracking-wider">Etiquetas Disponibles</p>
-                                    <div className="flex flex-wrap gap-1.5 pt-1">
-                                        {["{{name}}", "{{plate}}", "{{raw_message}}", "{{NUM_COORDINACION}}"].map(tag => (
-                                            <code key={tag} className="bg-white/5 px-2 py-0.5 rounded text-[10px] text-blue-300 font-mono border border-white/5">{tag}</code>
-                                        ))}
-                                    </div>
-                                    <p className="text-[10px] text-gray-500 leading-tight pt-1 italic">
-                                        Usa estas etiquetas para que el sistema reemplace automáticamente los datos reales del conductor y el taxi.
-                                    </p>
-                                </div>
+                            <div className="flex items-center justify-between">
+                                <p className={cn(
+                                    "text-sm font-bold transition-all duration-300",
+                                    success ? "text-emerald-400 opacity-100 translate-x-0" : "opacity-0 -translate-x-2"
+                                )}>
+                                    ✓ Cambios guardados exitosamente
+                                </p>
+                                <button
+                                    onClick={handleSave}
+                                    disabled={loading}
+                                    className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-10 py-4 rounded-xl font-black transition-all shadow-xl shadow-indigo-900/30 flex items-center gap-2 active:scale-95 uppercase tracking-tighter"
+                                >
+                                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+                                    Guardar Diseño
+                                </button>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Live Preview */}
-                        <div className="space-y-4">
-                            <label className="text-xs font-black text-gray-500 uppercase tracking-widest px-1">Vista Previa Móvil</label>
-                            <div className="bg-[#121b22] rounded-[2.5rem] p-6 border-8 border-[#202c33] shadow-2xl min-h-[450px] relative overflow-hidden flex flex-col">
-                                <div className="bg-[#202c33] -mx-6 -mt-6 p-4 flex items-center gap-3 mb-6">
-                                    <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center font-bold text-white shrink-0">
-                                        {org?.name?.charAt(0) || "C"}
-                                    </div>
-                                    <div>
-                                        <p className="text-white font-bold text-sm leading-none">{org?.name || "Cootransrio"}</p>
-                                        <p className="text-emerald-400 text-[10px] uppercase font-black tracking-widest">En línea</p>
-                                    </div>
-                                </div>
-
-                                <div className="bg-[#dcf8c6] text-[#111b21] p-5 rounded-2xl rounded-tl-none shadow-sm relative text-xs whitespace-pre-wrap font-sans max-w-[90%]">
-                                    <div className="absolute top-0 -left-2 w-0 h-0 border-t-[10px] border-t-transparent border-r-[15px] border-r-[#dcf8c6] border-b-[10px] border-b-transparent" />
-                                    {formData.messageWrapper
-                                        ? formData.messageWrapper
-                                            .replace("{{name}}", "Juan Pérez")
-                                            .replace("{{plate}}", "ABC-123")
-                                            .replace("{{raw_message}}", "Se solicita su presencia en la central para revisión de documentos.")
-                                        : "Tu mensaje aparecerá aquí..."
-                                    }
-                                    <p className="text-right text-[9px] text-gray-500 mt-2">11:32 AM ✓✓</p>
-                                </div>
-
-                                <div className="mt-auto -mx-6 -mb-6 bg-[#202c33] p-4 flex gap-2">
-                                    <div className="flex-1 bg-[#2a3942] rounded-full h-8" />
-                                    <div className="w-8 h-8 rounded-full bg-emerald-500" />
-                                </div>
-                            </div>
+                    <div className="p-6 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 flex gap-4">
+                        <AlertCircle className="h-6 w-6 text-indigo-500 shrink-0" />
+                        <div className="space-y-1">
+                            <h4 className="text-sm font-bold text-indigo-500/80 uppercase">Aviso Importante</h4>
+                            <p className="text-xs text-gray-400 leading-relaxed font-medium">
+                                Esta plantilla define el "envoltura" de todos los mensajes que envíes. Asegúrate de incluir la etiqueta <code className="text-indigo-400">{"{{raw_message}}"}</code> para que el contenido específico no se pierda.
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Save Button */}
-                <div className="flex items-center justify-end gap-4 p-2">
-                    {success && (
-                        <div className="flex items-center gap-2 text-emerald-400 animate-in fade-in slide-in-from-right-4">
-                            <CheckCircle2 className="h-5 w-5" />
-                            <span className="text-sm font-bold uppercase tracking-widest">Cambios Guardados</span>
-                        </div>
-                    )}
+                {/* Sidebar Info */}
+                <div className="space-y-6">
+                    <div className="p-8 rounded-3xl bg-white/5 border border-white/10 space-y-6 shadow-xl">
+                        <h4 className="text-[10px] font-black text-white uppercase tracking-[0.2em] flex items-center gap-2 opacity-60">
+                            <Info className="h-4 w-4 text-indigo-400" />
+                            Tags Inteligentes
+                        </h4>
 
-                    <button
-                        type="submit"
-                        disabled={saving}
-                        className="bg-indigo-500 hover:bg-indigo-600 text-white px-10 py-5 rounded-2xl font-black transition-all flex items-center gap-3 shadow-2xl shadow-indigo-500/30 active:scale-95 disabled:opacity-50"
-                    >
-                        {saving ? (
-                            <>
-                                <Loader2 className="h-6 w-6 animate-spin" />
-                                <span>GUARDANDO...</span>
-                            </>
-                        ) : (
-                            <>
-                                <Save className="h-6 w-6" />
-                                <span>GUARDAR TODO</span>
-                            </>
-                        )}
-                    </button>
+                        <div className="space-y-4">
+                            {[
+                                { tag: "{{name}}", desc: "Nombre del conductor o propietario." },
+                                { tag: "{{plate}}", desc: "Número de placa del vehículo." },
+                                { tag: "{{raw_message}}", desc: "Contenido del aviso específico del mensaje." },
+                            ].map(item => (
+                                <div key={item.tag} className="space-y-1.5 p-4 rounded-xl bg-white/[0.03] border border-white/5 group hover:bg-white/5 transition-all">
+                                    <code className="text-xs font-black text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/10">{item.tag}</code>
+                                    <p className="text-[10px] text-gray-500 font-bold leading-tight uppercase tracking-tight">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={copyTags}
+                            className="w-full py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center justify-center gap-2"
+                        >
+                            {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+                            {copied ? "¡COPIADO!" : "COPIAR TAGS"}
+                        </button>
+                    </div>
+
+                    <div className="p-8 rounded-3xl bg-gradient-to-br from-indigo-600/10 to-purple-600/10 border border-indigo-500/20 space-y-4 shadow-xl">
+                        <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest italic flex items-center gap-2">
+                            VISTA PREVIA RÁPIDA
+                        </h4>
+                        <div className="bg-black/30 p-4 rounded-xl border border-white/5 font-mono text-[9px] text-gray-500 leading-relaxed overflow-hidden">
+                            <p className="text-indigo-400/80 mb-2">🚕 AVISO - {orgName}</p>
+                            <p>Estimado/a Juan Pérez,</p>
+                            <br />
+                            <p>Placa: ABC-123</p>
+                            <p>Mensaje: "..."</p>
+                            <br />
+                            <p className="opacity-40">────────────────</p>
+                            <p className="italic">NotifyCar 💚</p>
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
     )
 }
