@@ -15,15 +15,16 @@ export async function PUT(
 
     try {
         const body = await request.json()
-        const { name, type, isActive, messageWrapper } = body
+        const { name, type, isActive, messageWrapper, useGlobalTemplates } = body
 
-        const organization = await db.organization.update({
+        const organization = await (db.organization as any).update({
             where: { id },
             data: {
                 name,
                 type,
                 isActive,
-                messageWrapper
+                messageWrapper,
+                useGlobalTemplates
             }
         })
 

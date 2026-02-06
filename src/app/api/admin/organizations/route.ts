@@ -32,16 +32,17 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json()
-        const { name, type, isActive, messageWrapper } = body
+        const { name, type, isActive, messageWrapper, useGlobalTemplates } = body
 
         if (!name) return NextResponse.json({ error: "El nombre es obligatorio" }, { status: 400 })
 
-        const organization = await db.organization.create({
+        const organization = await (db.organization as any).create({
             data: {
                 name,
                 type: type || "PARKING",
                 isActive: isActive !== undefined ? isActive : true,
-                messageWrapper
+                messageWrapper,
+                useGlobalTemplates: useGlobalTemplates !== undefined ? useGlobalTemplates : true
             }
         })
 

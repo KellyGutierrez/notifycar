@@ -13,7 +13,8 @@ export default function AdminCorporatesPage() {
         name: "",
         type: "FLEET",
         isActive: true,
-        messageWrapper: ""
+        messageWrapper: "",
+        useGlobalTemplates: true
     })
     const [saving, setSaving] = useState(false)
     const [search, setSearch] = useState("")
@@ -43,7 +44,8 @@ export default function AdminCorporatesPage() {
                 name: org.name,
                 type: org.type,
                 isActive: org.isActive,
-                messageWrapper: org.messageWrapper || ""
+                messageWrapper: org.messageWrapper || "",
+                useGlobalTemplates: org.useGlobalTemplates ?? true
             })
         } else {
             setEditingOrg(null)
@@ -51,7 +53,8 @@ export default function AdminCorporatesPage() {
                 name: "",
                 type: "FLEET",
                 isActive: true,
-                messageWrapper: ""
+                messageWrapper: "",
+                useGlobalTemplates: true
             })
         }
         setIsModalOpen(true)
@@ -165,6 +168,16 @@ export default function AdminCorporatesPage() {
                                         <span className="text-[10px] font-bold text-cyan-400 uppercase">Wrapper Personalizado</span>
                                     </div>
                                 )}
+
+                                <div className={cn(
+                                    "flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit",
+                                    org.useGlobalTemplates ? "bg-emerald-500/10 border-emerald-500/20" : "bg-amber-500/10 border-amber-500/20"
+                                )}>
+                                    <div className={cn("h-1.5 w-1.5 rounded-full", org.useGlobalTemplates ? "bg-emerald-500" : "bg-amber-500")} />
+                                    <span className={cn("text-[10px] font-bold uppercase", org.useGlobalTemplates ? "text-emerald-500" : "text-amber-500")}>
+                                        {org.useGlobalTemplates ? "Usa Predeterminados" : "Solo Personalizados"}
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="mt-6 flex items-center justify-end gap-2 pt-4 border-t border-white/5">
@@ -218,15 +231,27 @@ export default function AdminCorporatesPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5">
-                                    <input
-                                        type="checkbox"
-                                        id="isActive"
-                                        className="h-5 w-5 rounded border-white/10 bg-white/5 text-cyan-500"
-                                        checked={formData.isActive}
-                                        onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                                    />
-                                    <label htmlFor="isActive" className="text-sm font-bold cursor-pointer text-white">Flota Activa</label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5">
+                                        <input
+                                            type="checkbox"
+                                            id="isActive"
+                                            className="h-5 w-5 rounded border-white/10 bg-white/5 text-cyan-500"
+                                            checked={formData.isActive}
+                                            onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                                        />
+                                        <label htmlFor="isActive" className="text-sm font-bold cursor-pointer text-white">Flota Activa</label>
+                                    </div>
+                                    <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5">
+                                        <input
+                                            type="checkbox"
+                                            id="useGlobalTemplates"
+                                            className="h-5 w-5 rounded border-white/10 bg-white/5 text-cyan-500"
+                                            checked={formData.useGlobalTemplates}
+                                            onChange={(e) => setFormData({ ...formData, useGlobalTemplates: e.target.checked })}
+                                        />
+                                        <label htmlFor="useGlobalTemplates" className="text-sm font-bold cursor-pointer text-white underline decoration-cyan-500/30">Usar Predeterminados</label>
+                                    </div>
                                 </div>
 
                                 <div className="flex gap-4 pt-4">

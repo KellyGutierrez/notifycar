@@ -16,18 +16,29 @@ export async function GET(request: Request) {
     const organizationId = publicOrgId || sessionOrgId
 
     try {
+        let shouldIncludeGlobal = true;
+        if (organizationId) {
+            const org = await db.organization.findUnique({
+                where: { id: organizationId },
+                select: { useGlobalTemplates: true }
+            }) as any;
+            if (org && org.useGlobalTemplates === false) {
+                shouldIncludeGlobal = false;
+            }
+        }
+
         const templates = await db.notificationTemplate.findMany({
             where: {
                 isActive: true,
                 OR: [
-                    {
+                    ...(shouldIncludeGlobal ? [{
                         organizationId: null, // Global templates
                         OR: [
                             { vehicleType: "ALL" },
                             { vehicleType: type },
                             ...(isElectric ? [{ vehicleType: "ELECTRIC" }] : [])
                         ]
-                    },
+                    }] : []),
                     ...(organizationId ? [{
                         organizationId: organizationId, // Organization specific templates
                         OR: [

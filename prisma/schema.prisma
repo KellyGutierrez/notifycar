@@ -47,6 +47,9 @@ model Organization {
   // Custom WhatsApp layout for this organization
   messageWrapper String?   @db.Text
 
+  // Preferences
+  useGlobalTemplates Boolean   @default(true)
+
   users         User[]
   templates     NotificationTemplate[]
   vehicles      Vehicle[]
