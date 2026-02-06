@@ -266,15 +266,25 @@ export default function CorporateVehiclesPage() {
                                 {/* Contact Info */}
                                 <div className="mt-4 pt-4 border-t border-white/5 space-y-2">
                                     {vehicle.ownerName && (
-                                        <div className="flex items-center justify-between px-2">
-                                            <span className="text-[10px] text-gray-500">Propietario:</span>
-                                            <span className="text-[10px] font-bold text-white">{vehicle.ownerName}</span>
+                                        <div className="flex flex-col px-2">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] text-gray-500">Propietario:</span>
+                                                <span className="text-[10px] font-bold text-white">{vehicle.ownerName}</span>
+                                            </div>
+                                            {vehicle.ownerPhone && (
+                                                <span className="text-[9px] text-indigo-400 font-mono text-right">{vehicle.ownerPhone}</span>
+                                            )}
                                         </div>
                                     )}
                                     {vehicle.driverName && (
-                                        <div className="flex items-center justify-between px-2">
-                                            <span className="text-[10px] text-gray-500">Conductor:</span>
-                                            <span className="text-[10px] font-bold text-white">{vehicle.driverName}</span>
+                                        <div className="flex flex-col px-2 mt-1">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] text-gray-500">Conductor:</span>
+                                                <span className="text-[10px] font-bold text-white">{vehicle.driverName}</span>
+                                            </div>
+                                            {vehicle.driverPhone && (
+                                                <span className="text-[9px] text-indigo-400 font-mono text-right">{vehicle.driverPhone}</span>
+                                            )}
                                         </div>
                                     )}
                                 </div>

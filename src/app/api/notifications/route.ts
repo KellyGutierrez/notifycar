@@ -35,13 +35,12 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const body = await req.json()
-        const { vehicleId, content, type, templateId, recipientRole } = body
+        let { vehicleId, content, type, templateId, recipientRole } = body
 
         if (!vehicleId || !content) {
             return new NextResponse("Missing required fields", { status: 400 })
         }
 
-        // Check for cooldown (10 minutes)
         // ... (cooldown logic remains)
         const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000)
         const lastNotification = await db.notification.findFirst({
@@ -74,34 +73,44 @@ export async function POST(req: Request) {
                     }
                 }
             }
-        });
+        }) as any;
 
         if (!vehicle) {
             return new NextResponse("Vehículo no encontrado", { status: 404 });
         }
 
-        console.log("🔍 [DEBUG] Recipient Role:", recipientRole);
-        console.log("🔍 [DEBUG] Vehicle Contacts:", {
-            ownerName: vehicle.ownerName,
+        // Determine target contact and name based on role
+        // Default values from the main user
+        let targetName = vehicle.user?.name || "Usuario"
+        let targetPhone = `${vehicle.user?.phonePrefix || ""}${vehicle.user?.phoneNumber || ""}`
+
+        console.log("🔍 [DEBUG] Vehicle Data:", {
+            organizationId: vehicle.organizationId,
             ownerPhone: vehicle.ownerPhone,
-            driverName: vehicle.driverName,
             driverPhone: vehicle.driverPhone
         });
 
-        // Determine target contact and name based on role
-        let targetName = vehicle.user.name || "Usuario"
-        let targetPhone = `${vehicle.user.phonePrefix || ""}${vehicle.user.phoneNumber || ""}`
+        // If it's a corporate vehicle and no role is specified, we try to find a direct contact
+        if (!recipientRole && vehicle.organizationId) {
+            if (vehicle.driverPhone) {
+                recipientRole = "DRIVER";
+                console.log("ℹ️ Corporate vehicle detected, defaulting to DRIVER contact");
+            } else if (vehicle.ownerPhone) {
+                recipientRole = "OWNER";
+                console.log("ℹ️ Corporate vehicle detected, defaulting to OWNER contact");
+            }
+        }
 
         if (recipientRole === "OWNER" && vehicle.ownerPhone) {
             targetPhone = vehicle.ownerPhone
-            targetName = vehicle.ownerName || targetName
+            targetName = vehicle.ownerName || targetName || "Propietario"
             console.log("✅ Target: OWNER", targetPhone);
         } else if (recipientRole === "DRIVER" && vehicle.driverPhone) {
             targetPhone = vehicle.driverPhone
-            targetName = vehicle.driverName || targetName
+            targetName = vehicle.driverName || targetName || "Conductor"
             console.log("✅ Target: DRIVER", targetPhone);
         } else {
-            console.log("ℹ️ Falling back to User phone:", targetPhone);
+            console.log("ℹ️ Final target: User phone", targetPhone);
         }
 
         // Buscar números de emergencia según el país
@@ -193,7 +202,13 @@ export async function POST(req: Request) {
 
         if (webhookUrl && targetPhone) {
             try {
-                const fullPhone = targetPhone.replace(/\+/g, '').replace(/\s/g, '');
+                // Limpiar: dejar solo dígitos
+                let fullPhone = targetPhone.replace(/\D/g, '');
+
+                // Si tiene 10 dígitos (Colombia) y no empieza por 57, se lo ponemos
+                if (fullPhone.length === 10 && !fullPhone.startsWith('57')) {
+                    fullPhone = `57${fullPhone}`;
+                }
 
                 console.log("🚀 Enviando WhatsApp a:", fullPhone);
                 console.log("📦 Payload:", {
