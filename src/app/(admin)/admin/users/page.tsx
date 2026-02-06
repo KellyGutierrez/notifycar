@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Users, Car, Mail, Calendar, MoreVertical, Search, Filter, Edit2, Trash2, Loader2 } from "lucide-react"
+import { Users, Car, Mail, Calendar, MoreVertical, Search, Filter, Edit2, Trash2, Loader2, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 import UserEditModal from "@/components/UserEditModal"
+import UserCreateModal from "@/components/UserCreateModal"
 
 export default function AdminUsersPage() {
     const [users, setUsers] = useState<any[]>([])
@@ -12,6 +13,7 @@ export default function AdminUsersPage() {
     const [activeMenu, setActiveMenu] = useState<string | null>(null)
     const [selectedUser, setSelectedUser] = useState<any>(null)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
     const fetchUsers = async () => {
         try {
@@ -90,6 +92,13 @@ export default function AdminUsersPage() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-cyan-500/20 active:scale-95"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Nuevo Usuario
+                    </button>
                 </div>
             </div>
 
@@ -221,6 +230,12 @@ export default function AdminUsersPage() {
                     setSelectedUser(null)
                 }}
                 onUpdate={fetchUsers}
+            />
+
+            <UserCreateModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onCreate={fetchUsers}
             />
         </div>
     )
