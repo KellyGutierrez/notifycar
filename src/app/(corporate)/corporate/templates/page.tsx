@@ -108,6 +108,7 @@ export default function CorporateTemplatesPage() {
                     </h1>
                     <p className="text-gray-400 font-medium">
                         Personaliza los mensajes que tus conductores recibirán.
+                        {" "}<a href="/corporate/settings" className="text-indigo-400 hover:underline text-xs ml-2 font-bold uppercase tracking-tighter">⚙️ Configurar visibilidad global</a>
                     </p>
                 </div>
                 <button

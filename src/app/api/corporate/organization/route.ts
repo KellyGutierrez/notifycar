@@ -36,13 +36,14 @@ export async function PUT(req: NextRequest) {
 
         const orgId = (session.user as any).organizationId
         const body = await req.json()
-        const { messageWrapper, name } = body
+        const { messageWrapper, name, useGlobalTemplates } = body
 
-        const updated = await db.organization.update({
+        const updated = await (db.organization as any).update({
             where: { id: orgId },
             data: {
                 ...(messageWrapper !== undefined && { messageWrapper }),
-                ...(name && { name }) // Allow editing name too
+                ...(name && { name }),
+                ...(useGlobalTemplates !== undefined && { useGlobalTemplates })
             }
         })
 

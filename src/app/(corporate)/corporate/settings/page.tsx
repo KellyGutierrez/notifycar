@@ -11,6 +11,7 @@ export default function CorporateSettingsPage() {
     const [copied, setCopied] = useState(false)
 
     const [messageWrapper, setMessageWrapper] = useState("")
+    const [useGlobalTemplates, setUseGlobalTemplates] = useState(true)
     const [orgName, setOrgName] = useState("")
 
     useEffect(() => {
@@ -18,6 +19,7 @@ export default function CorporateSettingsPage() {
             .then(res => res.json())
             .then(data => {
                 setMessageWrapper(data.messageWrapper || "")
+                setUseGlobalTemplates(data.useGlobalTemplates ?? true)
                 setOrgName(data.name || "")
             })
             .catch(err => console.error("Error fetching settings:", err))
@@ -32,7 +34,10 @@ export default function CorporateSettingsPage() {
             const res = await fetch("/api/corporate/organization", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ messageWrapper })
+                body: JSON.stringify({
+                    messageWrapper,
+                    useGlobalTemplates
+                })
             })
             if (res.ok) {
                 setSuccess(true)
@@ -113,6 +118,28 @@ export default function CorporateSettingsPage() {
                                     {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
                                     Guardar Diseño
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Preferences Selection */}
+                    <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden p-8 space-y-4">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+                                <MessageSquare className="h-4 w-4 text-indigo-400" />
+                                Mensajes del Sistema
+                            </h3>
+                        </div>
+                        <div className="flex items-center gap-4 p-6 rounded-2xl bg-black/20 border border-white/5 group hover:border-indigo-500/30 transition-all cursor-pointer" onClick={() => setUseGlobalTemplates(!useGlobalTemplates)}>
+                            <div className={cn(
+                                "h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all",
+                                useGlobalTemplates ? "bg-indigo-500 border-indigo-500" : "border-white/10 bg-white/5"
+                            )}>
+                                {useGlobalTemplates && <Check className="h-4 w-4 text-white" strokeWidth={4} />}
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-sm font-bold text-white">Incluir mensajes generales de NotifyCar</p>
+                                <p className="text-[11px] text-gray-500 font-medium">Si se desactiva, los usuarios solo verán tus mensajes personalizados al buscar tus placas.</p>
                             </div>
                         </div>
                     </div>
