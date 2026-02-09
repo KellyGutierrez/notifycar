@@ -42,15 +42,30 @@ export async function POST(req: Request) {
         if (webhookUrl) {
             const message = `🔐 *NotifyCar - Código de Verificación*\n\nTu código para verificar tu número de celular es: *${code}*\n\nEste código vencerá en 10 minutos. No lo compartas con nadie.`
 
-            fetch(webhookUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    phoneNumber: fullPhone,
-                    message: message,
-                    content: message
-                })
-            }).catch(err => console.error("❌ Error enviando código via WH:", err))
+            console.log("🚀 Enviando código de verificación a:", fullPhone);
+            console.log("📡 URL Webhook:", webhookUrl);
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        notificationId: `verify_${Date.now()}`,
+                        plate: "REGISTRO",
+                        ownerName: "Nuevo Usuario",
+                        phoneNumber: fullPhone,
+                        raw_message: message,
+                        message: message,
+                        content: message,
+                        timestamp: new Date()
+                    })
+                });
+                console.log(`📡 Webhook Response Status (${fullPhone}):`, response.status);
+            } catch (err) {
+                console.error("❌ Error enviando código via WH:", err);
+            }
+        } else {
+            console.warn("⚠️ No se encontró URL de Webhook para enviar la verificación.");
         }
 
         return NextResponse.json({ message: "Código enviado" })
