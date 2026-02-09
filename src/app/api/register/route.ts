@@ -21,9 +21,23 @@ export async function POST(req: Request) {
             return new NextResponse("El correo ya está registrado", { status: 400 })
         }
 
+        // VALIDAR VERIFICACIÓN TELEFÓNICA
+        const identifier = `${phonePrefix}${phoneNumber}`
+        const verifiedToken = await (db as any).verificationToken.findFirst({
+            where: {
+                identifier,
+                verified: true,
+                expires: { gt: new Date() }
+            }
+        })
+
+        if (!verifiedToken) {
+            return new NextResponse("El número de teléfono no ha sido verificado", { status: 400 })
+        }
+
         const hashedPassword = await hash(password, 10)
 
-        const user = await db.user.create({
+        const user = await (db.user as any).create({
             data: {
                 email,
                 name,
@@ -31,8 +45,14 @@ export async function POST(req: Request) {
                 country,
                 phonePrefix,
                 phoneNumber,
+                phoneVerified: new Date(),
                 termsAccepted,
             },
+        })
+
+        // Limpiar tokens usados
+        await (db as any).verificationToken.deleteMany({
+            where: { identifier }
         })
 
         // Remove password from response

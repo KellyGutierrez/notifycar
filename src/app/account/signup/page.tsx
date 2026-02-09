@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import axios from "axios"
-import { Loader2, Mail, Lock, User, Shield, Globe, Phone, Check, Eye, EyeOff } from "lucide-react"
+import { Loader2, Mail, Lock, User, Shield, Globe, Phone, Check, Eye, EyeOff, CheckCircle2 } from "lucide-react"
 
 import { countries } from "@/lib/countries"
 import { CountrySelect } from "@/components/CountrySelect"
@@ -22,15 +22,62 @@ export default function SignUpPage() {
         phoneNumber: "",
         termsAccepted: false
     })
+
+    // Si cambia el teléfono, resetear verificación
+    useEffect(() => {
+        setIsVerified(false)
+        setShowCodeInput(false)
+        setVerificationCode("")
+    }, [data.phoneNumber, data.phonePrefix])
     const [error, setError] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
 
+    // Estados de verificación
+    const [isVerifying, setIsVerifying] = useState(false)
+    const [isVerified, setIsVerified] = useState(false)
+    const [verificationCode, setVerificationCode] = useState("")
+    const [showCodeInput, setShowCodeInput] = useState(false)
+    const [verifyingCode, setVerifyingCode] = useState(false)
 
+    const handleSendCode = async () => {
+        if (!data.phoneNumber) {
+            setError("Ingresa tu número de celular primero.")
+            return
+        }
+        setIsVerifying(true)
+        setError("")
+        try {
+            await axios.post("/api/auth/verify-phone/send", {
+                phonePrefix: data.phonePrefix,
+                phoneNumber: data.phoneNumber
+            })
+            setShowCodeInput(true)
+        } catch (err: any) {
+            setError("No pudimos enviar el código. Revisa el número e intenta de nuevo.")
+        } finally {
+            setIsVerifying(false)
+        }
+    }
 
-    // ... inside render ... 
-
-    // Select options need to use the new fields
+    const handleConfirmCode = async () => {
+        if (!verificationCode) return
+        setVerifyingCode(true)
+        setError("")
+        try {
+            await axios.post("/api/auth/verify-phone/confirm", {
+                phonePrefix: data.phonePrefix,
+                phoneNumber: data.phoneNumber,
+                code: verificationCode
+            })
+            setIsVerified(true)
+            setShowCodeInput(false)
+        } catch (err: any) {
+            setError("Código incorrecto o expirado.")
+        } finally {
+            setVerifyingCode(false)
+        }
+    }
 
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -39,6 +86,11 @@ export default function SignUpPage() {
 
         if (!data.termsAccepted) {
             setError("Debes aceptar el tratamiento de datos para continuar.")
+            return
+        }
+
+        if (!isVerified) {
+            setError("Debes verificar tu número de celular para continuar.")
             return
         }
 
@@ -134,7 +186,7 @@ export default function SignUpPage() {
                         {/* País y Teléfono */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Celular / WhatsApp</label>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 mb-3">
                                 <CountrySelect
                                     value={data.country}
                                     onChange={(code) => {
@@ -153,14 +205,61 @@ export default function SignUpPage() {
                                     <input
                                         type="tel"
                                         required
-                                        className="w-full pl-16 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all font-mono"
+                                        disabled={isVerified}
+                                        className="w-full pl-16 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all font-mono disabled:opacity-50"
                                         placeholder="300 123 4567"
                                         value={data.phoneNumber}
                                         onChange={(e) => setData({ ...data, phoneNumber: e.target.value })}
                                     />
-                                    <Phone className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
+                                    {isVerified ? (
+                                        <Check className="absolute right-3 top-3.5 h-5 w-5 text-emerald-500" />
+                                    ) : (
+                                        <Phone className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
+                                    )}
                                 </div>
+                                {!isVerified && !showCodeInput && (
+                                    <button
+                                        type="button"
+                                        onClick={handleSendCode}
+                                        disabled={isVerifying || !data.phoneNumber}
+                                        className="px-4 py-3 bg-brand/10 text-brand border border-brand/20 rounded-xl font-bold text-sm hover:bg-brand/20 transition-all disabled:opacity-50"
+                                    >
+                                        {isVerifying ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verificar"}
+                                    </button>
+                                )}
                             </div>
+
+                            {/* Campo para el código */}
+                            {showCodeInput && !isVerified && (
+                                <div className="flex gap-2 animate-in slide-in-from-top-2 duration-300">
+                                    <div className="relative flex-1 group">
+                                        <Shield className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                                        <input
+                                            type="text"
+                                            maxLength={6}
+                                            className="w-full pl-10 pr-4 py-3 bg-emerald-50/50 border border-emerald-200 rounded-xl text-emerald-900 placeholder:text-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all font-mono tracking-[0.5em] text-center text-lg"
+                                            placeholder="------"
+                                            value={verificationCode}
+                                            onChange={(e) => setVerificationCode(e.target.value)}
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={handleConfirmCode}
+                                        disabled={verifyingCode || verificationCode.length < 6}
+                                        className="px-6 py-3 bg-emerald-500 text-white rounded-xl font-bold text-sm hover:bg-emerald-600 transition-all disabled:opacity-50 shadow-lg shadow-emerald-500/20"
+                                    >
+                                        {verifyingCode ? <Loader2 className="h-4 w-4 animate-spin" /> : "Validar"}
+                                    </button>
+                                </div>
+                            )}
+
+                            {isVerified && (
+                                <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider flex items-center gap-1.5 mt-1 ml-1">
+                                    <CheckCircle2 className="h-3 w-3" />
+                                    Número verificado correctamente
+                                </p>
+                            )}
                         </div>
 
                         {/* Términos */}
