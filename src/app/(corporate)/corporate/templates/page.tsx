@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Plus, MessageSquare, Trash2, Edit2, Zap, Loader2, Search, X, CheckCircle2 } from "lucide-react"
+import { Plus, MessageSquare, Trash2, Edit2, Zap, Loader2, Search, X, CheckCircle2, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export default function CorporateTemplatesPage() {
@@ -10,6 +10,8 @@ export default function CorporateTemplatesPage() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [editingTemplate, setEditingTemplate] = useState<any>(null)
     const [saving, setSaving] = useState(false)
+    const [updatingGlobal, setUpdatingGlobal] = useState(false)
+    const [useGlobalTemplates, setUseGlobalTemplates] = useState(true)
     const [search, setSearch] = useState("")
 
     const [formData, setFormData] = useState({
@@ -21,7 +23,39 @@ export default function CorporateTemplatesPage() {
 
     useEffect(() => {
         fetchTemplates()
+        fetchOrgSettings()
     }, [])
+
+    const fetchOrgSettings = async () => {
+        try {
+            const res = await fetch("/api/corporate/organization")
+            if (res.ok) {
+                const data = await res.json()
+                setUseGlobalTemplates(data.useGlobalTemplates ?? true)
+            }
+        } catch (error) {
+            console.error("Error fetching org settings:", error)
+        }
+    }
+
+    const toggleGlobalTemplates = async () => {
+        setUpdatingGlobal(true)
+        const newValue = !useGlobalTemplates
+        try {
+            const res = await fetch("/api/corporate/organization", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ useGlobalTemplates: newValue })
+            })
+            if (res.ok) {
+                setUseGlobalTemplates(newValue)
+            }
+        } catch (error) {
+            console.error("Error updating global templates setting:", error)
+        } finally {
+            setUpdatingGlobal(false)
+        }
+    }
 
     const fetchTemplates = async () => {
         try {
@@ -121,6 +155,43 @@ export default function CorporateTemplatesPage() {
                 >
                     <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform" />
                     <span>NUEVO MENSAJE</span>
+                </button>
+            </div>
+
+            {/* Visibilidad Global Toggle */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 rounded-[2rem] bg-indigo-500/5 border border-indigo-500/10 gap-4">
+                <div className="space-y-1">
+                    <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+                        <MessageSquare className="h-4 w-4 text-indigo-400" />
+                        Mensajes Generales de NotifyCar
+                    </h3>
+                    <p className="text-xs text-gray-500 font-medium max-w-md">
+                        {useGlobalTemplates
+                            ? "Actualmente tus clientes ven tanto tus mensajes personalizados como los avisos generales de NotifyCar."
+                            : "Actualmente los usuarios SOLO ven tus mensajes personalizados al buscar tus vehículos."}
+                    </p>
+                </div>
+                <button
+                    onClick={toggleGlobalTemplates}
+                    disabled={updatingGlobal}
+                    className={cn(
+                        "relative flex items-center gap-3 px-6 py-3 rounded-2xl font-black transition-all active:scale-95 group",
+                        useGlobalTemplates
+                            ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20"
+                            : "bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10"
+                    )}
+                >
+                    {updatingGlobal ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                        <div className={cn(
+                            "h-5 w-5 rounded-md border-2 flex items-center justify-center transition-all",
+                            useGlobalTemplates ? "bg-indigo-500 border-indigo-500" : "border-white/10 bg-white/5"
+                        )}>
+                            {useGlobalTemplates && <Check className="h-3 w-3 text-white" strokeWidth={4} />}
+                        </div>
+                    )}
+                    <span className="text-xs">{useGlobalTemplates ? "ACTIVADOS" : "DESACTIVADOS"}</span>
                 </button>
             </div>
 
