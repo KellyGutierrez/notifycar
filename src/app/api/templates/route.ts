@@ -12,8 +12,9 @@ export async function GET(request: Request) {
     const session = await getServerSession(authOptions)
     const sessionOrgId = session?.user?.organizationId
 
-    // Usamos el orgId del parámetro (público) o el de la sesión (dashboard)
-    const organizationId = publicOrgId || sessionOrgId
+    // Si el parámetro orgId está presente en la URL, tiene prioridad absoluta (incluso si está vacío)
+    // Esto evita que un usuario corporativo vea sus propios mensajes al buscar una placa ajena
+    const organizationId = searchParams.has("orgId") ? (searchParams.get("orgId") || null) : sessionOrgId
 
     try {
         let shouldIncludeGlobal = true;

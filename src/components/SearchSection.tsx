@@ -66,7 +66,7 @@ export default function SearchSection() {
                 const data = await res.json()
                 if (data.found) {
                     setResult(data.vehicle)
-                    const tRes = await fetch(`/api/templates?type=${data.vehicle.type}&isElectric=${data.vehicle.isElectric}${data.vehicle.organizationId ? `&orgId=${data.vehicle.organizationId}` : ''}`)
+                    const tRes = await fetch(`/api/templates?type=${data.vehicle.type}&isElectric=${data.vehicle.isElectric}&orgId=${data.vehicle.organizationId || ''}`)
                     if (tRes.ok) {
                         const tData = await tRes.json()
                         setTemplates(Array.isArray(tData) ? tData : [])
