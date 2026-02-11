@@ -4,6 +4,25 @@ import { useState, useEffect } from "react"
 import { Search, Car, Zap, Info, Loader2, AlertCircle, MessageSquare, Send, CheckCircle2, Bike } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+
+const getColorHex = (colorName: string | undefined | null) => {
+    if (!colorName) return '#9CA3AF'; // Default gray
+    const c = colorName.toLowerCase();
+
+    if (c.includes('rojo')) return '#DC2626'; // Red
+    if (c.includes('azul')) return '#2563EB'; // Blue
+    if (c.includes('blanco')) return '#FFFFFF'; // White
+    if (c.includes('negro')) return '#000000'; // Black
+    if (c.includes('gris') || c.includes('plata')) return '#9CA3AF'; // Gray
+    if (c.includes('verde')) return '#16A34A'; // Green
+    if (c.includes('amarillo')) return '#CA8A04'; // Yellow
+    if (c.includes('naranja')) return '#EA580C'; // Orange
+    if (c.includes('café') || c.includes('cafe') || c.includes('marrón')) return '#5D4037';
+    if (c.includes('beige')) return '#F5F5DC';
+
+    return '#9CA3AF'; // Fallback
+}
+
 export default function SearchSection() {
     const [plate, setPlate] = useState("")
     const [loading, setLoading] = useState(false)
@@ -39,24 +58,22 @@ export default function SearchSection() {
         if (plate.toUpperCase() === "TEST") {
             setTimeout(() => { // Simulamos un pequeño delay para que se sienta natural
                 setResult({
-                    id: "test-id",
-                    plate: "TEST-123",
+                    id: "real-example-id",
+                    plate: "MZD-582",
                     type: "CAR",
-                    brand: "Vehículo",
-                    model: "De Prueba",
-                    color: "Azul",
-                    isElectric: true
+                    brand: "Mazda",
+                    model: "CX-30 Grand Touring",
+                    color: "Rojo Diamante",
+                    isElectric: false // Probamos uno normal (no eléctrico)
                 });
                 setTemplates([
-                    { id: "1", name: "Luces encendidas", content: "Hola, te informo que dejaste las luces de tu vehículo encendidas.", vehicleType: "CAR", category: "COMMON" },
-                    { id: "2", name: "Mal estacionado", content: "Hola, tu vehículo está obstruyendo el paso o mal estacionado.", vehicleType: "ALL", category: "COMMON" },
-                    { id: "6", name: "Estacionarias encendidas", content: "Dejaste las luces estacionarias de tu vehículo encendidas.", vehicleType: "ALL", category: "COMMON" },
-                    { id: "3", name: "Obstrucción garaje", content: "Hola, su vehículo está obstruyendo la salida de un garaje.", vehicleType: "ALL", category: "URGENT" },
-                    { id: "4", name: "Puesto de cargador ocupado", content: "Tu vehículo está ocupando un cargador y hay otros conductores esperando para cargar. ¿Podrías moverlo si ya terminó, por favor?", vehicleType: "ELECTRIC", category: "COMMON" },
-                    { id: "5", name: "Cargador desconectado", content: "Hola, te informo que el cargador de tu vehículo ha sido desconectado.", vehicleType: "ELECTRIC", category: "URGENT" }
+                    { id: "1", name: "Luces Encendidas", content: "Hola, te informo que dejaste las luces de tu Mazda encendidas.", vehicleType: "CAR", category: "COMMON" },
+                    { id: "2", name: "Mal Estacionado", content: "Hola, tu vehículo está obstruyendo el paso. Agradecemos si puedes moverlo.", vehicleType: "ALL", category: "COMMON" },
+                    { id: "3", name: "Bloqueando Garaje", content: "Hola, tu vehículo está bloqueando la salida de mi garaje. Por favor, ¿podrías moverlo?", vehicleType: "ALL", category: "URGENT" },
+                    { id: "4", name: "Ventana Abierta", content: "Dejaste una ventana de tu vehículo abierta. Te aviso por seguridad.", vehicleType: "ALL", category: "URGENT" }
                 ]);
                 setLoading(false);
-            }, 500);
+            }, 800);
             return;
         }
 
@@ -177,149 +194,124 @@ export default function SearchSection() {
             )}
 
             {result && !successMsg && (
-                <div className="bg-white border border-gray-100 rounded-3xl shadow-2xl shadow-gray-200/50 overflow-hidden animate-in fade-in zoom-in duration-500 max-w-5xl mx-auto">
-                    <div className="grid grid-cols-1 lg:grid-cols-12">
-                        {/* Galería Lateral (Solo visible en Desktop) */}
-                        <div className="hidden lg:flex lg:col-span-1 flex-col gap-3 p-4 border-r border-gray-50 bg-gray-50/30">
-                            {[1, 2, 3, 4].map((i) => (
-                                <div key={i} className={cn(
-                                    "aspect-square rounded-lg border-2 cursor-pointer transition-all overflow-hidden",
-                                    i === 1 ? "border-brand shadow-sm" : "border-gray-200 hover:border-brand/50"
-                                )}>
-                                    <img
-                                        src={result.type === "MOTORCYCLE"
-                                            ? `https://images.unsplash.com/photo-1558981403-c5f91cbba527?q=80&w=200&auto=format&fit=crop`
-                                            : `https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=200&auto=format&fit=crop`
-                                        }
-                                        className="w-full h-full object-cover"
-                                        alt="Vista previa"
-                                    />
-                                </div>
-                            ))}
+                <div className="bg-white border border-gray-100 rounded-[2.5rem] shadow-2xl shadow-gray-200/60 overflow-hidden animate-in fade-in zoom-in duration-500 max-w-3xl mx-auto">
+                    {/* Cabecera de Identificación */}
+                    <div className="p-10 text-center space-y-4 bg-gradient-to-b from-gray-50/50 to-white">
+                        <div className="inline-flex items-center gap-2 bg-brand/10 text-brand px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest">
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            Vehículo Encontrado
                         </div>
 
-                        {/* Imagen Principal */}
-                        <div className="lg:col-span-7 p-4 bg-white flex flex-col justify-center relative group">
-                            <div className="absolute top-8 left-8 z-10 flex gap-2">
-                                <span className="bg-brand text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
-                                    Verificado
+                        <div className="space-y-1">
+                            <p className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em]">Marca y Modelo</p>
+                            <h2 className="text-5xl font-black text-gray-900 tracking-tight">
+                                {result.brand} <span className="text-brand">{result.model}</span>
+                            </h2>
+                        </div>
+
+                        {/* Visual de la Placa Estilo Real */}
+                        <div className="pt-4 flex justify-center">
+                            <div className="bg-white border-4 border-gray-900 rounded-2xl px-12 py-6 shadow-xl relative overflow-hidden group hover:scale-105 transition-transform duration-500">
+                                {/* Reflejo estético de placa */}
+                                <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-gray-100/20 to-transparent" />
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.5em] mb-1">Colombia</p>
+                                <span className="text-6xl font-black text-gray-900 tracking-tighter block leading-none">
+                                    {result.plate.replace(/-/g, '')}
                                 </span>
-                                {result.isElectric && (
-                                    <span className="bg-green-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1">
-                                        <Zap className="h-3 w-3 fill-current" />
-                                        E-Power
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-gray-50 relative border border-gray-100 shadow-inner">
-                                <img
-                                    src={result.type === "MOTORCYCLE"
-                                        ? `https://images.unsplash.com/photo-1558981403-c5f91cbba527?q=80&w=1200&auto=format&fit=crop`
-                                        : `https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1200&auto=format&fit=crop`
-                                    }
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                    alt={result.brand}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-                            </div>
-
-                            <div className="mt-4 flex items-center justify-between px-2">
-                                <div className="flex gap-4">
-                                    <div className="text-center">
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Tipo</p>
-                                        <p className="text-sm font-bold text-gray-700">{result.type === "MOTORCYCLE" ? "Moto" : "Automóvil"}</p>
-                                    </div>
-                                    <div className="w-px h-8 bg-gray-100" />
-                                    <div className="text-center">
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Color</p>
-                                        <p className="text-sm font-bold text-gray-700 capitalize">{result.color || 'Gris'}</p>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Placa</p>
-                                    <p className="text-2xl font-black text-gray-900 tracking-tighter">{result.plate}</p>
-                                </div>
+                                <div className="absolute bottom-1 right-2 w-4 h-4 rounded-full bg-gray-100" />
+                                <div className="absolute bottom-1 left-2 w-4 h-4 rounded-full bg-gray-100" />
                             </div>
                         </div>
 
-                        {/* Columna de Acción (Sidebar) */}
-                        <div className="lg:col-span-4 bg-gray-50/50 p-8 flex flex-col justify-between border-l border-gray-100">
-                            <div className="space-y-6">
-                                <div>
-                                    <p className="text-sm text-gray-500 font-medium mb-1">Empresa / Propietario</p>
-                                    <h2 className="text-2xl font-bold text-gray-900 leading-tight">
-                                        {result.brand} {result.model}
-                                    </h2>
-                                    <div className="flex items-center gap-2 mt-2 text-brand font-bold text-sm">
-                                        <CheckCircle2 className="h-4 w-4" />
-                                        Propietario Registrado
-                                    </div>
-                                </div>
-
-                                <div className="space-y-3 pt-6 border-t border-gray-200/50">
-                                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Seleccione una Alerta</p>
-
-                                    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                                        {Array.isArray(templates) && templates.length > 0 ? (
-                                            templates.map(t => (
-                                                <button
-                                                    key={t.id}
-                                                    onClick={() => toggleTemplate(t.id)}
-                                                    className={cn(
-                                                        "w-full p-4 rounded-xl text-left border transition-all relative group",
-                                                        selectedTemplates.includes(t.id)
-                                                            ? "bg-white border-brand ring-1 ring-brand shadow-md"
-                                                            : "bg-white border-gray-200 hover:border-brand/50 hover:shadow-sm"
-                                                    )}
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={cn(
-                                                            "h-4 w-4 rounded-full border-2 flex items-center justify-center transition-all",
-                                                            selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-300"
-                                                        )}>
-                                                            {selectedTemplates.includes(t.id) && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                                                        </div>
-                                                        <span className={cn(
-                                                            "text-sm font-bold transition-colors",
-                                                            selectedTemplates.includes(t.id) ? "text-gray-900" : "text-gray-600 group-hover:text-gray-900"
-                                                        )}>
-                                                            {t.name}
-                                                        </span>
-                                                    </div>
-                                                </button>
-                                            ))
-                                        ) : (
-                                            <p className="text-sm text-gray-400 italic">No hay plantillas disponibles.</p>
-                                        )}
-                                    </div>
-                                </div>
+                        <div className="flex items-center justify-center gap-6 pt-4">
+                            <div className="flex items-center gap-2 text-gray-500 font-bold text-sm">
+                                <Car className="h-4 w-4 text-brand" />
+                                <span>{result.type === "MOTORCYCLE" ? "Motocicleta" : "Automóvil"}</span>
                             </div>
-
-                            <div className="pt-8 space-y-4">
-                                <button
-                                    disabled={selectedTemplates.length === 0 || notifying}
-                                    onClick={handleNotify}
-                                    className="w-full bg-brand hover:bg-brand-dark text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-brand/20 transition-all hover:-translate-y-1 disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-3"
-                                >
-                                    {notifying ? (
-                                        <Loader2 className="h-6 w-6 animate-spin" />
-                                    ) : (
-                                        <>
-                                            <Send className="h-5 w-5" />
-                                            Enviar Alerta
-                                        </>
-                                    )}
-                                </button>
-                                <p className="text-[10px] text-center text-gray-400 font-medium">
-                                    Al enviar, el propietario recibirá un mensaje de WhatsApp instantáneo.
-                                </p>
+                            <div className="w-1 h-1 rounded-full bg-gray-300" />
+                            <div className="flex items-center gap-2 text-gray-500 font-bold text-sm">
+                                <div className="h-4 w-4 rounded-full border-2 border-gray-100 shadow-sm" style={{ backgroundColor: getColorHex(result.color) }} />
+                                <span>Color {result.color || 'Gris'}</span>
                             </div>
                         </div>
                     </div>
+
+                    {/* Sección de Selección de Mensajes - Muy Intuitiva */}
+                    <div className="p-10 pt-6 border-t border-gray-100 bg-white">
+                        <div className="text-center mb-8">
+                            <h3 className="text-2xl font-black text-gray-900">¿Qué quieres notificarle?</h3>
+                            <p className="text-gray-500 font-medium">Selecciona el mensaje que quieres enviar por WhatsApp</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                            {Array.isArray(templates) && templates.length > 0 ? (
+                                templates.map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => toggleTemplate(t.id)}
+                                        className={cn(
+                                            "p-5 rounded-2xl text-left border-2 transition-all relative group flex flex-col",
+                                            selectedTemplates.includes(t.id)
+                                                ? "bg-brand/5 border-brand shadow-md"
+                                                : "bg-white border-gray-100 hover:border-brand/30 hover:bg-gray-50/30"
+                                        )}
+                                    >
+                                        <div className="flex items-center justify-between w-full">
+                                            <span className={cn(
+                                                "text-sm font-bold uppercase tracking-tight",
+                                                selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700"
+                                            )}>
+                                                {t.name}
+                                            </span>
+                                            <div className={cn(
+                                                "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                                                selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-200 bg-white"
+                                            )}>
+                                                {selectedTemplates.includes(t.id) && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                                            </div>
+                                        </div>
+
+                                        {selectedTemplates.includes(t.id) && (
+                                            <div className="mt-4 pt-3 border-t border-brand/10 animate-in slide-in-from-top-1 fade-in duration-200">
+                                                <p className="text-xs text-gray-600 italic leading-relaxed flex items-start gap-2">
+                                                    <Info className="h-3 w-3 mt-0.5 text-brand shrink-0" />
+                                                    "{t.content}"
+                                                </p>
+                                            </div>
+                                        )}
+                                    </button>
+                                ))
+                            ) : (
+                                <div className="col-span-2 text-center py-8 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+                                    <p className="text-gray-400 font-medium">Cargando opciones de notificación...</p>
+                                </div>
+                            )}
+                        </div>
+
+                        <button
+                            disabled={selectedTemplates.length === 0 || notifying}
+                            onClick={handleNotify}
+                            className="w-full bg-gray-900 hover:bg-black text-white py-6 rounded-3xl font-black text-xl shadow-2xl shadow-gray-900/20 transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-20 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-4 group"
+                        >
+                            {notifying ? (
+                                <Loader2 className="h-7 w-7 animate-spin text-brand" />
+                            ) : (
+                                <>
+                                    <Send className="h-6 w-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform text-brand" />
+                                    Enviar Notificación Ahora
+                                </>
+                            )}
+                        </button>
+
+                        <p className="text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-6">
+                            Notificación 100% Anónima y Segura
+                        </p>
+                    </div>
                 </div>
             )}
+
+
             <p className="text-[9px] text-gray-300 text-center uppercase tracking-[0.2em] font-bold">NotifyCar v2.2 - Preview Loaded</p>
-        </div>
+        </div >
     )
 }
