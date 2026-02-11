@@ -177,175 +177,145 @@ export default function SearchSection() {
             )}
 
             {result && !successMsg && (
-                <div className="bg-white border border-gray-100 p-6 rounded-2xl shadow-lg shadow-gray-200/40 animate-in fade-in zoom-in duration-300">
-                    <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-5">
-                            <div className="h-16 w-16 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-100">
-                                {result.type === "MOTORCYCLE" ? (
-                                    <Bike className="h-8 w-8 text-gray-400" />
-                                ) : (
-                                    <Car className="h-8 w-8 text-gray-400" />
-                                )}
-                            </div>
-                            <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                    <h4 className="text-2xl font-black text-gray-900 tracking-tighter uppercase">{result.plate}</h4>
-                                    <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                        {result.type === "MOTORCYCLE" ? "Moto" : "Auto"}
-                                    </span>
-                                    {result.isElectric && (
-                                        <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 uppercase tracking-wider">
-                                            <Zap className="h-2.5 w-2.5 fill-current" />
-                                            Eléctrico
-                                        </span>
-                                    )}
+                <div className="bg-white border border-gray-100 rounded-3xl shadow-2xl shadow-gray-200/50 overflow-hidden animate-in fade-in zoom-in duration-500 max-w-5xl mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-12">
+                        {/* Galería Lateral (Solo visible en Desktop) */}
+                        <div className="hidden lg:flex lg:col-span-1 flex-col gap-3 p-4 border-r border-gray-50 bg-gray-50/30">
+                            {[1, 2, 3, 4].map((i) => (
+                                <div key={i} className={cn(
+                                    "aspect-square rounded-lg border-2 cursor-pointer transition-all overflow-hidden",
+                                    i === 1 ? "border-brand shadow-sm" : "border-gray-200 hover:border-brand/50"
+                                )}>
+                                    <img
+                                        src={result.type === "MOTORCYCLE"
+                                            ? `https://images.unsplash.com/photo-1558981403-c5f91cbba527?q=80&w=200&auto=format&fit=crop`
+                                            : `https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=200&auto=format&fit=crop`
+                                        }
+                                        className="w-full h-full object-cover"
+                                        alt="Vista previa"
+                                    />
                                 </div>
-                                <p className="text-gray-500 font-medium">{result.brand} {result.model}</p>
-                            </div>
+                            ))}
                         </div>
-                        <div className="text-right">
-                            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Color</div>
-                            <div className="flex items-center gap-2 justify-end">
-                                <span className="font-bold text-gray-900">{result.color || 'No especificado'}</span>
-                                <div
-                                    className="h-3 w-3 rounded-full border border-gray-200"
-                                    style={{ backgroundColor: result.color?.toLowerCase() === 'blanco' ? 'white' : result.color?.toLowerCase() }}
-                                />
-                            </div>
-                        </div>
-                    </div>
 
-                    <div className="mt-8 space-y-4 pt-6 border-t border-gray-50">
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
-                                <MessageSquare className="h-4 w-4 text-brand" />
-                                Selecciona los mensajes
-                            </label>
-                            <div className="space-y-6">
-                                {Array.isArray(templates) && templates.some(t => t.vehicleType === "ELECTRIC") && (
-                                    <div className="space-y-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-                                            <span className="text-[10px] font-bold text-green-700 uppercase tracking-widest">Mensajes Eléctricos</span>
-                                        </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-                                            {templates.filter(t => t.vehicleType === "ELECTRIC").map(t => (
-                                                <div key={t.id} className="flex flex-col gap-2">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => toggleTemplate(t.id)}
-                                                        className={cn(
-                                                            "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all border text-left w-full h-full",
-                                                            selectedTemplates.includes(t.id)
-                                                                ? "bg-green-50 border-green-200 text-green-900 shadow-sm"
-                                                                : "bg-white border-gray-100 text-gray-600 hover:border-green-200 hover:bg-green-50/30"
-                                                        )}
-                                                    >
-                                                        <div
-                                                            className={cn(
-                                                                "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                                selectedTemplates.includes(t.id)
-                                                                    ? "border-green-500 bg-green-500"
-                                                                    : "border-gray-300 bg-white"
-                                                            )}>
-                                                            {selectedTemplates.includes(t.id) && (
-                                                                <div className="h-2 w-2 rounded-full bg-white" />
-                                                            )}
-                                                        </div>
-                                                        <div className="flex flex-col flex-1">
-                                                            <span className="leading-tight">{t.name}</span>
-                                                            {t.organizationId && (
-                                                                <span className="text-[9px] text-green-700/60 font-black uppercase tracking-tighter mt-1">
-                                                                    Personalizado
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    </button>
-                                                    {selectedTemplates.includes(t.id) && (
-                                                        <div className="px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-900 animate-in slide-in-from-top-2 duration-300 shadow-inner">
-                                                            <div className="flex items-center gap-2 font-bold mb-1.5">
-                                                                <Info className="h-4 w-4" />
-                                                                Mensaje completo a enviar:
-                                                            </div>
-                                                            <p className="italic leading-relaxed font-medium bg-white/50 p-2 rounded-lg">"{t.content}"</p>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
+                        {/* Imagen Principal */}
+                        <div className="lg:col-span-7 p-4 bg-white flex flex-col justify-center relative group">
+                            <div className="absolute top-8 left-8 z-10 flex gap-2">
+                                <span className="bg-brand text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
+                                    Verificado
+                                </span>
+                                {result.isElectric && (
+                                    <span className="bg-green-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1">
+                                        <Zap className="h-3 w-3 fill-current" />
+                                        E-Power
+                                    </span>
                                 )}
+                            </div>
 
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-2">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-gray-400" />
-                                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                                            {result.isElectric ? "Mensajes Generales" : "Mensajes Sugeridos"}
-                                        </span>
+                            <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-gray-50 relative border border-gray-100 shadow-inner">
+                                <img
+                                    src={result.type === "MOTORCYCLE"
+                                        ? `https://images.unsplash.com/photo-1558981403-c5f91cbba527?q=80&w=1200&auto=format&fit=crop`
+                                        : `https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1200&auto=format&fit=crop`
+                                    }
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                    alt={result.brand}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                            </div>
+
+                            <div className="mt-4 flex items-center justify-between px-2">
+                                <div className="flex gap-4">
+                                    <div className="text-center">
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Tipo</p>
+                                        <p className="text-sm font-bold text-gray-700">{result.type === "MOTORCYCLE" ? "Moto" : "Automóvil"}</p>
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-                                        {Array.isArray(templates) && templates.filter(t => t.vehicleType !== "ELECTRIC").map(t => (
-                                            <div key={t.id} className="flex flex-col gap-2">
+                                    <div className="w-px h-8 bg-gray-100" />
+                                    <div className="text-center">
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Color</p>
+                                        <p className="text-sm font-bold text-gray-700 capitalize">{result.color || 'Gris'}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Placa</p>
+                                    <p className="text-2xl font-black text-gray-900 tracking-tighter">{result.plate}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Columna de Acción (Sidebar) */}
+                        <div className="lg:col-span-4 bg-gray-50/50 p-8 flex flex-col justify-between border-l border-gray-100">
+                            <div className="space-y-6">
+                                <div>
+                                    <p className="text-sm text-gray-500 font-medium mb-1">Empresa / Propietario</p>
+                                    <h2 className="text-2xl font-bold text-gray-900 leading-tight">
+                                        {result.brand} {result.model}
+                                    </h2>
+                                    <div className="flex items-center gap-2 mt-2 text-brand font-bold text-sm">
+                                        <CheckCircle2 className="h-4 w-4" />
+                                        Propietario Registrado
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3 pt-6 border-t border-gray-200/50">
+                                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Seleccione una Alerta</p>
+
+                                    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                        {Array.isArray(templates) && templates.length > 0 ? (
+                                            templates.map(t => (
                                                 <button
-                                                    type="button"
+                                                    key={t.id}
                                                     onClick={() => toggleTemplate(t.id)}
                                                     className={cn(
-                                                        "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all border text-left w-full h-full",
+                                                        "w-full p-4 rounded-xl text-left border transition-all relative group",
                                                         selectedTemplates.includes(t.id)
-                                                            ? "bg-brand/5 border-brand text-gray-900 shadow-sm"
-                                                            : "bg-white border-gray-100 text-gray-600 hover:border-brand/40 hover:bg-gray-50/50"
+                                                            ? "bg-white border-brand ring-1 ring-brand shadow-md"
+                                                            : "bg-white border-gray-200 hover:border-brand/50 hover:shadow-sm"
                                                     )}
                                                 >
-                                                    <div className={cn(
-                                                        "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                        selectedTemplates.includes(t.id)
-                                                            ? "border-brand bg-brand"
-                                                            : "border-gray-300 bg-white"
-                                                    )}>
-                                                        {selectedTemplates.includes(t.id) && (
-                                                            <div className="h-2 w-2 rounded-full bg-white" />
-                                                        )}
-                                                    </div>
-                                                    <div className="flex flex-col flex-1">
-                                                        <span className="leading-tight">{t.name}</span>
-                                                        {t.organizationId && (
-                                                            <span className="text-[9px] text-brand/60 font-black uppercase tracking-tighter mt-1">
-                                                                Personalizado
-                                                            </span>
-                                                        )}
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={cn(
+                                                            "h-4 w-4 rounded-full border-2 flex items-center justify-center transition-all",
+                                                            selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-300"
+                                                        )}>
+                                                            {selectedTemplates.includes(t.id) && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                                                        </div>
+                                                        <span className={cn(
+                                                            "text-sm font-bold transition-colors",
+                                                            selectedTemplates.includes(t.id) ? "text-gray-900" : "text-gray-600 group-hover:text-gray-900"
+                                                        )}>
+                                                            {t.name}
+                                                        </span>
                                                     </div>
                                                 </button>
-                                                {selectedTemplates.includes(t.id) && (
-                                                    <div className="px-4 py-3 bg-brand/5 border border-brand/20 rounded-xl text-sm text-gray-800 animate-in slide-in-from-top-2 duration-300 shadow-inner">
-                                                        <div className="flex items-center gap-2 font-bold mb-1.5 text-brand">
-                                                            <Info className="h-4 w-4" />
-                                                            Mensaje completo a enviar:
-                                                        </div>
-                                                        <p className="italic leading-relaxed font-medium bg-white/50 p-2 rounded-lg">"{t.content}"</p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
+                                            ))
+                                        ) : (
+                                            <p className="text-sm text-gray-400 italic">No hay plantillas disponibles.</p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="pt-8 space-y-4">
+                                <button
+                                    disabled={selectedTemplates.length === 0 || notifying}
+                                    onClick={handleNotify}
+                                    className="w-full bg-brand hover:bg-brand-dark text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-brand/20 transition-all hover:-translate-y-1 disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-3"
+                                >
+                                    {notifying ? (
+                                        <Loader2 className="h-6 w-6 animate-spin" />
+                                    ) : (
+                                        <>
+                                            <Send className="h-5 w-5" />
+                                            Enviar Alerta
+                                        </>
+                                    )}
+                                </button>
+                                <p className="text-[10px] text-center text-gray-400 font-medium">
+                                    Al enviar, el propietario recibirá un mensaje de WhatsApp instantáneo.
+                                </p>
+                            </div>
                         </div>
-
-
-                        <button
-                            disabled={selectedTemplates.length === 0 || notifying}
-                            onClick={handleNotify}
-                            className="w-full bg-gray-900 hover:bg-black text-white py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:grayscale group"
-                        >
-                            {notifying ? (
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                            ) : (
-                                <>
-                                    <Send className="h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                    Enviar Notificación
-                                </>
-                            )}
-                        </button>
                     </div>
                 </div>
             )}
