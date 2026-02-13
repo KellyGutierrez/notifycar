@@ -12,7 +12,8 @@ import {
     ShieldAlert,
     BarChart3,
     MessageSquare,
-    Building2
+    Building2,
+    Phone
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { signOut } from "next-auth/react"
@@ -26,6 +27,7 @@ const adminNavigation = [
     { name: "Mensajes WhatsApp", href: "/admin/whatsapp-layout", icon: MessageSquare },
     { name: "Notificaciones", href: "/admin/notifications", icon: Bell },
     { name: "Mensajes", href: "/admin/templates", icon: MessageSquare },
+    { name: "Números Emergencia", href: "/admin/emergency", icon: Phone },
     { name: "Reportes", href: "/admin/reports", icon: BarChart3 },
     { name: "Configuración", href: "/admin/settings", icon: Settings },
 ]

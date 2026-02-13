@@ -187,18 +187,22 @@ export default function CorporateSettingsPage() {
 
                     <div className="p-8 rounded-3xl bg-gradient-to-br from-indigo-600/10 to-purple-600/10 border border-indigo-500/20 space-y-4 shadow-xl">
                         <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest italic flex items-center gap-2">
-                            VISTA PREVIA RÁPIDA
+                            VISTA PREVIA DINÁMICA
                         </h4>
-                        <div className="bg-black/30 p-4 rounded-xl border border-white/5 font-mono text-[9px] text-gray-500 leading-relaxed overflow-hidden">
-                            <p className="text-indigo-400/80 mb-2">🚕 AVISO - {orgName}</p>
-                            <p>Estimado/a Juan Pérez,</p>
-                            <br />
-                            <p>Placa: ABC-123</p>
-                            <p>Mensaje: "..."</p>
-                            <br />
-                            <p className="opacity-40">────────────────</p>
-                            <p className="italic">NotifyCar 💚</p>
+                        <div className="bg-[#075e54]/20 p-5 rounded-2xl border border-white/5 shadow-inner">
+                            <div className="bg-white text-black p-3 rounded-tr-xl rounded-bl-xl rounded-br-xl text-[10px] leading-relaxed relative shadow-lg">
+                                <div className="absolute -left-2 top-0 border-[8px] border-transparent border-t-white border-r-white" />
+                                <div className="whitespace-pre-wrap font-sans">
+                                    {(messageWrapper || "Hola {{name}}, tu vehículo {{plate}} tiene un aviso:\n\n{{raw_message}}\n\nSaludos!")
+                                        .replace("{{name}}", "Juan Pérez")
+                                        .replace("{{plate}}", "ABC-123")
+                                        .replace("{{raw_message}}", "Por favor mover el vehículo de la rampa.")
+                                    }
+                                </div>
+                                <div className="text-[8px] text-gray-400 text-right mt-1">12:00 PM ✓✓</div>
+                            </div>
                         </div>
+                        <p className="text-[9px] text-center text-gray-500 font-bold uppercase tracking-tighter">Simulación de WhatsApp</p>
                     </div>
                 </div>
             </div>

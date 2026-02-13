@@ -20,7 +20,7 @@ model User {
   email         String    @unique
   password      String?
   image         String?
-  role          String    @default("USER") // USER, ADMIN, CORPORATE, INSTITUTIONAL
+  role          String    @default("USER") // USER, ADMIN, CORPORATE, INSTITUTIONAL, OPERATOR
   country       String?
   phonePrefix   String?
   phoneNumber   String?

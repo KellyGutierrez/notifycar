@@ -1,6 +1,7 @@
-"use client"
-
-import { useState, useEffect } from "react"
+import { db } from "@/lib/db"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { redirect } from "next/navigation"
 import Link from "next/link"
 import {
     LayoutDashboard,
@@ -11,43 +12,74 @@ import {
     Zap,
     Building2,
     Shield,
-    Link as LinkIcon,
-    Copy,
-    Check,
-    Globe,
-    Settings
+    Settings,
+    Plus,
+    ShieldAlert
 } from "lucide-react"
+import CorporateStatsChart from "@/components/CorporateStatsChart"
+import InstitutionalPublicLink from "@/components/InstitutionalPublicLink"
+import { headers } from "next/headers"
 
-export default function InstitutionalDashboardPage() {
-    const [publicToken, setPublicToken] = useState<string | null>(null)
-    const [copied, setCopied] = useState(false)
+async function getStats(orgId: string) {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
 
-    useEffect(() => {
-        // Fetch current user org token info
-        fetch("/api/institutional/settings")
-            .then(res => res.json())
-            .then(data => setPublicToken(data.publicToken))
-            .catch(err => console.error(err))
-    }, [])
+    const [
+        templateCount,
+        todayNotifications,
+        organization,
+        notificationsByDay
+    ] = await Promise.all([
+        db.notificationTemplate.count({ where: { organizationId: orgId, isActive: true } }),
+        db.notification.count({ where: { organizationId: orgId, createdAt: { gte: today } } }),
+        db.organization.findUnique({ where: { id: orgId }, select: { publicToken: true } }),
+        db.notification.findMany({
+            where: {
+                organizationId: orgId,
+                createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+            },
+            select: { createdAt: true }
+        })
+    ])
 
-    const publicLink = typeof window !== 'undefined' && publicToken ? `${window.location.origin}/zone/${publicToken}` : ""
+    // Process notification chart data
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date()
+        d.setDate(d.getDate() - i)
+        return d.toISOString().split('T')[0]
+    }).reverse()
 
-    const copyLink = () => {
-        if (!publicToken || !publicLink) {
-            alert("El enlace aún no está disponible. Por favor espera un momento.")
-            return
-        }
+    const chartData = last7Days.map(day => ({
+        day: day.split('-').slice(1).join('/'),
+        count: notificationsByDay.filter(n => n.createdAt.toISOString().split('T')[0] === day).length
+    }))
 
-        navigator.clipboard.writeText(publicLink)
-            .then(() => {
-                setCopied(true)
-                setTimeout(() => setCopied(false), 2000)
-            })
-            .catch(err => {
-                console.error("Error al copiar:", err)
-                alert("No se pudo copiar el enlace. Inténtalo de nuevo.")
-            })
+    return {
+        templateCount,
+        todayNotifications,
+        publicToken: organization?.publicToken || null,
+        chartData
     }
+}
+
+export default async function InstitutionalDashboardPage() {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.organizationId) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[60vh] space-y-4 text-white">
+                <ShieldAlert className="h-16 w-16 text-yellow-500 opacity-50" />
+                <h1 className="text-2xl font-bold">Sin Organización Asignada</h1>
+                <p className="text-gray-400">Panel reservado para entidades institucionales.</p>
+            </div>
+        )
+    }
+
+    const stats = await getStats(session.user.organizationId)
+    const headerList = await headers()
+    const host = headerList.get("host")
+    const protocol = host?.includes("localhost") ? "http" : "https"
+    const origin = `${protocol}://${host}`
+
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
             {/* Header section */}
@@ -81,10 +113,10 @@ export default function InstitutionalDashboardPage() {
                         <Building2 className="h-12 w-12 text-emerald-500" />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">Zonas Bajo Control</span>
+                        <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">Plantillas Oficiales</span>
                         <div className="flex items-end gap-2">
-                            <span className="text-4xl font-black text-white">8</span>
-                            <span className="text-emerald-400 text-xs font-bold mb-1">Activas</span>
+                            <span className="text-4xl font-black text-white">{stats.templateCount}</span>
+                            <span className="text-emerald-400 text-xs font-bold mb-1">ACTIVAS</span>
                         </div>
                     </div>
                 </div>
@@ -94,11 +126,11 @@ export default function InstitutionalDashboardPage() {
                         <Bell className="h-12 w-12 text-teal-500" />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">Notificaciones Hoy</span>
+                        <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">Alertas Hoy</span>
                         <div className="flex items-end gap-2">
-                            <span className="text-4xl font-black text-white">156</span>
+                            <span className="text-4xl font-black text-white">{stats.todayNotifications}</span>
                             <span className="text-emerald-400 text-xs font-bold mb-1 flex items-center gap-0.5">
-                                <TrendingUp className="h-3 w-3" /> Promedio estable
+                                <TrendingUp className="h-3 w-3" /> Tiempo real
                             </span>
                         </div>
                     </div>
@@ -109,87 +141,34 @@ export default function InstitutionalDashboardPage() {
                         <Zap className="h-12 w-12 text-yellow-500" />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">Efectividad</span>
+                        <span className="text-gray-400 text-sm font-bold uppercase tracking-wider">Estado</span>
                         <div className="flex items-end gap-2">
-                            <span className="text-4xl font-black text-white">94%</span>
-                            <span className="text-gray-500 text-xs font-bold mb-1">ENTREGADOS</span>
+                            <span className="text-4xl font-black text-white">ACTIVO</span>
+                            <span className="text-emerald-400 text-xs font-bold mb-1">OK</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Main Content Area */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Recent Activity */}
-                <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-8">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-bold flex items-center gap-2">
-                            <MessageSquare className="h-5 w-5 text-emerald-400" />
-                            Plantillas Activas
-                        </h2>
-                        <Link
-                            href="/institutional/templates"
-                            className="text-emerald-400 text-sm font-bold hover:underline flex items-center gap-1"
-                        >
-                            Ver todas <ArrowUpRight className="h-4 w-4" />
-                        </Link>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Stats Chart */}
+                <div className="lg:col-span-2 bg-white/[0.03] border border-white/10 rounded-3xl p-8">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 className="text-xl font-bold text-white">Histórico de Alertas</h2>
+                            <p className="text-sm text-gray-500">Volumen de actividad institucional (últimos 7 días).</p>
+                        </div>
                     </div>
-                    <div className="space-y-4">
-                        {[
-                            { name: "Ticket por Vencer", type: "Aviso", usage: 312 },
-                            { name: "Zona Prohibida", type: "Seguridad", usage: 45 },
-                            { name: "Bloqueo de Rampa", type: "Urgente", usage: 22 }
-                        ].map((t, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-all cursor-pointer group">
-                                <div>
-                                    <p className="font-bold text-white group-hover:text-emerald-400 transition-colors">{t.name}</p>
-                                    <p className="text-xs text-gray-500 uppercase tracking-widest">{t.type}</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-lg font-black text-white">{t.usage}</p>
-                                    <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Eventos</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    <CorporateStatsChart data={stats.chartData} />
                 </div>
 
                 {/* Public Access Link Section */}
-                <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-8 relative overflow-hidden flex flex-col justify-center">
-                    <div className="absolute top-[-10%] right-[-10%] w-[200px] h-[200px] bg-emerald-500/10 rounded-full blur-[80px]" />
-
-                    <div className="flex items-center gap-2 mb-4">
-                        <Globe className="h-5 w-5 text-emerald-400" />
-                        <h2 className="text-xl font-bold text-white">Acceso Público (Bypass)</h2>
-                    </div>
-
-                    <p className="text-emerald-100/70 mb-6 text-sm leading-relaxed">
-                        Comparte este link con tus operarios en campo para que puedan notificar sin necesidad de una cuenta personal.
-                    </p>
-
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-2 p-3 bg-black/40 border border-white/10 rounded-2xl group">
-                            <LinkIcon className="h-4 w-4 text-gray-500 shrink-0" />
-                            <code className="text-[10px] text-emerald-400/80 truncate font-mono flex-1">
-                                {publicToken ? publicLink : "Generando link..."}
-                            </code>
-                        </div>
-
-                        <button
-                            onClick={copyLink}
-                            disabled={!publicToken}
-                            className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white px-6 py-3 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 shadow-xl shadow-emerald-900/20 active:scale-95"
-                        >
-                            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                            {copied ? "¡Link Copiado!" : "Copiar Link de Acceso"}
-                        </button>
-                    </div>
-
-                    <div className="mt-6 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
-                        <p className="text-[10px] text-emerald-500/70 leading-relaxed italic">
-                            Cualquier persona con este link podrá enviar mensajes de aviso usando el nombre de tu organización.
-                        </p>
-                    </div>
+                <div className="lg:col-span-1">
+                    <InstitutionalPublicLink
+                        publicToken={stats.publicToken}
+                        origin={origin}
+                    />
                 </div>
             </div>
         </div>

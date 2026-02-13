@@ -21,7 +21,8 @@ export const metadata: Metadata = {
   description: "La forma más rápida y segura de contactar al dueño de un vehículo por su placa.",
   icons: {
     icon: "/icon.png?v=1",
-  }
+  },
+  manifest: "/manifest.json"
 };
 
 export const dynamic = "force-dynamic";

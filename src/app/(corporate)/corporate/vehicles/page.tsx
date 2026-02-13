@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Car, User, Hash, Plus, Loader2, X, Search, Zap, Bike, Save, Edit2, Bell, MessageSquare, Send, CheckCircle2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 export default function CorporateVehiclesPage() {
     const [vehicles, setVehicles] = useState<any[]>([])
@@ -188,13 +189,27 @@ export default function CorporateVehiclesPage() {
                     <h1 className="text-3xl font-black tracking-tight text-white uppercase italic bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">Gestión de Flota</h1>
                     <p className="text-gray-400 font-medium">Administra los vehículos asignados a tu empresa.</p>
                 </div>
-                <button
-                    onClick={() => handleOpenAddModal(null)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-xl shadow-indigo-900/20 flex items-center justify-center gap-2 active:scale-95"
-                >
-                    <Plus className="h-5 w-5" />
-                    Registrar Vehículo
-                </button>
+                <div className="flex flex-wrap items-center gap-3">
+                    <Link
+                        href="/corporate/vehicles/import"
+                        className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-2xl font-bold transition-all border border-white/10"
+                    >
+                        <Hash className="h-5 w-5 text-indigo-400" /> Importar CSV
+                    </Link>
+                    <button
+                        onClick={() => {
+                            setEditingVehicle(null)
+                            setFormData({
+                                plate: "", brand: "", model: "", color: "", type: "CAR",
+                                isElectric: false, ownerName: "", ownerPhone: "", driverName: "", driverPhone: ""
+                            })
+                            setIsAddModalOpen(true)
+                        }}
+                        className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 shadow-xl shadow-indigo-500/20"
+                    >
+                        <Plus className="h-5 w-5" /> Nuevo Vehículo
+                    </button>
+                </div>
             </div>
 
             {/* Barra de Búsqueda */}
