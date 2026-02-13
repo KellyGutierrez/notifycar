@@ -156,10 +156,10 @@ export default function SearchSection() {
     }
 
     return (
-        <div className="w-full max-w-2xl mx-auto mt-4 space-y-6">
+        <div className="w-full max-w-2xl mx-auto mt-2 space-y-6">
             <form
                 onSubmit={handleSearch}
-                className="bg-white p-2 rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 flex items-center gap-2 group focus-within:ring-2 focus-within:ring-brand/20 transition-all"
+                className="bg-white p-2 rounded-2xl border border-gray-100 flex items-center gap-2 group focus-within:ring-2 focus-within:ring-brand/20 transition-all"
             >
                 <div className="pl-4 text-gray-400">
                     <Search className="h-5 w-5 group-focus-within:text-brand transition-colors" />
@@ -238,7 +238,7 @@ export default function SearchSection() {
 
                     {/* Sección de Selección de Mensajes - Muy Intuitiva */}
                     <div className="p-10 pt-6 border-t border-gray-100 bg-white">
-                        <div className="text-center mb-8">
+                        <div className="text-center mb-10 space-y-4">
                             <h3 className="text-2xl font-black text-gray-900">¿Qué quieres notificarle?</h3>
                             <p className="text-gray-500 font-medium">Selecciona el mensaje que quieres enviar por WhatsApp</p>
                         </div>
