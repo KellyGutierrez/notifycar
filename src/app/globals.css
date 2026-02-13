@@ -87,6 +87,6 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-gray-200 rounded-full;
+    @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
   }
 }
