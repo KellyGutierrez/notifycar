@@ -17,6 +17,7 @@ import { signOut } from "next-auth/react"
 
 const institutionalNavigation = [
     { name: "Resumen", href: "/institutional", icon: LayoutDashboard },
+    { name: "Mi Equipo", href: "/institutional/operators", icon: Users },
     { name: "Vehículos", href: "/institutional/vehicles", icon: Car },
     { name: "Mensajes", href: "/institutional/templates", icon: MessageSquare },
     { name: "Notificaciones", href: "/institutional/notifications", icon: Bell },

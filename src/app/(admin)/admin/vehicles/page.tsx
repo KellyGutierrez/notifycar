@@ -1,6 +1,8 @@
 import { db } from "@/lib/db"
-import { Car, User, Hash } from "lucide-react"
+import { Car, User, Hash, Upload } from "lucide-react"
 import { VehicleFilters } from "./VehicleFilters"
+import ExportVehiclesButton from "./ExportVehiclesButton"
+import Link from "next/link"
 import { Prisma } from "@prisma/client"
 
 interface PageProps {
@@ -50,9 +52,21 @@ export default async function AdminVehiclesPage({ searchParams }: PageProps) {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header */}
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-white uppercase italic bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Inventario de Vehículos</h1>
-                <p className="text-gray-400">Gestiona y filtra todos los vehículos registrados.</p>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-white uppercase italic bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Inventario de Vehículos</h1>
+                    <p className="text-gray-400">Gestiona y filtra todos los vehículos registrados.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <ExportVehiclesButton data={vehicles} />
+                    <Link
+                        href="/admin/vehicles/import"
+                        className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-2xl font-bold transition-all border border-white/10"
+                    >
+                        <Upload className="h-5 w-5 text-cyan-400" />
+                        Importar CSV
+                    </Link>
+                </div>
             </div>
 
             {/* Filtros */}

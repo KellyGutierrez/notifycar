@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Car, User, Hash, Plus, Loader2, X, Search, Zap, Bike, Save, Edit2, Bell, MessageSquare, Send, CheckCircle2 } from "lucide-react"
+import { Car, User, Hash, Plus, Loader2, X, Search, Zap, Bike, Save, Edit2, Bell, MessageSquare, Send, CheckCircle2, Upload, Download } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 
@@ -63,6 +63,34 @@ export default function CorporateVehiclesPage() {
         } catch (error) {
             console.error(error)
         }
+    }
+
+    const exportToCSV = () => {
+        const headers = ["Placa", "Marca", "Modelo", "Color", "Tipo", "Electrico", "Propietario", "Tel Propietario", "Conductor", "Tel Conductor"]
+        const rows = vehicles.map(v => [
+            v.plate,
+            v.brand,
+            v.model,
+            v.color || "N/A",
+            v.type,
+            v.isElectric ? "Si" : "No",
+            v.ownerName || "N/A",
+            v.ownerPhone || "N/A",
+            v.driverName || "N/A",
+            v.driverPhone || "N/A"
+        ])
+
+        const csvContent = [
+            headers.join(","),
+            ...rows.map(row => row.join(","))
+        ].join("\n")
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.setAttribute("href", url)
+        link.setAttribute("download", `flota_notifycar_${new Date().toISOString().split('T')[0]}.csv`)
+        link.click()
     }
 
     useEffect(() => {
@@ -190,11 +218,17 @@ export default function CorporateVehiclesPage() {
                     <p className="text-gray-400 font-medium">Administra los vehículos asignados a tu empresa.</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
+                    <button
+                        onClick={exportToCSV}
+                        className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-2xl font-bold transition-all border border-white/10"
+                    >
+                        <Download className="h-5 w-5 text-gray-500" /> Exportar
+                    </button>
                     <Link
                         href="/corporate/vehicles/import"
                         className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-2xl font-bold transition-all border border-white/10"
                     >
-                        <Hash className="h-5 w-5 text-indigo-400" /> Importar CSV
+                        <Upload className="h-5 w-5 text-indigo-400" /> Importar CSV
                     </Link>
                     <button
                         onClick={() => {

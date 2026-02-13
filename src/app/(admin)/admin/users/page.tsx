@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Users, Car, Mail, Calendar, MoreVertical, Search, Filter, Edit2, Trash2, Loader2, Plus } from "lucide-react"
+import { Users, Car, Mail, Calendar, MoreVertical, Search, Filter, Edit2, Trash2, Loader2, Plus, Upload, Download } from "lucide-react"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 import UserEditModal from "@/components/UserEditModal"
 import UserCreateModal from "@/components/UserCreateModal"
 
@@ -59,6 +60,32 @@ export default function AdminUsersPage() {
         setActiveMenu(null)
     }
 
+    const exportToCSV = () => {
+        const headers = ["Nombre", "Email", "Rol", "Pais", "Prefijo", "Telefono", "Vehiculos", "Fecha Registro"]
+        const rows = filteredUsers.map(user => [
+            user.name || "N/A",
+            user.email,
+            user.role,
+            user.country || "N/A",
+            user.phonePrefix || "",
+            user.phoneNumber || "",
+            user._count.vehicles,
+            new Date(user.createdAt).toLocaleDateString()
+        ])
+
+        const csvContent = [
+            headers.join(","),
+            ...rows.map(row => row.join(","))
+        ].join("\n")
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.setAttribute("href", url)
+        link.setAttribute("download", `usuarios_notifycar_${new Date().toISOString().split('T')[0]}.csv`)
+        link.click()
+    }
+
     const filteredUsers = users.filter(user =>
         user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -82,7 +109,7 @@ export default function AdminUsersPage() {
                     <p className="text-gray-400">Lista completa de usuarios registrados y sus vehículos.</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="relative group">
+                    <div className="relative group mr-2">
                         <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500 group-focus-within:text-cyan-400 transition-colors" />
                         <input
                             type="text"
@@ -92,6 +119,20 @@ export default function AdminUsersPage() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
+                    <button
+                        onClick={exportToCSV}
+                        className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-xl border border-white/10 font-bold transition-all"
+                    >
+                        <Download className="h-4 w-4 text-gray-500" />
+                        Exportar
+                    </button>
+                    <Link
+                        href="/admin/users/import"
+                        className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-xl border border-white/10 font-bold transition-all"
+                    >
+                        <Upload className="h-4 w-4 text-cyan-400" />
+                        Importar CSV
+                    </Link>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
                         className="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-cyan-500/20 active:scale-95"

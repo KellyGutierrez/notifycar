@@ -5,7 +5,7 @@ import { db } from "@/lib/db"
 
 export async function GET(req: Request) {
     const session = await getServerSession(authOptions)
-    if (!session || (session.user.role !== "CORPORATE" && session.user.role !== "ADMIN")) {
+    if (!session || (session.user.role !== "CORPORATE" && session.user.role !== "ADMIN" && session.user.role !== "INSTITUTIONAL")) {
         return new NextResponse("Unauthorized", { status: 401 })
     }
 
@@ -47,7 +47,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions)
-        if (!session || (session.user.role !== "CORPORATE" && session.user.role !== "ADMIN")) {
+        if (!session || (session.user.role !== "CORPORATE" && session.user.role !== "ADMIN" && session.user.role !== "INSTITUTIONAL")) {
             return new NextResponse("Unauthorized", { status: 401 })
         }
 
@@ -96,7 +96,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
     try {
         const session = await getServerSession(authOptions)
-        if (!session || (session.user.role !== "CORPORATE" && session.user.role !== "ADMIN")) {
+        if (!session || (session.user.role !== "CORPORATE" && session.user.role !== "ADMIN" && session.user.role !== "INSTITUTIONAL")) {
             return new NextResponse("Unauthorized", { status: 401 })
         }
 
