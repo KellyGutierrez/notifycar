@@ -183,7 +183,8 @@ export async function POST(req: Request) {
             .replace(/{{transito}}/g, emergency.transit)
             .replace(/{{NUM_TRANSITO}}/g, emergency.transit)
             .replace(/{{emergencia}}/g, emergency.general)
-            .replace(/{{NUM_EMERGENCIAS}}/g, emergency.general);
+            .replace(/{{NUM_EMERGENCIAS}}/g, emergency.general)
+            .replace(/{{role}}/g, recipientRole === "OWNER" ? "Propietario" : recipientRole === "DRIVER" ? "Conductor" : "Usuario");
 
         // Create the notification in DB
         const notification = await db.notification.create({
