@@ -15,6 +15,10 @@ RUN npm install -g pnpm
 # Copy package manifests
 COPY package.json pnpm-lock.yaml ./
 
+# Accept build arguments for public variables
+ARG NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+ENV NEXT_PUBLIC_RECAPTCHA_SITE_KEY=$NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+
 # Install dependencies
 RUN pnpm install
 
