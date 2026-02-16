@@ -161,7 +161,7 @@ export async function POST(req: Request) {
 
         // 3. Fallback al diseño por defecto si todo lo anterior falla
         if (!wrapper) {
-            wrapper = `🚗 *NotifyCar*\nAlguien cerca de tu vehículo quiso avisarte lo siguiente:\n“{{plate}} - {{raw_message}}”\n\nℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo.\n\n📞 Emergencias: {{NUM_EMERGENCIAS}}`;
+            wrapper = `Hola {{name}} 👋🏻\nRecibiste un aviso automático de NotifyCar 🚗💚.\n\nUna persona que se encontraba cerca de tu vehículo:\n🚗 {{marca}} - {{modelo}}\n\nℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo.\n\n📞 Emergencias: {{NUM_EMERGENCIAS}}`;
         }
 
         // 4. Reemplazo de etiquetas
@@ -170,6 +170,10 @@ export async function POST(req: Request) {
             .replace(/{{placa}}/g, vehicle.plate.toUpperCase())
             .replace(/{{plate}}/g, vehicle.plate.toUpperCase())
             .replace(/{{name}}/g, targetName)
+            .replace(/{{marca}}/g, vehicle.brand || '')
+            .replace(/{{brand}}/g, vehicle.brand || '')
+            .replace(/{{modelo}}/g, vehicle.model || '')
+            .replace(/{{model}}/g, vehicle.model || '')
             .replace(/{{mensaje}}/g, content)
             .replace(/{{raw_message}}/g, content)
             .replace(/{{icono}}/g, vehicleIcon)

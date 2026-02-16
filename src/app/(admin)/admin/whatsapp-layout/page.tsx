@@ -45,7 +45,7 @@ export default function AdminWhatsappLayoutPage() {
     }
 
     const copyTags = () => {
-        const tags = "{{plate}}, {{raw_message}}, {{NUM_POLICIA}}, {{NUM_TRANSITO}}, {{NUM_EMERGENCIAS}}";
+        const tags = "{{name}}, {{plate}}, {{marca}}, {{modelo}}, {{raw_message}}, {{NUM_POLICIA}}, {{NUM_TRANSITO}}, {{NUM_EMERGENCIAS}}";
         navigator.clipboard.writeText(tags);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -139,6 +139,8 @@ export default function AdminWhatsappLayoutPage() {
                             {[
                                 { tag: "{{name}}", desc: "Nombre del dueño del vehículo." },
                                 { tag: "{{plate}}", desc: "La placa del vehículo (Ej: ABC-123)" },
+                                { tag: "{{marca}}", desc: "Marca del vehículo (Ej: Volkswagen)" },
+                                { tag: "{{modelo}}", desc: "Modelo del vehículo (Ej: Taos)" },
                                 { tag: "{{raw_message}}", desc: "El texto seleccionado por el usuario." },
                                 { tag: "{{NUM_POLICIA}}", desc: "Número de la policía del país." },
                                 { tag: "{{NUM_TRANSITO}}", desc: "Número de tránsito local." },

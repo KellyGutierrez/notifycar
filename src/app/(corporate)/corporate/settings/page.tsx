@@ -51,7 +51,7 @@ export default function CorporateSettingsPage() {
     }
 
     const copyTags = () => {
-        const tags = "{{name}}, {{plate}}, {{raw_message}}";
+        const tags = "{{name}}, {{plate}}, {{marca}}, {{modelo}}, {{raw_message}}";
         navigator.clipboard.writeText(tags);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -167,6 +167,8 @@ export default function CorporateSettingsPage() {
                             {[
                                 { tag: "{{name}}", desc: "Nombre del conductor o propietario." },
                                 { tag: "{{plate}}", desc: "Número de placa del vehículo." },
+                                { tag: "{{marca}}", desc: "Marca del vehículo (Ej: Volkswagen)" },
+                                { tag: "{{modelo}}", desc: "Modelo del vehículo (Ej: Taos)" },
                                 { tag: "{{raw_message}}", desc: "Contenido del aviso específico del mensaje." },
                             ].map(item => (
                                 <div key={item.tag} className="space-y-1.5 p-4 rounded-xl bg-white/[0.03] border border-white/5 group hover:bg-white/5 transition-all">
