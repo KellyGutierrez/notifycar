@@ -261,33 +261,52 @@ export default function SearchSection() {
                                 {templates
                                     .filter(t => {
                                         if (!result.organizationId) return true;
-                                        if (userProfile === "PASSENGER") return t.category === "OBJETOS PERDIDOS" || t.category === "SERVICIO";
-                                        return t.category === "COMÚN" || t.category === "URGENTE";
-                                    })
-                                    .map(t => (
-                                        <button
-                                            key={t.id}
-                                            onClick={() => toggleTemplate(t.id)}
-                                            className={cn(
-                                                "p-5 rounded-2xl text-left border-2 transition-all relative group flex flex-col",
-                                                selectedTemplates.includes(t.id) ? "bg-brand/5 border-brand shadow-md" : "bg-white border-gray-100 hover:border-brand/30"
-                                            )}
-                                        >
-                                            <div className="flex items-center justify-between w-full">
-                                                <span className={cn("text-sm font-bold uppercase tracking-tight", selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700")}>
-                                                    {t.name}
-                                                </span>
-                                                <div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all", selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-200")}>
-                                                    {selectedTemplates.includes(t.id) && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+
+                                        const cat = t.category?.toUpperCase();
+                                        if (userProfile === "PASSENGER") {
+                                            return cat === "OBJETOS PERDIDOS" || cat === "SERVICIO";
+                                        }
+                                        // "COMMON" es el default de Prisma, lo mapeamos a Peatón
+                                        return cat === "COMÚN" || cat === "URGENTE" || cat === "COMMON" || cat === "URGENT";
+                                    }).length > 0 ? (
+                                    templates
+                                        .filter(t => {
+                                            if (!result.organizationId) return true;
+                                            const cat = t.category?.toUpperCase();
+                                            if (userProfile === "PASSENGER") return cat === "OBJETOS PERDIDOS" || cat === "SERVICIO";
+                                            return cat === "COMÚN" || cat === "URGENTE" || cat === "COMMON" || cat === "URGENT";
+                                        })
+                                        .map(t => (
+                                            <button
+                                                key={t.id}
+                                                onClick={() => toggleTemplate(t.id)}
+                                                className={cn(
+                                                    "p-5 rounded-2xl text-left border-2 transition-all relative group flex flex-col",
+                                                    selectedTemplates.includes(t.id) ? "bg-brand/5 border-brand shadow-md" : "bg-white border-gray-100 hover:border-brand/30"
+                                                )}
+                                            >
+                                                <div className="flex items-center justify-between w-full">
+                                                    <span className={cn("text-sm font-bold uppercase tracking-tight", selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700")}>
+                                                        {t.name}
+                                                    </span>
+                                                    <div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all", selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-200")}>
+                                                        {selectedTemplates.includes(t.id) && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            {selectedTemplates.includes(t.id) && (
-                                                <div className="mt-4 pt-3 border-t border-brand/10">
-                                                    <p className="text-xs text-gray-600 italic">"{t.content}"</p>
-                                                </div>
-                                            )}
-                                        </button>
-                                    ))}
+                                                {selectedTemplates.includes(t.id) && (
+                                                    <div className="mt-4 pt-3 border-t border-brand/10">
+                                                        <p className="text-xs text-gray-600 italic">"{t.content}"</p>
+                                                    </div>
+                                                )}
+                                            </button>
+                                        ))
+                                ) : (
+                                    <div className="col-span-2 py-8 px-4 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+                                        <Info className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                                        <p className="text-sm font-bold text-gray-500">No hay mensajes en esta categoría.</p>
+                                        <p className="text-[10px] text-gray-400 uppercase mt-1">Configúralos en el panel corporativo.</p>
+                                    </div>
+                                )}
                             </div>
 
                             <button
