@@ -144,6 +144,12 @@ export default function SearchSection() {
             if (res.ok) {
                 setSuccessMsg("¡Notificación enviada correctamente!")
                 setSelectedTemplates([])
+
+                // Subir suavemente al buscador otra vez
+                const element = document.getElementById("notifica-conductores-title");
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             } else {
                 const errorText = await res.text()
                 setError(errorText || "Error al enviar la notificación.")

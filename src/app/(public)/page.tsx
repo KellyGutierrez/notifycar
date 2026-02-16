@@ -73,7 +73,7 @@ export default async function LandingPage() {
                 <span className="inline-block py-1 px-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/30 text-brand text-xs font-bold uppercase tracking-widest mb-4 shadow-lg">
                   Comunidad #1 de Conductores
                 </span>
-                <h1 className="text-5xl md:text-7xl font-black tracking-tight text-white leading-[0.9] drop-shadow-2xl">
+                <h1 id="notifica-conductores-title" className="text-5xl md:text-7xl font-black tracking-tight text-white leading-[0.9] drop-shadow-2xl">
                   Notifica a otros <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-cyan-400">conductores.</span>
                 </h1>
