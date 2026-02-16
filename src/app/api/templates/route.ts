@@ -33,7 +33,7 @@ export async function GET(request: Request) {
                 isActive: true,
                 OR: [
                     ...(shouldIncludeGlobal ? [{
-                        organizationId: null, // Global templates
+                        organizationId: null,
                         OR: [
                             { vehicleType: "ALL" },
                             { vehicleType: type },
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
                         ]
                     }] : []),
                     ...(organizationId ? [{
-                        organizationId: organizationId, // Organization specific templates
+                        organizationId: organizationId,
                         OR: [
                             { vehicleType: "ALL" },
                             { vehicleType: type },
@@ -50,12 +50,20 @@ export async function GET(request: Request) {
                     }] : [])
                 ]
             },
-            orderBy: {
-                createdAt: 'asc'
-            }
+            orderBy: [
+                { vehicleType: 'desc' }, // 'ELECTRIC' is alphabetically after 'ALL', 'CAR', etc. but we want consistent grouping.
+                { createdAt: 'asc' }
+            ]
         })
 
-        return NextResponse.json(templates)
+        // Ordenamiento manual para asegurar que ELECTRIC vaya primero
+        const sortedTemplates = [...templates].sort((a, b) => {
+            if (a.vehicleType === "ELECTRIC" && b.vehicleType !== "ELECTRIC") return -1;
+            if (a.vehicleType !== "ELECTRIC" && b.vehicleType === "ELECTRIC") return 1;
+            return 0;
+        });
+
+        return NextResponse.json(sortedTemplates)
     } catch (error) {
         console.error("Error fetching templates:", error)
         return NextResponse.json({ error: "Error fetching templates" }, { status: 500 })
