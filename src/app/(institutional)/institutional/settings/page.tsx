@@ -46,7 +46,7 @@ export default function InstitutionalSettingsPage() {
     }
 
     const copyTags = () => {
-        const tags = "{{name}}, {{plate}}, {{marca}}, {{modelo}}, {{raw_message}}, {{NUM_POLICIA}}, {{NUM_TRANSITO}}, {{NUM_EMERGENCIAS}}";
+        const tags = "{{name}}, {{plate}}, {{marca}}, {{modelo}}, {{electrico}}, {{raw_message}}, {{NUM_POLICIA}}, {{NUM_TRANSITO}}, {{NUM_EMERGENCIAS}}";
         navigator.clipboard.writeText(tags);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -142,6 +142,7 @@ export default function InstitutionalSettingsPage() {
                                 { tag: "{{plate}}", desc: "Número de placa/matrícula." },
                                 { tag: "{{marca}}", desc: "Marca del vehículo (Ej: Volkswagen)" },
                                 { tag: "{{modelo}}", desc: "Modelo del vehículo (Ej: Taos)" },
+                                { tag: "{{electrico}}", desc: "Distintivo eléctrico (⚡)" },
                                 { tag: "{{raw_message}}", desc: "Contenido del aviso específico." },
                                 { tag: "{{NUM_POLICIA}}", desc: "Número de policía configurado." },
                                 { tag: "{{NUM_TRANSITO}}", desc: "Número de tránsito local." },
@@ -166,7 +167,7 @@ export default function InstitutionalSettingsPage() {
                     <div className="p-8 rounded-3xl bg-gradient-to-br from-emerald-600/10 to-teal-600/10 border border-emerald-500/20 space-y-4">
                         <h4 className="text-xs font-black text-emerald-400 uppercase tracking-widest italic">Ejemplo de éxito</h4>
                         <p className="text-[11px] text-gray-400 leading-relaxed font-mono">
-                            "Aviso oficial de {orgName}: {{ marca }} {{ modelo }} con placa {'{{plate}}'} ha sido reportado por: {'{{raw_message}}'}."
+                            Aviso oficial de {orgName}: {'{{marca}}'} {'{{modelo}}'} con placa {'{{plate}}'} ha sido reportado por: {'{{raw_message}}'}.
                         </p>
                     </div>
                 </div>
