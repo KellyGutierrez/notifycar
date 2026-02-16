@@ -19,8 +19,7 @@ const corporateNavigation = [
     { name: "Resumen", href: "/corporate", icon: LayoutDashboard },
     { name: "Mi Flota", href: "/corporate/vehicles", icon: Car },
     { name: "Mis Mensajes", href: "/corporate/templates", icon: MessageSquare },
-    { name: "Notificaciones", href: "/corporate/notifications", icon: Bell },
-    { name: "Mi Equipo", href: "/corporate/team", icon: Users },
+    { name: "Historial de Avisos", href: "/corporate/notifications", icon: Bell },
     { name: "Plantilla Wpp", href: "/corporate/settings", icon: Layout },
 ]
 
