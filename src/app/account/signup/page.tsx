@@ -8,9 +8,9 @@ import { Loader2, Mail, Lock, User, Shield, Globe, Phone, Check, Eye, EyeOff, Ch
 
 import { countries } from "@/lib/countries"
 import { CountrySelect } from "@/components/CountrySelect"
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
+import { useGoogleReCaptcha, GoogleReCaptchaProvider } from "react-google-recaptcha-v3"
 
-export default function SignUpPage() {
+function SignUpForm() {
     const router = useRouter()
     const defaultCountry = countries.find(c => c.code === "CO") || countries[0]
 
@@ -30,6 +30,7 @@ export default function SignUpPage() {
         setShowCodeInput(false)
         setVerificationCode("")
     }, [data.phoneNumber, data.phonePrefix])
+
     const [error, setError] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
@@ -79,7 +80,6 @@ export default function SignUpPage() {
             setVerifyingCode(false)
         }
     }
-
 
     const { executeRecaptcha } = useGoogleReCaptcha()
 
@@ -307,6 +307,13 @@ export default function SignUpPage() {
                         {isLoading ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : "Crear mi cuenta"}
                     </button>
 
+                    {/* Badge visual de protección */}
+                    <div className="flex justify-center mt-4">
+                        <span className="text-[10px] text-gray-400 font-medium flex items-center gap-1">
+                            <Shield className="h-3 w-3" /> Protegido por Google reCAPTCHA
+                        </span>
+                    </div>
+
                     <div className="mt-6 text-center text-sm text-gray-500">
                         ¿Ya tienes una cuenta? <Link href="/account/signin" className="text-brand font-bold hover:underline transition-colors">Iniciar sesión</Link>
                     </div>
@@ -314,5 +321,14 @@ export default function SignUpPage() {
             </div>
         </div>
     )
+}
 
+export default function SignUpPage() {
+    return (
+        <GoogleReCaptchaProvider
+            reCaptchaKey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY as string}
+        >
+            <SignUpForm />
+        </GoogleReCaptchaProvider>
+    )
 }
