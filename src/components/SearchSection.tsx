@@ -83,7 +83,9 @@ export default function SearchSection() {
                 const data = await res.json()
                 if (data.found) {
                     setResult(data.vehicle)
-                    const tRes = await fetch(`/api/templates?type=${data.vehicle.type}&isElectric=${data.vehicle.isElectric}&orgId=${data.vehicle.organizationId || ''}`)
+                    // Aseguramos que isElectric pase como string "true" o "false" explícito
+                    const isElectricParam = data.vehicle.isElectric ? "true" : "false";
+                    const tRes = await fetch(`/api/templates?type=${data.vehicle.type}&isElectric=${isElectricParam}&orgId=${data.vehicle.organizationId || ''}`)
                     if (tRes.ok) {
                         const tData = await tRes.json()
                         setTemplates(Array.isArray(tData) ? tData : [])
@@ -234,6 +236,15 @@ export default function SearchSection() {
                                 <Car className="h-4 w-4 text-brand" />
                                 <span>{result.type === "MOTORCYCLE" ? "Motocicleta" : "Automóvil"}</span>
                             </div>
+                            {result.isElectric && (
+                                <>
+                                    <div className="w-1 h-1 rounded-full bg-gray-300" />
+                                    <div className="flex items-center gap-2 text-emerald-500 font-black text-xs uppercase tracking-wider bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                                        <Zap className="h-3.5 w-3.5 fill-emerald-500" />
+                                        <span>Eléctrico</span>
+                                    </div>
+                                </>
+                            )}
                             <div className="w-1 h-1 rounded-full bg-gray-300" />
                             <div className="flex items-center gap-2 text-gray-500 font-bold text-sm">
                                 <div className="h-4 w-4 rounded-full border-2 border-gray-100 shadow-sm" style={{ backgroundColor: getColorHex(result.color) }} />
@@ -264,9 +275,10 @@ export default function SearchSection() {
                                     >
                                         <div className="flex items-center justify-between w-full">
                                             <span className={cn(
-                                                "text-sm font-bold uppercase tracking-tight",
+                                                "text-sm font-bold uppercase tracking-tight flex items-center gap-1.5",
                                                 selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700"
                                             )}>
+                                                {t.vehicleType === "ELECTRIC" && <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />}
                                                 {t.name}
                                             </span>
                                             <div className={cn(

@@ -412,7 +412,7 @@ export default function CorporateVehiclesPage() {
                                             </div>
                                         </div>
 
-                                        <div className="space-y-2">
+                                        <div className="space-y-4">
                                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Tipo de Vehículo</label>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <button
@@ -435,6 +435,37 @@ export default function CorporateVehiclesPage() {
                                                 >
                                                     <Bike className="h-4 w-4" /> Motocicleta
                                                 </button>
+                                            </div>
+
+                                            {/* Toggle Eléctrico */}
+                                            <div
+                                                onClick={() => setFormData({ ...formData, isElectric: !formData.isElectric })}
+                                                className={cn(
+                                                    "flex items-center justify-between p-4 rounded-xl border border-white/10 cursor-pointer transition-all",
+                                                    formData.isElectric ? "bg-emerald-500/10 border-emerald-500/30" : "bg-white/5 hover:bg-white/10"
+                                                )}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className={cn(
+                                                        "p-2 rounded-lg",
+                                                        formData.isElectric ? "bg-emerald-500/20" : "bg-white/5 text-gray-500"
+                                                    )}>
+                                                        <Zap className={cn("h-4 w-4 transition-all", formData.isElectric ? "text-emerald-400 animate-pulse fill-emerald-400" : "text-gray-500")} />
+                                                    </div>
+                                                    <div>
+                                                        <p className={cn("text-xs font-black uppercase tracking-tight transition-colors", formData.isElectric ? "text-white" : "text-gray-400")}>Vehículo Eléctrico</p>
+                                                        <p className="text-[10px] text-gray-500 font-bold italic tracking-tighter">Habilitar funciones ecológicas</p>
+                                                    </div>
+                                                </div>
+                                                <div className={cn(
+                                                    "h-5 w-10 rounded-full transition-all relative overflow-hidden p-1",
+                                                    formData.isElectric ? "bg-emerald-500" : "bg-gray-800"
+                                                )}>
+                                                    <div className={cn(
+                                                        "h-3 w-3 rounded-full bg-white transition-all shadow-sm",
+                                                        formData.isElectric ? "translate-x-5" : "translate-x-0"
+                                                    )} />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

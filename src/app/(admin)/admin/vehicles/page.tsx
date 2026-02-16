@@ -1,5 +1,5 @@
 import { db } from "@/lib/db"
-import { Car, User, Hash, Upload } from "lucide-react"
+import { Car, User, Hash, Upload, Zap } from "lucide-react"
 import { VehicleFilters } from "./VehicleFilters"
 import ExportVehiclesButton from "./ExportVehiclesButton"
 import Link from "next/link"
@@ -103,6 +103,12 @@ export default async function AdminVehiclesPage({ searchParams }: PageProps) {
                                         <Hash className="h-3 w-3 text-cyan-500" />
                                         Color: {vehicle.color || "N/A"}
                                     </span>
+                                    {vehicle.isElectric && (
+                                        <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                            <Zap className="h-3 w-3 fill-emerald-500" />
+                                            Eléctrico
+                                        </span>
+                                    )}
                                 </div>
                             </div>
 
