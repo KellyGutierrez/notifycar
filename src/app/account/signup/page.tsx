@@ -8,6 +8,7 @@ import { Loader2, Mail, Lock, User, Shield, Globe, Phone, Check, Eye, EyeOff, Ch
 
 import { countries } from "@/lib/countries"
 import { CountrySelect } from "@/components/CountrySelect"
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 
 export default function SignUpPage() {
     const router = useRouter()
@@ -80,6 +81,8 @@ export default function SignUpPage() {
     }
 
 
+    const { executeRecaptcha } = useGoogleReCaptcha()
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError("")
@@ -97,7 +100,18 @@ export default function SignUpPage() {
         setIsLoading(true)
 
         try {
-            await axios.post("/api/register", data)
+            if (!executeRecaptcha) {
+                setError("ReCAPTCHA no está listo. Intenta de nuevo en un momento.")
+                setIsLoading(false)
+                return
+            }
+
+            const captchaToken = await executeRecaptcha("signup")
+
+            await axios.post("/api/register", {
+                ...data,
+                captchaToken
+            })
             // Redirigir al login
             router.push("/account/signin")
         } catch (err: any) {

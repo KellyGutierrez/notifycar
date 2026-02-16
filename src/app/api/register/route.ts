@@ -5,10 +5,24 @@ import { db } from "@/lib/db"
 export async function POST(req: Request) {
     try {
         const body = await req.json()
-        const { email, password, name, country, phonePrefix, phoneNumber, termsAccepted } = body
+        const { email, password, name, country, phonePrefix, phoneNumber, termsAccepted, captchaToken } = body
 
         if (!email || !password || !name || !termsAccepted) {
             return new NextResponse("Faltan campos obligatorios", { status: 400 })
+        }
+
+        // 1. VALIDAR RECAPTCHA
+        if (!captchaToken) {
+            return new NextResponse("La verificación de seguridad es obligatoria", { status: 400 })
+        }
+
+        const recaptchaUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${captchaToken}`;
+        const recaptchaRes = await fetch(recaptchaUrl, { method: "POST" });
+        const recaptchaData = await recaptchaRes.json();
+
+        if (!recaptchaData.success || recaptchaData.score < 0.5) {
+            console.error("RECAPTCHA_FAILED", recaptchaData);
+            return new NextResponse("Fallo la verificación de seguridad (Bot detectable)", { status: 400 })
         }
 
         const exists = await db.user.findUnique({
