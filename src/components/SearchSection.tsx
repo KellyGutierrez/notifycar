@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Car, Zap, Info, Loader2, AlertCircle, MessageSquare, Send, CheckCircle2, Bike } from "lucide-react"
+import { Search, Car, Zap, Info, Loader2, AlertCircle, MessageSquare, Send, CheckCircle2, Bike, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 
@@ -34,9 +34,7 @@ export default function SearchSection() {
 
     const [templates, setTemplates] = useState<any[]>([])
     const [selectedTemplates, setSelectedTemplates] = useState<string[]>([])
-    const [activeCategory, setActiveCategory] = useState<string>("TODOS")
-
-    const categories = ["TODOS", "COMÚN", "URGENTE", "OBJETOS PERDIDOS", "SERVICIO"]
+    const [userProfile, setUserProfile] = useState<"GENERAL" | "PASSENGER" | null>(null)
 
     useEffect(() => {
         fetch("/api/templates")
@@ -57,29 +55,7 @@ export default function SearchSection() {
         setResult(null)
         setSuccessMsg(null)
         setSelectedTemplates([]);
-
-        // MODO MOCK PARA PRUEBAS (PC ANTIGUO SIN DB)
-        if (plate.toUpperCase() === "TEST") {
-            setTimeout(() => { // Simulamos un pequeño delay para que se sienta natural
-                setResult({
-                    id: "real-example-id",
-                    plate: "MZD-582",
-                    type: "CAR",
-                    brand: "Mazda",
-                    model: "CX-30 Grand Touring",
-                    color: "Rojo Diamante",
-                    isElectric: false // Probamos uno normal (no eléctrico)
-                });
-                setTemplates([
-                    { id: "1", name: "Luces Encendidas", content: "Hola, te informo que dejaste las luces de tu Mazda encendidas.", vehicleType: "CAR", category: "COMMON" },
-                    { id: "2", name: "Mal Estacionado", content: "Hola, tu vehículo está obstruyendo el paso. Agradecemos si puedes moverlo.", vehicleType: "ALL", category: "COMMON" },
-                    { id: "3", name: "Bloqueando Garaje", content: "Hola, tu vehículo está bloqueando la salida de mi garaje. Por favor, ¿podrías moverlo?", vehicleType: "ALL", category: "URGENT" },
-                    { id: "4", name: "Ventana Abierta", content: "Dejaste una ventana de tu vehículo abierta. Te aviso por seguridad.", vehicleType: "ALL", category: "URGENT" }
-                ]);
-                setLoading(false);
-            }, 800);
-            return;
-        }
+        setUserProfile(null);
 
         try {
             const res = await fetch(`/api/search?plate=${plate}`)
@@ -87,7 +63,6 @@ export default function SearchSection() {
                 const data = await res.json()
                 if (data.found) {
                     setResult(data.vehicle)
-                    // Aseguramos que isElectric pase como string "true" o "false" explícito
                     const isElectricParam = data.vehicle.isElectric ? "true" : "false";
                     const tRes = await fetch(`/api/templates?type=${data.vehicle.type}&isElectric=${isElectricParam}&orgId=${data.vehicle.organizationId || ''}`)
                     if (tRes.ok) {
@@ -100,22 +75,16 @@ export default function SearchSection() {
                     setError("No se encontró ningún vehículo con esa placa.")
                 }
             } else {
-                const text = await res.text();
-                if (text.includes("Internal Error")) {
-                    setError("Error de conexión con la base de datos. ¿Deseas usar el modo de prueba? Escribe 'TEST' en la placa.");
-                } else {
-                    setError("Ocurrió un error al buscar el vehículo.");
-                }
+                setError("Ocurrió un error al buscar el vehículo.")
             }
         } catch (error) {
-            setError("Error de conexión. Verifica que el PC principal esté encendido y en la misma red.");
+            setError("Error de conexión.")
         } finally {
             setLoading(false)
         }
     }
 
     const toggleTemplate = (id: string) => {
-        // Ahora, independientemente de si es eléctrico o no, solo permitimos seleccionar una opción
         const isSelected = selectedTemplates.includes(id);
         if (isSelected) {
             setSelectedTemplates([]);
@@ -150,12 +119,6 @@ export default function SearchSection() {
             if (res.ok) {
                 setSuccessMsg("¡Notificación enviada correctamente!")
                 setSelectedTemplates([])
-
-                // Subir suavemente al buscador otra vez
-                const element = document.getElementById("notifica-conductores-title");
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
             } else {
                 const errorText = await res.text()
                 setError(errorText || "Error al enviar la notificación.")
@@ -207,7 +170,6 @@ export default function SearchSection() {
 
             {result && !successMsg && (
                 <div className="bg-white border border-gray-100 rounded-[2.5rem] shadow-2xl shadow-gray-200/60 overflow-hidden animate-in fade-in zoom-in duration-500 max-w-3xl mx-auto">
-                    {/* Cabecera de Identificación */}
                     <div className="p-10 text-center space-y-4 bg-gradient-to-b from-gray-50/50 to-white">
                         <div className="inline-flex items-center gap-2 bg-brand/10 text-brand px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest">
                             <CheckCircle2 className="h-3.5 w-3.5" />
@@ -215,23 +177,16 @@ export default function SearchSection() {
                         </div>
 
                         <div className="space-y-1">
-                            <p className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em]">Marca y Modelo</p>
                             <h2 className="text-5xl font-black text-gray-900 tracking-tight">
                                 {result.brand} <span className="text-brand">{result.model}</span>
                             </h2>
                         </div>
 
-                        {/* Visual de la Placa Estilo Real */}
                         <div className="pt-4 flex justify-center">
                             <div className="bg-white border-4 border-gray-900 rounded-2xl px-12 py-6 shadow-xl relative overflow-hidden group hover:scale-105 transition-transform duration-500">
-                                {/* Reflejo estético de placa */}
-                                <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-gray-100/20 to-transparent" />
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.5em] mb-1">Colombia</p>
-                                <span className="text-6xl font-black text-gray-900 tracking-tighter block leading-none">
+                                <p className="text-6xl font-black text-gray-900 tracking-tighter">
                                     {result.plate.replace(/-/g, '')}
-                                </span>
-                                <div className="absolute bottom-1 right-2 w-4 h-4 rounded-full bg-gray-100" />
-                                <div className="absolute bottom-1 left-2 w-4 h-4 rounded-full bg-gray-100" />
+                                </p>
                             </div>
                         </div>
 
@@ -245,25 +200,16 @@ export default function SearchSection() {
                                         <span>Servicio Público</span>
                                     </span>
                                 ) : (
-                                    <>
+                                    <span className="flex items-center gap-2">
                                         <Car className="h-4 w-4 text-brand" />
                                         <span>{result.type === "MOTORCYCLE" ? "Motocicleta" : "Automóvil"}</span>
-                                    </>
+                                    </span>
                                 )}
                             </div>
-                            {result.isElectric && (
-                                <>
-                                    <div className="w-1 h-1 rounded-full bg-gray-300" />
-                                    <div className="flex items-center gap-2 text-emerald-500 font-black text-xs uppercase tracking-wider bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                                        <Zap className="h-3.5 w-3.5 fill-emerald-500" />
-                                        <span>Eléctrico</span>
-                                    </div>
-                                </>
-                            )}
                             <div className="w-1 h-1 rounded-full bg-gray-300" />
                             <div className="flex items-center gap-2 text-gray-500 font-bold text-sm">
                                 <div
-                                    className="h-4 w-4 rounded-full border-2 border-gray-100 shadow-sm"
+                                    className="h-4 w-4 rounded-full border-2 border-gray-100"
                                     style={{ backgroundColor: result.organizationId ? '#CA8A04' : getColorHex(result.color) }}
                                 />
                                 <span>{result.organizationId ? 'Color Amarillo' : `Color ${result.color || 'Gris'}`}</span>
@@ -271,103 +217,91 @@ export default function SearchSection() {
                         </div>
                     </div>
 
-                    {/* Sección de Selección de Mensajes - Muy Intuitiva */}
-                    <div className="p-10 pt-6 border-t border-gray-100 bg-white">
-                        <div className="text-center mb-6 space-y-4">
-                            <h3 className="text-2xl font-black text-gray-900">¿Qué quieres notificarle?</h3>
-                            <p className="text-gray-500 font-medium">Selecciona el mensaje que quieres enviar por WhatsApp</p>
-                        </div>
-
-                        {/* Filtros de Categoría */}
-                        <div className="flex flex-wrap justify-center gap-2 mb-8">
-                            {categories.map(cat => (
+                    {result.organizationId && !userProfile && (
+                        <div className="p-10 text-center border-t border-gray-100 bg-gray-50/30">
+                            <h3 className="text-2xl font-black text-gray-900 mb-6">¿Quién utiliza el servicio?</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mx-auto">
                                 <button
-                                    key={cat}
-                                    onClick={() => setActiveCategory(cat)}
-                                    className={cn(
-                                        "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border",
-                                        activeCategory === cat
-                                            ? "bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-200"
-                                            : "bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100"
-                                    )}
+                                    onClick={() => setUserProfile("GENERAL")}
+                                    className="p-8 rounded-3xl border-2 border-gray-100 hover:border-brand hover:bg-brand/5 transition-all text-center group bg-white shadow-sm"
                                 >
-                                    {cat}
+                                    <Car className="h-8 w-8 mx-auto mb-3 text-gray-400 group-hover:text-brand" />
+                                    <p className="font-black text-gray-900">Peatón / Conductor</p>
+                                    <p className="text-xs text-gray-500 mt-1">Reportar novedad externa</p>
                                 </button>
-                            ))}
+                                <button
+                                    onClick={() => setUserProfile("PASSENGER")}
+                                    className="p-8 rounded-3xl border-2 border-gray-100 hover:border-brand hover:bg-brand/5 transition-all text-center group bg-white shadow-sm"
+                                >
+                                    <Users className="h-8 w-8 mx-auto mb-3 text-gray-400 group-hover:text-brand" />
+                                    <p className="font-black text-gray-900">Soy el Pasajero</p>
+                                    <p className="text-xs text-gray-500 mt-1">Reportar objeto o servicio</p>
+                                </button>
+                            </div>
                         </div>
+                    )}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-                            {Array.isArray(templates) && templates.length > 0 ? (
-                                templates
-                                    .filter(t => activeCategory === "TODOS" || t.category === activeCategory)
+                    {(!result.organizationId || userProfile) && (
+                        <div className="p-10 pt-6 border-t border-gray-100 bg-white">
+                            <div className="flex items-center justify-between mb-8">
+                                <h3 className="text-2xl font-black text-gray-900">
+                                    {userProfile === "PASSENGER" ? "Opciones de Pasajero" : "¿Qué quieres notificar?"}
+                                </h3>
+                                {userProfile && (
+                                    <button
+                                        onClick={() => { setUserProfile(null); setSelectedTemplates([]); }}
+                                        className="text-xs font-bold text-gray-400 hover:text-brand uppercase"
+                                    >
+                                        Atrás
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                                {templates
+                                    .filter(t => {
+                                        if (!result.organizationId) return true;
+                                        if (userProfile === "PASSENGER") return t.category === "OBJETOS PERDIDOS" || t.category === "SERVICIO";
+                                        return t.category === "COMÚN" || t.category === "URGENTE";
+                                    })
                                     .map(t => (
                                         <button
                                             key={t.id}
                                             onClick={() => toggleTemplate(t.id)}
                                             className={cn(
                                                 "p-5 rounded-2xl text-left border-2 transition-all relative group flex flex-col",
-                                                selectedTemplates.includes(t.id)
-                                                    ? "bg-brand/5 border-brand shadow-md"
-                                                    : "bg-white border-gray-100 hover:border-brand/30 hover:bg-gray-50/30"
+                                                selectedTemplates.includes(t.id) ? "bg-brand/5 border-brand shadow-md" : "bg-white border-gray-100 hover:border-brand/30"
                                             )}
                                         >
                                             <div className="flex items-center justify-between w-full">
-                                                <span className={cn(
-                                                    "text-sm font-bold uppercase tracking-tight flex items-center gap-1.5",
-                                                    selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700"
-                                                )}>
-                                                    {t.vehicleType === "ELECTRIC" && <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />}
+                                                <span className={cn("text-sm font-bold uppercase tracking-tight", selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700")}>
                                                     {t.name}
                                                 </span>
-                                                <div className={cn(
-                                                    "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
-                                                    selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-200 bg-white"
-                                                )}>
+                                                <div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all", selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-200")}>
                                                     {selectedTemplates.includes(t.id) && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
                                                 </div>
                                             </div>
-
                                             {selectedTemplates.includes(t.id) && (
-                                                <div className="mt-4 pt-3 border-t border-brand/10 animate-in slide-in-from-top-1 fade-in duration-200">
-                                                    <p className="text-xs text-gray-600 italic leading-relaxed flex items-start gap-2">
-                                                        <Info className="h-3 w-3 mt-0.5 text-brand shrink-0" />
-                                                        "{t.content}"
-                                                    </p>
+                                                <div className="mt-4 pt-3 border-t border-brand/10">
+                                                    <p className="text-xs text-gray-600 italic">"{t.content}"</p>
                                                 </div>
                                             )}
                                         </button>
-                                    ))
-                            ) : (
-                                <div className="col-span-2 text-center py-8 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                                    <p className="text-gray-400 font-medium">Cargando opciones de notificación...</p>
-                                </div>
-                            )}
+                                    ))}
+                            </div>
+
+                            <button
+                                disabled={selectedTemplates.length === 0 || notifying}
+                                onClick={handleNotify}
+                                className="w-full bg-gray-900 hover:bg-black text-white py-6 rounded-3xl font-black text-xl shadow-2xl transition-all disabled:opacity-20 flex items-center justify-center gap-4"
+                            >
+                                {notifying ? <Loader2 className="h-7 w-7 animate-spin text-brand" /> : <><Send className="h-6 w-6 text-brand" /> Enviar Notificación</>}
+                            </button>
                         </div>
-
-                        <button
-                            disabled={selectedTemplates.length === 0 || notifying}
-                            onClick={handleNotify}
-                            className="w-full bg-gray-900 hover:bg-black text-white py-6 rounded-3xl font-black text-xl shadow-2xl shadow-gray-900/20 transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-20 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-4 group"
-                        >
-                            {notifying ? (
-                                <Loader2 className="h-7 w-7 animate-spin text-brand" />
-                            ) : (
-                                <>
-                                    <Send className="h-6 w-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform text-brand" />
-                                    Enviar Notificación Ahora
-                                </>
-                            )}
-                        </button>
-
-                        <p className="text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-6">
-                            Notificación 100% Anónima y Segura
-                        </p>
-                    </div>
+                    )}
                 </div>
             )}
-
-
-            <p className="text-[9px] text-gray-300 text-center uppercase tracking-[0.2em] font-bold">NotifyCar v2.2 - Preview Loaded</p>
-        </div >
+            <p className="text-[9px] text-gray-300 text-center uppercase tracking-[0.2em] font-bold">NotifyCar v2.3 - Corporate Shield Active</p>
+        </div>
     )
 }
