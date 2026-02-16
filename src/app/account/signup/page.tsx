@@ -220,7 +220,7 @@ function SignUpForm() {
                                         type="tel"
                                         required
                                         disabled={isVerified}
-                                        className="w-full pl-16 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all font-mono disabled:opacity-50"
+                                        className="w-full pl-16 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all font-mono disabled:opacity-50"
                                         placeholder="300 123 4567"
                                         value={data.phoneNumber}
                                         onChange={(e) => setData({ ...data, phoneNumber: e.target.value })}
