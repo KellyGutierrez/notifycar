@@ -34,6 +34,9 @@ export default function SearchSection() {
 
     const [templates, setTemplates] = useState<any[]>([])
     const [selectedTemplates, setSelectedTemplates] = useState<string[]>([])
+    const [activeCategory, setActiveCategory] = useState<string>("TODOS")
+
+    const categories = ["TODOS", "COMÚN", "URGENTE", "OBJETOS PERDIDOS", "SERVICIO"]
 
     useEffect(() => {
         fetch("/api/templates")
@@ -270,50 +273,70 @@ export default function SearchSection() {
 
                     {/* Sección de Selección de Mensajes - Muy Intuitiva */}
                     <div className="p-10 pt-6 border-t border-gray-100 bg-white">
-                        <div className="text-center mb-10 space-y-4">
+                        <div className="text-center mb-6 space-y-4">
                             <h3 className="text-2xl font-black text-gray-900">¿Qué quieres notificarle?</h3>
                             <p className="text-gray-500 font-medium">Selecciona el mensaje que quieres enviar por WhatsApp</p>
                         </div>
 
+                        {/* Filtros de Categoría */}
+                        <div className="flex flex-wrap justify-center gap-2 mb-8">
+                            {categories.map(cat => (
+                                <button
+                                    key={cat}
+                                    onClick={() => setActiveCategory(cat)}
+                                    className={cn(
+                                        "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border",
+                                        activeCategory === cat
+                                            ? "bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-200"
+                                            : "bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100"
+                                    )}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                             {Array.isArray(templates) && templates.length > 0 ? (
-                                templates.map(t => (
-                                    <button
-                                        key={t.id}
-                                        onClick={() => toggleTemplate(t.id)}
-                                        className={cn(
-                                            "p-5 rounded-2xl text-left border-2 transition-all relative group flex flex-col",
-                                            selectedTemplates.includes(t.id)
-                                                ? "bg-brand/5 border-brand shadow-md"
-                                                : "bg-white border-gray-100 hover:border-brand/30 hover:bg-gray-50/30"
-                                        )}
-                                    >
-                                        <div className="flex items-center justify-between w-full">
-                                            <span className={cn(
-                                                "text-sm font-bold uppercase tracking-tight flex items-center gap-1.5",
-                                                selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700"
-                                            )}>
-                                                {t.vehicleType === "ELECTRIC" && <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />}
-                                                {t.name}
-                                            </span>
-                                            <div className={cn(
-                                                "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
-                                                selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-200 bg-white"
-                                            )}>
-                                                {selectedTemplates.includes(t.id) && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                                templates
+                                    .filter(t => activeCategory === "TODOS" || t.category === activeCategory)
+                                    .map(t => (
+                                        <button
+                                            key={t.id}
+                                            onClick={() => toggleTemplate(t.id)}
+                                            className={cn(
+                                                "p-5 rounded-2xl text-left border-2 transition-all relative group flex flex-col",
+                                                selectedTemplates.includes(t.id)
+                                                    ? "bg-brand/5 border-brand shadow-md"
+                                                    : "bg-white border-gray-100 hover:border-brand/30 hover:bg-gray-50/30"
+                                            )}
+                                        >
+                                            <div className="flex items-center justify-between w-full">
+                                                <span className={cn(
+                                                    "text-sm font-bold uppercase tracking-tight flex items-center gap-1.5",
+                                                    selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700"
+                                                )}>
+                                                    {t.vehicleType === "ELECTRIC" && <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />}
+                                                    {t.name}
+                                                </span>
+                                                <div className={cn(
+                                                    "h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                                                    selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-200 bg-white"
+                                                )}>
+                                                    {selectedTemplates.includes(t.id) && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        {selectedTemplates.includes(t.id) && (
-                                            <div className="mt-4 pt-3 border-t border-brand/10 animate-in slide-in-from-top-1 fade-in duration-200">
-                                                <p className="text-xs text-gray-600 italic leading-relaxed flex items-start gap-2">
-                                                    <Info className="h-3 w-3 mt-0.5 text-brand shrink-0" />
-                                                    "{t.content}"
-                                                </p>
-                                            </div>
-                                        )}
-                                    </button>
-                                ))
+                                            {selectedTemplates.includes(t.id) && (
+                                                <div className="mt-4 pt-3 border-t border-brand/10 animate-in slide-in-from-top-1 fade-in duration-200">
+                                                    <p className="text-xs text-gray-600 italic leading-relaxed flex items-start gap-2">
+                                                        <Info className="h-3 w-3 mt-0.5 text-brand shrink-0" />
+                                                        "{t.content}"
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </button>
+                                    ))
                             ) : (
                                 <div className="col-span-2 text-center py-8 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
                                     <p className="text-gray-400 font-medium">Cargando opciones de notificación...</p>
