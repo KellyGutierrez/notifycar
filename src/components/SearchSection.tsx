@@ -19,6 +19,7 @@ const getColorHex = (colorName: string | undefined | null) => {
     if (c.includes('naranja')) return '#EA580C'; // Orange
     if (c.includes('café') || c.includes('cafe') || c.includes('marrón')) return '#5D4037';
     if (c.includes('beige')) return '#F5F5DC';
+    if (c.includes('taxi')) return '#CA8A04'; // Taxi Yellow
 
     return '#9CA3AF'; // Fallback
 }
@@ -233,8 +234,19 @@ export default function SearchSection() {
 
                         <div className="flex items-center justify-center gap-6 pt-4">
                             <div className="flex items-center gap-2 text-gray-500 font-bold text-sm">
-                                <Car className="h-4 w-4 text-brand" />
-                                <span>{result.type === "MOTORCYCLE" ? "Motocicleta" : "Automóvil"}</span>
+                                {result.organizationId ? (
+                                    <span className="flex items-center gap-2">
+                                        <div className="p-1 px-2 bg-yellow-400 text-black text-[10px] font-black rounded flex items-center gap-1 shadow-sm">
+                                            🚕 TAXI
+                                        </div>
+                                        <span>Servicio Público</span>
+                                    </span>
+                                ) : (
+                                    <>
+                                        <Car className="h-4 w-4 text-brand" />
+                                        <span>{result.type === "MOTORCYCLE" ? "Motocicleta" : "Automóvil"}</span>
+                                    </>
+                                )}
                             </div>
                             {result.isElectric && (
                                 <>
@@ -247,8 +259,11 @@ export default function SearchSection() {
                             )}
                             <div className="w-1 h-1 rounded-full bg-gray-300" />
                             <div className="flex items-center gap-2 text-gray-500 font-bold text-sm">
-                                <div className="h-4 w-4 rounded-full border-2 border-gray-100 shadow-sm" style={{ backgroundColor: getColorHex(result.color) }} />
-                                <span>Color {result.color || 'Gris'}</span>
+                                <div
+                                    className="h-4 w-4 rounded-full border-2 border-gray-100 shadow-sm"
+                                    style={{ backgroundColor: result.organizationId ? '#CA8A04' : getColorHex(result.color) }}
+                                />
+                                <span>{result.organizationId ? 'Color Amarillo' : `Color ${result.color || 'Gris'}`}</span>
                             </div>
                         </div>
                     </div>
