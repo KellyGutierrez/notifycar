@@ -26,7 +26,8 @@ async function main() {
                 email,
                 password: hashedPassword,
                 role: 'ADMIN',
-                phone: '3000000000',
+                phonePrefix: '57',
+                phoneNumber: '3000000000',
                 emailVerified: new Date()
             }
         });
