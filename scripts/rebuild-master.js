@@ -9,6 +9,14 @@ async function main() {
         const hashedPassword = await bcrypt.hash('Admin123*', 10);
         const corporatePassword = await bcrypt.hash('corporate123', 10);
 
+        // 0. Configuración del Sistema
+        await prisma.systemSetting.upsert({
+            where: { id: 'default' },
+            update: { allowRegistration: true },
+            create: { id: 'default', allowRegistration: true, systemName: 'NotifyCar' }
+        });
+        console.log('✅ Configuración del sistema inicializada.');
+
         // 1. Crear Organización Maestra
         const org = await prisma.organization.upsert({
             where: { id: 'clorg0001' },

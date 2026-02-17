@@ -37,6 +37,8 @@ export async function POST(req: Request) {
 
         // VALIDAR VERIFICACIÓN TELEFÓNICA
         const identifier = `${phonePrefix}${phoneNumber}`
+        console.log("Verificando teléfono para:", identifier);
+
         const verifiedToken = await (db as any).verificationToken.findFirst({
             where: {
                 identifier,
@@ -46,7 +48,10 @@ export async function POST(req: Request) {
         })
 
         if (!verifiedToken) {
-            return new NextResponse("El número de teléfono no ha sido verificado", { status: 400 })
+            console.warn("ADVERTENCIA: No se encontró token de verificación para:", identifier);
+            // Para facilitar el desarrollo inicial, si no hay token pero estamos configurando el sistema,
+            // podrías querer comentar esta restricción o asegurar que el token se cree.
+            return new NextResponse("El número de teléfono no ha sido verificado en la base de datos", { status: 400 })
         }
 
         const hashedPassword = await hash(password, 10)
@@ -73,8 +78,8 @@ export async function POST(req: Request) {
         const { password: newUserPassword, ...rest } = user
 
         return NextResponse.json({ user: rest, message: "User created successfully" }, { status: 201 })
-    } catch (error) {
-        console.error("REGISTRATION_ERROR", error)
-        return new NextResponse("Internal Error", { status: 500 })
+    } catch (error: any) {
+        console.error("REGISTRATION_FULL_ERROR:", error)
+        return new NextResponse(`Error interno: ${error.message || 'Desconocido'}`, { status: 500 })
     }
 }
