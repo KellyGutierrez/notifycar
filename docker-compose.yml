@@ -42,6 +42,20 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  # Adminer - Database Management Tool
+  adminer:
+    image: adminer:latest
+    container_name: notifycar-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
 
 volumes:
   postgres_data:
