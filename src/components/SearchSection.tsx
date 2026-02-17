@@ -219,7 +219,7 @@ export default function SearchSection() {
 
                     {result.organizationId && !userProfile && (
                         <div className="p-10 text-center border-t border-gray-100 bg-gray-50/30">
-                            <h3 className="text-2xl font-black text-gray-900 mb-6">¿Quién utiliza el servicio?</h3>
+                            <h3 className="text-2xl font-black text-gray-900 mb-6">¿Quién envía la notificación?</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mx-auto">
                                 <button
                                     onClick={() => setUserProfile("GENERAL")}
