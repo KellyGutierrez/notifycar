@@ -55,13 +55,13 @@ export async function GET(req: NextRequest) {
                 },
                 {
                     name: "🚖 No aceptó destino",
-                    content: "Señor conductor, un pasajero reporta que no se quiso prestar el servicio al destino indicado. Por favor cumplir con las rutas asignadas.",
+                    content: "Estimado {role}, un pasajero reporta que el vehículo {plate} no quiso prestar el servicio al destino indicado. Por favor verificar esta situación.",
                     category: "SERVICIO",
                     vehicleType: "CAR"
                 },
                 {
                     name: "🗣️ Reporte de trato al usuario",
-                    content: "Se informa que un pasajero reportó un trato inadecuado por parte del conductor. Por favor mantener la cordialidad y el respeto.",
+                    content: "Estimado {role}, se informa que un pasajero reportó un trato inadecuado en el vehículo {plate}. Por favor mantener los estándares de cordialidad de la flota.",
                     category: "SERVICIO",
                     vehicleType: "CAR"
                 }
