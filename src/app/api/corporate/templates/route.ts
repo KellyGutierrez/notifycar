@@ -25,13 +25,13 @@ export async function GET(req: NextRequest) {
         const essentialServiceMessages = [
             {
                 name: "🚖 No aceptó destino",
-                content: "Estimado {role}, un pasajero reporta que el vehículo {plate} no quiso prestar el servicio al destino indicado. Por favor verificar esta situación.",
+                content: "Estimado {{role}}, un pasajero reporta que el vehículo {{plate}} no quiso prestar el servicio al destino indicado. Por favor verificar esta situación.",
                 category: "SERVICIO",
                 vehicleType: "CAR"
             },
             {
                 name: "🗣️ Reporte de trato al usuario",
-                content: "Estimado {role}, se informa que un pasajero reportó un trato inadecuado en el vehículo {plate}. Por favor mantener los estándares de cordialidad de la flota.",
+                content: "Estimado {{role}}, se informa que un pasajero reportó un trato inadecuado en el vehículo {{plate}}. Por favor mantener los estándares de cordialidad de la flota.",
                 category: "SERVICIO",
                 vehicleType: "CAR"
             }

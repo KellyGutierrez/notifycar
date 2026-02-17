@@ -168,8 +168,10 @@ export async function POST(req: Request) {
             wrapper = `Hola {{name}} 👋🏻\nRecibiste un aviso automático de NotifyCar 🚗💚.\n\nUna persona que se encontraba cerca de tu vehículo:\n🚗 {{marca}} - {{modelo}} {{electrico}}\n\nℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo.\n\n📞 Emergencias: {{NUM_EMERGENCIAS}}`;
         }
 
-        // 4. Reemplazo de etiquetas
+        // 4. Reemplazo de etiquetas (Insertamos el mensaje de primero para que sus etiquetas internas se reemplacen luego)
         const finalMessage = wrapper
+            .replace(/{{mensaje}}/g, content)
+            .replace(/{{raw_message}}/g, content)
             .replace(/{{tipo}}/g, vehicleTypeLabel)
             .replace(/{{placa}}/g, vehicle.plate.toUpperCase())
             .replace(/{{plate}}/g, vehicle.plate.toUpperCase())
@@ -178,8 +180,6 @@ export async function POST(req: Request) {
             .replace(/{{brand}}/g, vehicle.brand || '')
             .replace(/{{modelo}}/g, vehicle.model || '')
             .replace(/{{model}}/g, vehicle.model || '')
-            .replace(/{{mensaje}}/g, content)
-            .replace(/{{raw_message}}/g, content)
             .replace(/{{icono}}/g, vehicleIcon)
             .replace(/{{electrico}}/g, electricTag ? ` ${electricTag}` : '')
             .replace(/{{policia}}/g, emergency.police)
