@@ -10,9 +10,15 @@ export async function GET(req: Request) {
             return new NextResponse("Plate is required", { status: 400 })
         }
 
-        const vehicle = await db.vehicle.findUnique({
+        const normalizedPlate = plate.toUpperCase().replace(/[^A-Z0-9]/g, "")
+
+        // Buscamos coincidencia exacta o normalizada
+        const vehicle = await db.vehicle.findFirst({
             where: {
-                plate: plate.toUpperCase()
+                OR: [
+                    { plate: normalizedPlate },
+                    { plate: plate.toUpperCase() }
+                ]
             }
         })
 

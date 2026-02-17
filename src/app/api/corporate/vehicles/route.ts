@@ -100,6 +100,11 @@ export async function PUT(req: Request) {
             return new NextResponse("Unauthorized", { status: 401 })
         }
 
+        const user = await db.user.findUnique({
+            where: { id: session.user.id },
+            select: { organizationId: true }
+        })
+
         const body = await req.json()
         const { id, plate, brand, model, color, type, isElectric, ownerName, ownerPhone, driverName, driverPhone } = body
 
@@ -122,6 +127,8 @@ export async function PUT(req: Request) {
                 ...(ownerPhone !== undefined && { ownerPhone }),
                 ...(driverName !== undefined && { driverName }),
                 ...(driverPhone !== undefined && { driverPhone }),
+                // Aseguramos que el vehículo quede ligado a la organización del usuario que lo edita
+                ...(user?.organizationId && { organizationId: user.organizationId })
             }
         })
 
