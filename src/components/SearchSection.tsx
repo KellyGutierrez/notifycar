@@ -263,18 +263,25 @@ export default function SearchSection() {
                                 )}
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                            <div className={cn(
+                                "grid grid-cols-1 gap-4 mb-10",
+                                selectedTemplates.length === 0 ? "md:grid-cols-2" : "md:grid-cols-1"
+                            )}>
                                 {templates
                                     .filter(t => {
                                         if (!result.organizationId) return true;
-
                                         const cat = t.category?.toUpperCase();
-                                        if (userProfile === "PASSENGER") {
-                                            return cat === "SERVICIO";
-                                        }
-                                        // "COMMON" es el default de Prisma, lo mapeamos a Peatón
+                                        if (userProfile === "PASSENGER") return cat === "SERVICIO";
                                         return cat === "COMÚN" || cat === "URGENTE" || cat === "COMMON" || cat === "URGENT";
-                                    }).length > 0 ? (
+                                    })
+                                    .filter(t => {
+                                        // Si hay algo seleccionado, solo mostramos ese
+                                        if (selectedTemplates.length > 0) {
+                                            return selectedTemplates.includes(t.id);
+                                        }
+                                        return true;
+                                    })
+                                    .length > 0 ? (
                                     templates
                                         .filter(t => {
                                             if (!result.organizationId) return true;
@@ -282,29 +289,45 @@ export default function SearchSection() {
                                             if (userProfile === "PASSENGER") return cat === "SERVICIO";
                                             return cat === "COMÚN" || cat === "URGENTE" || cat === "COMMON" || cat === "URGENT";
                                         })
+                                        .filter(t => {
+                                            if (selectedTemplates.length > 0) {
+                                                return selectedTemplates.includes(t.id);
+                                            }
+                                            return true;
+                                        })
                                         .map(t => (
-                                            <button
-                                                key={t.id}
-                                                onClick={() => toggleTemplate(t.id)}
-                                                className={cn(
-                                                    "p-5 rounded-2xl text-left border-2 transition-all relative group flex flex-col",
-                                                    selectedTemplates.includes(t.id) ? "bg-brand/5 border-brand shadow-md" : "bg-white border-gray-100 hover:border-brand/30"
-                                                )}
-                                            >
-                                                <div className="flex items-center justify-between w-full">
-                                                    <span className={cn("text-sm font-bold uppercase tracking-tight", selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700")}>
-                                                        {t.name}
-                                                    </span>
-                                                    <div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all", selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-200")}>
-                                                        {selectedTemplates.includes(t.id) && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                                            <div key={t.id} className="space-y-4">
+                                                <button
+                                                    onClick={() => toggleTemplate(t.id)}
+                                                    className={cn(
+                                                        "w-full p-5 rounded-2xl text-left border-2 transition-all relative group flex flex-col",
+                                                        selectedTemplates.includes(t.id) ? "bg-brand/5 border-brand shadow-md" : "bg-white border-gray-100 hover:border-brand/30 hover:scale-[1.02]"
+                                                    )}
+                                                >
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <span className={cn("text-base font-black uppercase tracking-tight", selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700")}>
+                                                            {t.name}
+                                                        </span>
+                                                        <div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all", selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-200")}>
+                                                            {selectedTemplates.includes(t.id) && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                    <div className={cn("mt-4 pt-3 border-t", selectedTemplates.includes(t.id) ? "border-brand/10" : "border-gray-50")}>
+                                                        <p className={cn("text-sm italic font-medium", selectedTemplates.includes(t.id) ? "text-gray-900" : "text-gray-500")}>"{t.content}"</p>
+                                                    </div>
+                                                </button>
+
                                                 {selectedTemplates.includes(t.id) && (
-                                                    <div className="mt-4 pt-3 border-t border-brand/10">
-                                                        <p className="text-xs text-gray-600 italic">"{t.content}"</p>
+                                                    <div className="flex justify-center">
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); setSelectedTemplates([]); }}
+                                                            className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-brand transition-colors"
+                                                        >
+                                                            Cambiar mensaje
+                                                        </button>
                                                     </div>
                                                 )}
-                                            </button>
+                                            </div>
                                         ))
                                 ) : (
                                     <div className="col-span-2 py-8 px-4 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-200">
@@ -318,7 +341,10 @@ export default function SearchSection() {
                             <button
                                 disabled={selectedTemplates.length === 0 || notifying}
                                 onClick={handleNotify}
-                                className="w-full bg-gray-900 hover:bg-black text-white py-6 rounded-3xl font-black text-xl shadow-2xl transition-all disabled:opacity-20 flex items-center justify-center gap-4"
+                                className={cn(
+                                    "w-full bg-gray-900 hover:bg-black text-white py-6 rounded-3xl font-black text-xl shadow-2xl transition-all flex items-center justify-center gap-4 active:scale-95",
+                                    selectedTemplates.length === 0 ? "opacity-20 cursor-not-allowed" : "animate-in slide-in-from-bottom-4 duration-500 shadow-brand/20"
+                                )}
                             >
                                 {notifying ? <Loader2 className="h-7 w-7 animate-spin text-brand" /> : <><Send className="h-6 w-6 text-brand" /> Enviar Notificación</>}
                             </button>
