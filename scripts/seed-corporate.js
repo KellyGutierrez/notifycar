@@ -62,14 +62,23 @@ async function main() {
     ];
 
     for (const t of templates) {
-        await prisma.notificationTemplate.create({
-            data: {
-                ...t,
-                organizationId: organization.id,
-                isActive: true,
-                type: 'APP'
+        const existingTemplate = await prisma.notificationTemplate.findFirst({
+            where: {
+                name: t.name,
+                organizationId: organization.id
             }
         });
+
+        if (!existingTemplate) {
+            await prisma.notificationTemplate.create({
+                data: {
+                    ...t,
+                    organizationId: organization.id,
+                    isActive: true,
+                    type: 'APP'
+                }
+            });
+        }
     }
     console.log('✅ Plantillas corporativas creadas.');
 

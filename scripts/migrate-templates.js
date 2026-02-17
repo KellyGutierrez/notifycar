@@ -86,14 +86,24 @@ www.notifycar.com`;
     console.log('Migrando plantillas...')
 
     // Opcional: Desactivar plantillas antiguas que no estén en la nueva lista
+    // IMPORTANTE: Solo desactivamos plantillas GLOBALES (organizationId: null)
     const templateNames = templates.map(t => t.name)
     await prisma.notificationTemplate.updateMany({
-        where: { NOT: { name: { in: templateNames } } },
+        where: {
+            organizationId: null,
+            NOT: { name: { in: templateNames } }
+        },
         data: { isActive: false }
     })
 
     for (const t of templates) {
-        const existing = await prisma.notificationTemplate.findFirst({ where: { name: t.name } })
+        // Buscamos solo en las plantillas GLOBALES
+        const existing = await prisma.notificationTemplate.findFirst({
+            where: {
+                name: t.name,
+                organizationId: null
+            }
+        })
         if (existing) {
             await prisma.notificationTemplate.update({
                 where: { id: existing.id },
@@ -101,7 +111,11 @@ www.notifycar.com`;
             })
         } else {
             await prisma.notificationTemplate.create({
-                data: t
+                data: {
+                    ...t,
+                    organizationId: null,
+                    isActive: true
+                }
             })
         }
     }
