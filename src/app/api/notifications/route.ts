@@ -141,22 +141,26 @@ export async function POST(req: Request) {
         const vehicleTypeLabel = vehicle.type === 'MOTORCYCLE' ? 'MOTOCICLETA' : 'VEHÍCULO';
         const electricTag = vehicle.isElectric ? '⚡ *VEHÍCULO ELÉCTRICO*' : '';
 
-        // 1. Intentar obtener wrapper de la organización vinculada a la plantilla
+        // 1. Intentar obtener wrapper de la organización vinculada
         let wrapper = "";
-        if (templateId) {
-            const template = await db.notificationTemplate.findUnique({
-                where: { id: templateId },
-                include: { organization: true }
+
+        // Primero, si el vehículo pertenece a una organización, intentamos usar su wrapper
+        if (vehicle.organizationId) {
+            const org = await db.organization.findUnique({
+                where: { id: vehicle.organizationId },
+                select: { messageWrapper: true }
             });
-            if (template?.organization?.messageWrapper) {
-                wrapper = template.organization.messageWrapper;
+            if (org?.messageWrapper) {
+                wrapper = org.messageWrapper;
             }
         }
 
-        // 2. Si no hay wrapper de org, buscar el global en settings
-        const settings = await db.systemSetting.findUnique({ where: { id: "default" } });
-        if (!wrapper && settings?.messageWrapper) {
-            wrapper = settings.messageWrapper;
+        // 2. Si no hay wrapper de org (o el vehículo no tiene org), buscar el global en settings
+        if (!wrapper) {
+            const settings = await db.systemSetting.findUnique({ where: { id: "default" } });
+            if (settings?.messageWrapper) {
+                wrapper = settings.messageWrapper;
+            }
         }
 
         // 3. Fallback al diseño por defecto si todo lo anterior falla
