@@ -47,7 +47,9 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/scripts ./scripts
 
 # Install only production dependencies
-RUN npm install -g pnpm && pnpm install --prod && pnpm exec prisma generate
+RUN npm install -g pnpm
+RUN pnpm install --prod --frozen-lockfile || pnpm install --prod
+RUN pnpm exec prisma generate
 
 # Expose the port Next.js runs on
 EXPOSE 3000
