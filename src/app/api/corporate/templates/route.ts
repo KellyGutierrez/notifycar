@@ -52,6 +52,18 @@ export async function GET(req: NextRequest) {
                     content: "¡Felicidades {name}! Tienes una bonificación de desempeño lista. Pasa por administración para reclamarla.",
                     category: "COMMON",
                     vehicleType: "ALL"
+                },
+                {
+                    name: "🚖 No aceptó destino",
+                    content: "Señor conductor, un pasajero reporta que no se quiso prestar el servicio al destino indicado. Por favor cumplir con las rutas asignadas.",
+                    category: "SERVICIO",
+                    vehicleType: "CAR"
+                },
+                {
+                    name: "🗣️ Reporte de trato al usuario",
+                    content: "Se informa que un pasajero reportó un trato inadecuado por parte del conductor. Por favor mantener la cordialidad y el respeto.",
+                    category: "SERVICIO",
+                    vehicleType: "CAR"
                 }
             ]
 
