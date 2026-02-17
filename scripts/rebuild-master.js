@@ -84,8 +84,8 @@ www.notifycar.com`
 
         // 3. Crear Vehículos de Prueba (Taxis)
         const testVehicles = [
-            { plate: 'KEV777', brand: 'Hyundai', model: 'Grand i10', color: 'Amarillo', type: 'CAR', category: 'SERVICE', ownerName: 'Kelly G.', ownerPhone: '3004019274', driverName: 'Juan Conductor', driverPhone: '3001234567' },
-            { plate: 'TAX123', brand: 'Kia', model: 'Picanto', color: 'Amarillo', type: 'CAR', category: 'SERVICE', ownerName: 'Admin Empresa', ownerPhone: '3000000000', driverName: 'Pedro Chofer', driverPhone: '3019876543' }
+            { plate: 'KEV777', brand: 'Hyundai', model: 'Grand i10', color: 'Amarillo', type: 'CAR', ownerName: 'Kelly G.', ownerPhone: '3004019274', driverName: 'Juan Conductor', driverPhone: '3001234567' },
+            { plate: 'TAX123', brand: 'Kia', model: 'Picanto', color: 'Amarillo', type: 'CAR', ownerName: 'Admin Empresa', ownerPhone: '3000000000', driverName: 'Pedro Chofer', driverPhone: '3019876543' }
         ];
 
         for (const v of testVehicles) {
