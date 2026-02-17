@@ -45,7 +45,7 @@ www.notifycar.com`
         // 2. Crear Usuarios (Kelly Admin y Usuario Corporativo)
         const kelly = await prisma.user.upsert({
             where: { email: 'kellyg@rowell.co' },
-            update: { role: 'ADMIN', emailVerified: new Date() },
+            update: { role: 'ADMIN', phoneVerified: new Date() },
             create: {
                 name: 'Kelly',
                 email: 'kellyg@rowell.co',
@@ -53,7 +53,7 @@ www.notifycar.com`
                 role: 'ADMIN',
                 phonePrefix: '57',
                 phoneNumber: '3004019274',
-                emailVerified: new Date(),
+                phoneVerified: new Date(),
                 termsAccepted: true
             }
         });
@@ -68,7 +68,7 @@ www.notifycar.com`
                 password: corporatePassword,
                 role: 'CORPORATE',
                 organizationId: org.id,
-                emailVerified: new Date(),
+                phoneVerified: new Date(),
                 termsAccepted: true
             }
         });
