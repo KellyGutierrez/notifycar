@@ -305,16 +305,22 @@ export default function SearchSection() {
                                                     )}
                                                 >
                                                     <div className="flex items-center justify-between w-full">
-                                                        <span className={cn("text-base font-black uppercase tracking-tight", selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700")}>
+                                                        <span className={cn("text-base font-black uppercase tracking-tight", selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700 font-bold")}>
                                                             {t.name}
                                                         </span>
                                                         <div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all", selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-200")}>
                                                             {selectedTemplates.includes(t.id) && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
                                                         </div>
                                                     </div>
-                                                    <div className={cn("mt-4 pt-3 border-t", selectedTemplates.includes(t.id) ? "border-brand/10" : "border-gray-50")}>
-                                                        <p className={cn("text-sm italic font-medium", selectedTemplates.includes(t.id) ? "text-gray-900" : "text-gray-500")}>"{t.content}"</p>
-                                                    </div>
+
+                                                    {/* Mostrar contenido solo si está seleccionado */}
+                                                    {selectedTemplates.includes(t.id) && (
+                                                        <div className="mt-4 pt-3 border-t border-brand/10 animate-in fade-in slide-in-from-top-1 duration-300">
+                                                            <p className="text-sm italic font-medium text-gray-900 leading-relaxed">
+                                                                "{t.content}"
+                                                            </p>
+                                                        </div>
+                                                    )}
                                                 </button>
 
                                                 {selectedTemplates.includes(t.id) && (
