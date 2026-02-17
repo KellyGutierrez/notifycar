@@ -21,6 +21,47 @@ export async function GET(req: NextRequest) {
             orderBy: { createdAt: "desc" }
         })
 
+        // Definimos los mensajes de servicio "obligatorios" para flotas
+        const essentialServiceMessages = [
+            {
+                name: "🚖 No aceptó destino",
+                content: "Estimado {role}, un pasajero reporta que el vehículo {plate} no quiso prestar el servicio al destino indicado. Por favor verificar esta situación.",
+                category: "SERVICIO",
+                vehicleType: "CAR"
+            },
+            {
+                name: "🗣️ Reporte de trato al usuario",
+                content: "Estimado {role}, se informa que un pasajero reportó un trato inadecuado en el vehículo {plate}. Por favor mantener los estándares de cordialidad de la flota.",
+                category: "SERVICIO",
+                vehicleType: "CAR"
+            }
+        ]
+
+        // Verificamos si faltan estos mensajes esenciales
+        let createdAny = false
+        for (const msg of essentialServiceMessages) {
+            const exists = templates.find(t => t.name === msg.name)
+            if (!exists) {
+                await db.notificationTemplate.create({
+                    data: {
+                        ...msg,
+                        organizationId: orgId,
+                        type: "APP",
+                        isActive: true
+                    }
+                })
+                createdAny = true
+            }
+        }
+
+        // Si creamos alguno, volvemos a obtener la lista actualizada
+        if (createdAny) {
+            templates = await db.notificationTemplate.findMany({
+                where: { organizationId: orgId },
+                orderBy: { createdAt: "desc" }
+            })
+        }
+
         if (templates.length === 0) {
             const defaultFleetMessages = [
                 {
@@ -52,18 +93,6 @@ export async function GET(req: NextRequest) {
                     content: "¡Felicidades {name}! Tienes una bonificación de desempeño lista. Pasa por administración para reclamarla.",
                     category: "COMMON",
                     vehicleType: "ALL"
-                },
-                {
-                    name: "🚖 No aceptó destino",
-                    content: "Estimado {role}, un pasajero reporta que el vehículo {plate} no quiso prestar el servicio al destino indicado. Por favor verificar esta situación.",
-                    category: "SERVICIO",
-                    vehicleType: "CAR"
-                },
-                {
-                    name: "🗣️ Reporte de trato al usuario",
-                    content: "Estimado {role}, se informa que un pasajero reportó un trato inadecuado en el vehículo {plate}. Por favor mantener los estándares de cordialidad de la flota.",
-                    category: "SERVICIO",
-                    vehicleType: "CAR"
                 }
             ]
 
