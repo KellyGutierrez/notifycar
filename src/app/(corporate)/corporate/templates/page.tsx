@@ -4,6 +4,23 @@ import { useState, useEffect } from "react"
 import { Plus, MessageSquare, Trash2, Edit2, Zap, Loader2, Search, X, CheckCircle2, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+const scrollbarStyles = `
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.3);
+  }
+`;
+
 export default function CorporateTemplatesPage() {
     const [templates, setTemplates] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
@@ -18,7 +35,8 @@ export default function CorporateTemplatesPage() {
         name: "",
         content: "",
         category: "COMMON",
-        vehicleType: "ALL"
+        vehicleType: "ALL",
+        isActive: true
     })
 
     useEffect(() => {
@@ -95,7 +113,7 @@ export default function CorporateTemplatesPage() {
                 fetchTemplates()
                 setIsModalOpen(false)
                 setEditingTemplate(null)
-                setFormData({ name: "", content: "", category: "COMMON", vehicleType: "ALL" })
+                setFormData({ name: "", content: "", category: "COMMON", vehicleType: "ALL", isActive: true })
             }
         } catch (error) {
             console.error("Error saving template:", error)
@@ -122,7 +140,8 @@ export default function CorporateTemplatesPage() {
             name: t.name,
             content: t.content,
             category: t.category,
-            vehicleType: t.vehicleType
+            vehicleType: t.vehicleType,
+            isActive: t.isActive
         })
         setIsModalOpen(true)
     }
@@ -134,6 +153,7 @@ export default function CorporateTemplatesPage() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
+            <style>{scrollbarStyles}</style>
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -148,7 +168,7 @@ export default function CorporateTemplatesPage() {
                 <button
                     onClick={() => {
                         setEditingTemplate(null)
-                        setFormData({ name: "", content: "", category: "COMMON", vehicleType: "ALL" })
+                        setFormData({ name: "", content: "", category: "COMMON", vehicleType: "ALL", isActive: true })
                         setIsModalOpen(true)
                     }}
                     className="bg-indigo-500 hover:bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black transition-all flex items-center gap-3 shadow-2xl shadow-indigo-500/30 active:scale-95 group"
@@ -282,9 +302,9 @@ export default function CorporateTemplatesPage() {
             {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="fixed inset-0 bg-black/90 backdrop-blur-md" onClick={() => setIsModalOpen(false)} />
-                    <div className="relative w-full max-w-2xl bg-gray-900 border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300">
-                        <div className="p-10">
+                    <div className="fixed inset-0 bg-black/95 backdrop-blur-xl" onClick={() => setIsModalOpen(false)} />
+                    <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-gray-900 border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300">
+                        <div className="p-10 overflow-y-auto flex-1 custom-scrollbar">
                             <div className="flex items-center justify-between mb-8">
                                 <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">
                                     {editingTemplate ? "Actualizar Mensaje" : "Nuevo Mensaje Personalizado"}
@@ -349,6 +369,26 @@ export default function CorporateTemplatesPage() {
                                             <option value="MOTORCYCLE" className="bg-gray-900 font-bold">Motos</option>
                                         </select>
                                     </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-6 rounded-2xl bg-white/5 border border-white/5">
+                                    <div className="space-y-1">
+                                        <label className="text-sm font-black text-white uppercase tracking-widest">¿Mensaje Activo?</label>
+                                        <p className="text-xs text-gray-500">Solo los mensajes activos se muestran en el buscador público.</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, isActive: !prev.isActive }))}
+                                        className={cn(
+                                            "w-12 h-6 rounded-full transition-all relative",
+                                            formData.isActive ? "bg-indigo-500" : "bg-gray-700"
+                                        )}
+                                    >
+                                        <div className={cn(
+                                            "absolute top-1 w-4 h-4 rounded-full bg-white transition-all shadow-sm",
+                                            formData.isActive ? "left-7" : "left-1"
+                                        )} />
+                                    </button>
                                 </div>
 
                                 <div className="flex gap-4 pt-6">
