@@ -96,6 +96,9 @@ export default function SearchSection() {
     const handleNotify = async () => {
         if (!result || selectedTemplates.length === 0) return
 
+        // Scroll al inicio para ver feedback
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
         const selected = templates.filter(t => selectedTemplates.includes(t.id))
         if (selected.length === 0) return
 
@@ -122,9 +125,12 @@ export default function SearchSection() {
             } else {
                 const errorText = await res.text()
                 setError(errorText || "Error al enviar la notificación.")
+                // Si hay error, también aseguramos scroll arriba (aunque ya se hizo al inicio)
+                window.scrollTo({ top: 0, behavior: "smooth" });
             }
         } catch (error) {
             setError("Error de conexión.")
+            window.scrollTo({ top: 0, behavior: "smooth" });
         } finally {
             setNotifying(false)
         }
