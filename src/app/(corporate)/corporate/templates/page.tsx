@@ -233,13 +233,11 @@ export default function CorporateTemplatesPage() {
                                             <span className={cn(
                                                 "text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border",
                                                 t.category === 'URGENT' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                                                    t.category === 'OBJETOS PERDIDOS' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
-                                                        t.category === 'SERVICIO' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
-                                                            'bg-indigo-500/10 text-indigo-500 border-indigo-500/20'
+                                                    t.category === 'SERVICIO' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
+                                                        'bg-indigo-500/10 text-indigo-500 border-indigo-500/20'
                                             )}>
                                                 {t.category === 'URGENT' ? 'URGENTE' :
-                                                    t.category === 'OBJETOS PERDIDOS' ? 'OBJETOS PERDIDOS' :
-                                                        t.category === 'SERVICIO' ? 'SERVICIO' : 'COMÚN'}
+                                                    t.category === 'SERVICIO' ? 'SERVICIO' : 'COMÚN'}
                                             </span>
                                             {t.vehicleType !== 'ALL' && (
                                                 <span className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-[10px] font-black px-3 py-1 rounded-full flex items-center gap-1 uppercase tracking-widest">
@@ -336,7 +334,6 @@ export default function CorporateTemplatesPage() {
                                         >
                                             <option value="COMMON" className="bg-gray-900 font-bold">Común / Informativo</option>
                                             <option value="URGENT" className="bg-gray-900 font-bold">Urgente / Alerta</option>
-                                            <option value="OBJETOS PERDIDOS" className="bg-gray-900 font-bold">Objetos Perdidos</option>
                                             <option value="SERVICIO" className="bg-gray-900 font-bold">Servicio / Feedback</option>
                                         </select>
                                     </div>

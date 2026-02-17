@@ -264,7 +264,7 @@ export default function SearchSection() {
 
                                         const cat = t.category?.toUpperCase();
                                         if (userProfile === "PASSENGER") {
-                                            return cat === "OBJETOS PERDIDOS" || cat === "SERVICIO";
+                                            return cat === "SERVICIO";
                                         }
                                         // "COMMON" es el default de Prisma, lo mapeamos a Peatón
                                         return cat === "COMÚN" || cat === "URGENTE" || cat === "COMMON" || cat === "URGENT";
@@ -273,7 +273,7 @@ export default function SearchSection() {
                                         .filter(t => {
                                             if (!result.organizationId) return true;
                                             const cat = t.category?.toUpperCase();
-                                            if (userProfile === "PASSENGER") return cat === "OBJETOS PERDIDOS" || cat === "SERVICIO";
+                                            if (userProfile === "PASSENGER") return cat === "SERVICIO";
                                             return cat === "COMÚN" || cat === "URGENTE" || cat === "COMMON" || cat === "URGENT";
                                         })
                                         .map(t => (
