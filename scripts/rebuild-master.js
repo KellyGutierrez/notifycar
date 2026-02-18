@@ -5,12 +5,17 @@ async function main() {
     console.log('🚀 INICIANDO REPARACIÓN Y CARGA DE DATOS REALES INTERNACIONALES...');
 
     try {
-        // 1. Limpieza total para evitar duplicados con IDs viejos
+        // 1. Limpieza total
+        // Intentamos limpiar NotificationTemplate si existe
+        try {
+            await prisma.$executeRawUnsafe(`TRUNCATE TABLE public."NotificationTemplate" CASCADE;`);
+        } catch (e) { }
+
         await prisma.$executeRawUnsafe(`TRUNCATE TABLE public."Notification", public."Vehicle", public."User", public."Organization", public."EmergencyConfig" CASCADE;`);
 
-        // 2. Usuarios Reales (Extraídos de tu captura)
+        // 2. Usuarios Reales
         const usersData = [
-            { id: 'usr-kelly', name: 'Kelly', email: 'kellyg@rowell.co', role: 'ADMIN', color: 'Gris' },
+            { id: 'usr-kelly', name: 'Kelly', email: 'kellyg@rowell.co', role: 'ADMIN' },
             { id: 'usr-nathaly', name: 'Nathaly Gil', email: 'nathaly@rowell.co', role: 'USER' },
             { id: 'usr-lucas', name: 'Lucas Restrepo', email: 'lucas@rowell.co', role: 'ADMIN' }
         ];
@@ -29,9 +34,9 @@ async function main() {
                 }
             });
         }
-        console.log('✅ Usuarios (Kelly, Nathaly, Lucas) restaurados.');
+        console.log('✅ Usuarios restaurados.');
 
-        // 3. Vehículos Reales (Extraídos de tu pgAdmin)
+        // 3. Vehículos Reales
         const vehiclesData = [
             { id: 'v-epm319', plate: 'EPM319', brand: 'Chevrolet', model: 'Spark GT', color: 'Gris', type: 'CAR', userId: 'usr-kelly' },
             { id: 'v-hhw968', plate: 'HHW968', brand: 'Honda', model: 'Fit', color: 'Gris plata', type: 'CAR', userId: 'usr-nathaly' },
@@ -43,20 +48,29 @@ async function main() {
         for (const v of vehiclesData) {
             await prisma.vehicle.create({ data: v });
         }
-        console.log('✅ Los 5 vehículos históricos están cargados y listos.');
+        console.log('✅ Vehículos cargados.');
 
-        // 4. Configuración de Sistema Final
+        // 4. Plantillas de Notificación
+        await prisma.notificationTemplate.createMany({
+            data: [
+                { name: 'Vehículo mal parqueado', content: 'Tu vehículo está mal parqueado, por favor moverlo.', vehicleType: 'ALL', category: 'URGENT' },
+                { name: 'Luces encendidas', content: 'Dejaste las luces encendidas de tu vehículo.', vehicleType: 'ALL', category: 'COMMON' },
+                { name: 'Bloqueo de salida', content: 'Tu vehículo está bloqueando una salida.', vehicleType: 'ALL', category: 'URGENT' }
+            ]
+        });
+        console.log('✅ Plantillas de notificación creadas.');
+
+        // 5. Configuración de Sistema
         await prisma.systemSetting.upsert({
             where: { id: 'default' },
             update: { allowRegistration: true, systemName: 'NotifyCar' },
             create: { id: 'default', allowRegistration: true, systemName: 'NotifyCar' }
         });
 
-        console.log('\n✨ ÉXITO: Tu sistema local ya tiene todos tus datos reales.');
-        console.log('Intenta buscar EPM319 o ZAG82 en la web.');
+        console.log('\n✨ ÉXITO TOTAL: Sistema sincronizado.');
 
     } catch (e) {
-        console.error('❌ ERROR FATAL:', e.message);
+        console.error('❌ ERROR:', e.message);
     } finally {
         await prisma.$disconnect();
     }
