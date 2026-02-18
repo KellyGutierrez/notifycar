@@ -25,22 +25,22 @@ async function main() {
         });
         console.log('✅ Configuración del sistema (Registro habilitado) lista.');
 
-        // 1. Números de Emergencia (Maestros)
-        const emergencyData = [
-            { name: 'Policía Nacional', number: '123', category: 'SEGURIDAD' },
-            { name: 'Ambulancia / Emergencias', number: '125', category: 'SALUD' },
-            { name: 'Bomberos', number: '119', category: 'SEGURIDAD' },
-            { name: 'Tránsito de Medellín', number: '4457777', category: 'TRANSITO' }
-        ];
-
-        for (const e of emergencyData) {
-            await prisma.emergencyNumber.upsert({
-                where: { number: e.number },
-                update: { name: e.name, category: e.category },
-                create: e
-            });
-        }
-        console.log('✅ Números de emergencia cargados.');
+        // 1. Configuración de Emergencia (Colombia)
+        await prisma.emergencyConfig.upsert({
+            where: { country: 'Colombia' },
+            update: {
+                police: '123',
+                transit: '4457777',
+                emergency: '123'
+            },
+            create: {
+                country: 'Colombia',
+                police: '123',
+                transit: '4457777',
+                emergency: '123'
+            }
+        });
+        console.log('✅ Números de emergencia (Colombia) cargados.');
 
         // 2. Organizaciones Maestras
         const orgs = [
