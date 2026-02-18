@@ -209,7 +209,7 @@ export async function POST(req: Request) {
             webhookUrl = systemSettings.webhookUrl;
         }
 
-        if (webhookUrl && targetPhone) {
+        if (targetPhone) {
             try {
                 // Limpiar: dejar solo dígitos
                 let fullPhone = targetPhone.replace(/\D/g, '');
@@ -219,35 +219,58 @@ export async function POST(req: Request) {
                     fullPhone = `57${fullPhone}`;
                 }
 
-                console.log("🚀 Enviando WhatsApp a:", fullPhone);
-                console.log("📦 Payload:", {
-                    notificationId: notification.id,
-                    plate: vehicle.plate,
-                    ownerName: targetName,
-                    phoneNumber: fullPhone,
-                    raw_message: content
-                });
+                // --- ENVÍO POR EVOLUTION API (OPCIONAL) ---
+                const evolutionUrl = process.env.EVOLUTION_API_URL;
+                const evolutionKey = process.env.EVOLUTION_API_KEY;
+                const evolutionInstance = process.env.EVOLUTION_INSTANCE || "Notifycar";
 
-                fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        notificationId: notification.id,
-                        plate: vehicle.plate,
-                        ownerName: targetName,
-                        phoneNumber: fullPhone,
-                        raw_message: content,
-                        message: finalMessage,
-                        content: finalMessage,
-                        timestamp: notification.createdAt
-                    })
-                }).then(r => console.log("📡 Webhook Response Status:", r.status))
-                    .catch(err => console.error("❌ Webhook fetch error:", err));
+                if (evolutionUrl && evolutionKey && evolutionKey !== "TU_API_KEY_AQUÍ") {
+                    console.log("🚀 Enviando vía Evolution API...");
+                    fetch(`${evolutionUrl}/message/sendText/${evolutionInstance}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': evolutionKey
+                        },
+                        body: JSON.stringify({
+                            number: fullPhone,
+                            options: {
+                                delay: 1200,
+                                presence: "composing",
+                                linkPreview: true
+                            },
+                            textMessage: {
+                                text: finalMessage
+                            }
+                        })
+                    }).then(r => console.log("📱 Evolution API Response Status:", r.status))
+                        .catch(err => console.error("❌ Evolution API Error:", err));
+                }
+
+                // --- ENVÍO POR WEBHOOK N8N (EXISTENTE) ---
+                if (webhookUrl) {
+                    console.log("🚀 Enviando a n8n Webhook...");
+                    fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            notificationId: notification.id,
+                            plate: vehicle.plate,
+                            ownerName: targetName,
+                            phoneNumber: fullPhone,
+                            raw_message: content,
+                            message: finalMessage,
+                            content: finalMessage,
+                            timestamp: notification.createdAt
+                        })
+                    }).then(r => console.log("📡 Webhook Response Status:", r.status))
+                        .catch(err => console.error("❌ Webhook fetch error:", err));
+                }
             } catch (err) {
-                console.error("Error preparing webhook data:", err);
+                console.error("Error preparing notification data:", err);
             }
         } else {
-            console.log("⚠️ Webhook skipped. URL:", !!webhookUrl, "Phone:", targetPhone);
+            console.log("⚠️ Notification skipped. Phone:", targetPhone);
         }
 
         return NextResponse.json(notification)
