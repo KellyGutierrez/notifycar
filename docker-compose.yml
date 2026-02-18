@@ -25,7 +25,7 @@ services:
       dockerfile: Dockerfile
       args:
         - NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-    container_name: notifycar-app
+    container_name: notifycar-app-v2
     restart: unless-stopped
     ports:
       - "3000:3000"

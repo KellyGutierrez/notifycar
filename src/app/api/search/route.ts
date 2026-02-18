@@ -11,6 +11,7 @@ export async function GET(req: Request) {
         }
 
         const normalizedPlate = plate.toUpperCase().replace(/[^A-Z0-9]/g, "")
+        console.log(`🔍 BUSCANDO PLACA: "${plate}" -> Normalizada: "${normalizedPlate}"`);
 
         // Buscamos coincidencia exacta o normalizada
         const vehicle = await db.vehicle.findFirst({
@@ -23,8 +24,11 @@ export async function GET(req: Request) {
         })
 
         if (!vehicle) {
+            console.warn(`❌ NO SE ENCONTRÓ NADA EN LA DB PARA: ${normalizedPlate}`);
             return NextResponse.json({ found: false })
         }
+
+        console.log(`✅ ¡ENCONTRADO!: ${vehicle.plate} - ${vehicle.brand}`);
 
         return NextResponse.json({
             found: true,
