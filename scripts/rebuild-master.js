@@ -2,98 +2,61 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-    console.log('🚀 INICIANDO RESTAURACIÓN DE DATOS REALES (EPM319, NWZ170)...');
+    console.log('🚀 INICIANDO REPARACIÓN Y CARGA DE DATOS REALES INTERNACIONALES...');
 
     try {
-        // 1. Limpieza de tablas conflictivas para asegurar una carga limpia
-        // Usamos executeRaw para limpiar de forma rápida y total como pidió el usuario
+        // 1. Limpieza total para evitar duplicados con IDs viejos
         await prisma.$executeRawUnsafe(`TRUNCATE TABLE public."Notification", public."Vehicle", public."User", public."Organization", public."EmergencyConfig" CASCADE;`);
-        console.log('✅ Tablas limpias.');
 
-        // 2. Crear Organización Real
-        const org = await prisma.organization.create({
-            data: {
-                id: 'test-org-id',
-                name: 'Zona Azul Medellín',
-                type: 'BLUE_ZONE',
-                isActive: true
-            }
-        });
-        console.log('✅ Organización creada.');
+        // 2. Usuarios Reales (Extraídos de tu captura)
+        const usersData = [
+            { id: 'usr-kelly', name: 'Kelly', email: 'kellyg@rowell.co', role: 'ADMIN', color: 'Gris' },
+            { id: 'usr-nathaly', name: 'Nathaly Gil', email: 'nathaly@rowell.co', role: 'USER' },
+            { id: 'usr-lucas', name: 'Lucas Restrepo', email: 'lucas@rowell.co', role: 'ADMIN' }
+        ];
 
-        // 3. Crear Usuarios Reales (Kelly y Lucas)
-        const kelly = await prisma.user.create({
-            data: {
-                id: 'cmkh0877n0000ll6lc7klym0k',
-                name: 'Kelly',
-                email: 'kellyg@rowell.co',
-                password: '$2b$10$tDFHwLFCLkE6gKGt8koawOOdS6a6DVWqQfXBUYYDMJ6qLmbkNnYoC', // Password: Admin123*
-                role: 'ADMIN',
-                phoneVerified: new Date(),
-                termsAccepted: true
-            }
-        });
-
-        const lucas = await prisma.user.create({
-            data: {
-                id: 'cmkhf3gex00005l25ulx303uh',
-                name: 'Lucas Restrepo',
-                email: 'lucas@rowell.co',
-                password: '$2b$10$bKbKMGt6Jb6zD5leLhFyuutLNRMzNJFWnfOjLLXVKX92r24J2nKsy',
-                role: 'ADMIN',
-                phoneVerified: new Date(),
-                termsAccepted: true
-            }
-        });
-        console.log('✅ Usuarios Kelly y Lucas restaurados.');
-
-        // 4. Crear Vehículos Reales (Como Particulares, sin organización)
-        await prisma.vehicle.createMany({
-            data: [
-                {
-                    id: 'cmkh1qvcj0001laghoxu4kube',
-                    plate: 'EPM319',
-                    brand: 'Chevrolet',
-                    model: 'Spark GT',
-                    color: 'Gris',
-                    userId: kelly.id
-                },
-                {
-                    id: 'cmkhf424q00025l25brz9l66f',
-                    plate: 'NWZ170',
-                    brand: 'BYD',
-                    model: 'Seagull',
-                    color: 'Blanco',
-                    userId: lucas.id
+        for (const u of usersData) {
+            await prisma.user.create({
+                data: {
+                    id: u.id,
+                    name: u.name,
+                    email: u.email,
+                    role: u.role,
+                    password: '$2b$10$tDFHwLFCLkE6gKGt8koawOOdS6a6DVWqQfXBUYYDMJ6qLmbkNnYoC', // Admin123*
+                    phonePrefix: '57',
+                    phoneVerified: new Date(),
+                    termsAccepted: true
                 }
-            ]
-        });
-        console.log('✅ Vehículos EPM319 y NWZ170 listos.');
+            });
+        }
+        console.log('✅ Usuarios (Kelly, Nathaly, Lucas) restaurados.');
 
-        // 5. Configuración de Emergencia Real
-        await prisma.emergencyConfig.create({
-            data: {
-                id: 'cmkrdv1rb0001eguxvbidcrsz',
-                country: 'COLOMBIA',
-                police: '123',
-                transit: '127',
-                emergency: '123'
-            }
-        });
-        console.log('✅ Configuración de emergencia restaurada.');
+        // 3. Vehículos Reales (Extraídos de tu pgAdmin)
+        const vehiclesData = [
+            { id: 'v-epm319', plate: 'EPM319', brand: 'Chevrolet', model: 'Spark GT', color: 'Gris', type: 'CAR', userId: 'usr-kelly' },
+            { id: 'v-hhw968', plate: 'HHW968', brand: 'Honda', model: 'Fit', color: 'Gris plata', type: 'CAR', userId: 'usr-nathaly' },
+            { id: 'v-lpw187', plate: 'LPW187', brand: 'Volkswagen', model: 'Taos', color: 'Gris Oscuro', type: 'CAR', userId: 'usr-lucas' },
+            { id: 'v-nwz170', plate: 'NWZ170', brand: 'BYD', model: 'Seagull', color: 'Blanco', type: 'CAR', userId: 'usr-lucas' },
+            { id: 'v-zag82', plate: 'ZAG82', brand: 'Yamaha', model: 'Chappy', color: 'Roja', type: 'MOTORCYCLE', userId: 'usr-lucas' }
+        ];
 
-        // 6. Configuración de Sistema (Habilitar Registro)
+        for (const v of vehiclesData) {
+            await prisma.vehicle.create({ data: v });
+        }
+        console.log('✅ Los 5 vehículos históricos están cargados y listos.');
+
+        // 4. Configuración de Sistema Final
         await prisma.systemSetting.upsert({
             where: { id: 'default' },
             update: { allowRegistration: true, systemName: 'NotifyCar' },
             create: { id: 'default', allowRegistration: true, systemName: 'NotifyCar' }
         });
 
-        console.log('\n✨ RESTAURACIÓN COMPLETADA CON ÉXITO');
-        console.log('Busca la placa EPM319 para probar.');
+        console.log('\n✨ ÉXITO: Tu sistema local ya tiene todos tus datos reales.');
+        console.log('Intenta buscar EPM319 o ZAG82 en la web.');
 
     } catch (e) {
-        console.error('❌ Error en el proceso:', e.message);
+        console.error('❌ ERROR FATAL:', e.message);
     } finally {
         await prisma.$disconnect();
     }
