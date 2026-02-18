@@ -42,8 +42,9 @@ export async function middleware(request: NextRequest) {
 }
 
 async function checkMaintenanceMode(): Promise<boolean> {
+    // DESACTIVADO TEMPORALMENTE: Causa bucle infinito en Docker al llamarse a sí mismo
+    /*
     try {
-        // Hacer una petición interna para verificar el modo mantenimiento
         const response = await fetch(`${process.env.NEXTAUTH_URL}/api/admin/settings/maintenance`, {
             cache: 'no-store'
         })
@@ -54,6 +55,7 @@ async function checkMaintenanceMode(): Promise<boolean> {
     } catch (error) {
         console.error('Error checking maintenance mode:', error)
     }
+    */
     return false
 }
 
