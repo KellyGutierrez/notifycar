@@ -47,7 +47,7 @@ async function main() {
         });
         console.log('✅ Usuarios Kelly y Lucas restaurados.');
 
-        // 4. Crear Vehículos Reales
+        // 4. Crear Vehículos Reales (Como Particulares, sin organización)
         await prisma.vehicle.createMany({
             data: [
                 {
@@ -56,8 +56,7 @@ async function main() {
                     brand: 'Chevrolet',
                     model: 'Spark GT',
                     color: 'Gris',
-                    userId: kelly.id,
-                    organizationId: org.id
+                    userId: kelly.id
                 },
                 {
                     id: 'cmkhf424q00025l25brz9l66f',
@@ -65,8 +64,7 @@ async function main() {
                     brand: 'BYD',
                     model: 'Seagull',
                     color: 'Blanco',
-                    userId: lucas.id,
-                    organizationId: org.id
+                    userId: lucas.id
                 }
             ]
         });
