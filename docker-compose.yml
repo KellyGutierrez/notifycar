@@ -7,9 +7,9 @@ services:
     environment:
       POSTGRES_USER: notifycaruser
       POSTGRES_PASSWORD: notifycarpass
-      POSTGRES_DB: notifycar
+      POSTGRES_DB: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -30,7 +30,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://notifycaruser:notifycarpass@db:5432/notifycar
+      - DATABASE_URL=postgresql://notifycaruser:notifycarpass@db:5432/postgres
       - NEXTAUTH_SECRET=supersecretkey123
       - NEXTAUTH_URL=http://localhost:3000
       - NODE_ENV=production
