@@ -58,4 +58,4 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 # Start the application with automated DB sync and seeding
-CMD sh -c "npx prisma db push --accept-data-loss && node scripts/rebuild-master.js && pnpm start -- -H 0.0.0.0"
+CMD sh -c "npx prisma db push --accept-data-loss && node scripts/rebuild-master.js && ./node_modules/.bin/next start -H 0.0.0.0"
