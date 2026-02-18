@@ -3,59 +3,66 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-    console.log('🚀 Iniciando Reconstrucción Maestra de Base de Datos...');
+    console.log('🚀 Iniciando RECONSTRUCCIÓN TOTAL del Sistema...');
 
     try {
         const hashedPassword = await bcrypt.hash('Admin123*', 10);
         const corporatePassword = await bcrypt.hash('corporate123', 10);
 
-        // 0. Configuración del Sistema
+        // 0. Configuración Global del Sistema
         await prisma.systemSetting.upsert({
             where: { id: 'default' },
-            update: { allowRegistration: true },
-            create: { id: 'default', allowRegistration: true, systemName: 'NotifyCar' }
-        });
-        console.log('✅ Configuración del sistema inicializada.');
-
-        // 1. Crear Organización Maestra
-        const org = await prisma.organization.upsert({
-            where: { id: 'clorg0001' },
             update: {
-                name: 'Zona Azul Medellín',
-                type: 'FLEET',
-                messageWrapper: `🚗 *Hola {{role}}, NotifyCar te avisa:*
-Alguien cerca de tu vehículo quiso avisarte lo siguiente:
-“{{plate}} - {{mensaje}}”
-
-ℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo. No se compartió tu número ni ningún dato personal.
-
-—
-NotifyCar · Comunicación inteligente en la vía
-www.notifycar.com`
+                allowRegistration: true,
+                systemName: 'NotifyCar',
+                maintenanceMode: false
             },
             create: {
-                id: 'clorg0001',
-                name: 'Zona Azul Medellín',
-                type: 'FLEET',
-                messageWrapper: `🚗 *Hola {{role}}, NotifyCar te avisa:*
-Alguien cerca de tu vehículo quiso avisarte lo siguiente:
-“{{plate}} - {{mensaje}}”
-
-ℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo. No se compartió tu número ni ningún dato personal.
-
-—
-NotifyCar · Comunicación inteligente en la vía
-www.notifycar.com`
+                id: 'default',
+                allowRegistration: true,
+                systemName: 'NotifyCar'
             }
         });
-        console.log('✅ Organización "Zona Azul Medellín" lista.');
+        console.log('✅ Configuración del sistema (Registro habilitado) lista.');
 
-        // 2. Crear Usuarios (Kelly Admin y Usuario Corporativo)
+        // 1. Números de Emergencia (Maestros)
+        const emergencyData = [
+            { name: 'Policía Nacional', number: '123', category: 'SEGURIDAD' },
+            { name: 'Ambulancia / Emergencias', number: '125', category: 'SALUD' },
+            { name: 'Bomberos', number: '119', category: 'SEGURIDAD' },
+            { name: 'Tránsito de Medellín', number: '4457777', category: 'TRANSITO' }
+        ];
+
+        for (const e of emergencyData) {
+            await prisma.emergencyNumber.upsert({
+                where: { number: e.number },
+                update: { name: e.name, category: e.category },
+                create: e
+            });
+        }
+        console.log('✅ Números de emergencia cargados.');
+
+        // 2. Organizaciones Maestras
+        const orgs = [
+            { id: 'clorg0001', name: 'Zona Azul Medellín', type: 'BLUE_ZONE' },
+            { id: 'clorg0002', name: 'Alcaldía de Riosucio', type: 'INSTITUTIONAL' }
+        ];
+
+        for (const o of orgs) {
+            await prisma.organization.upsert({
+                where: { id: o.id },
+                update: { name: o.name, type: o.type },
+                create: o
+            });
+        }
+        console.log('✅ Organizaciones (Medellín y Riosucio) listas.');
+
+        // 3. Usuarios de Administración y Gestión
         const kelly = await prisma.user.upsert({
             where: { email: 'kellyg@rowell.co' },
             update: { role: 'ADMIN', phoneVerified: new Date() },
             create: {
-                name: 'Kelly',
+                name: 'Kelly Gutierrez',
                 email: 'kellyg@rowell.co',
                 password: hashedPassword,
                 role: 'ADMIN',
@@ -65,85 +72,63 @@ www.notifycar.com`
                 termsAccepted: true
             }
         });
-        console.log('✅ Usuario Admin "Kelly" listo.');
 
-        const corpUser = await prisma.user.upsert({
+        await prisma.user.upsert({
             where: { email: 'corporate@notifycar.com' },
-            update: { organizationId: org.id, role: 'CORPORATE' },
+            update: { organizationId: 'clorg0001', role: 'CORPORATE' },
             create: {
-                name: 'Gestor de Flota',
+                name: 'Gestor Zona Azul',
                 email: 'corporate@notifycar.com',
                 password: corporatePassword,
                 role: 'CORPORATE',
-                organizationId: org.id,
+                organizationId: 'clorg0001',
                 phoneVerified: new Date(),
                 termsAccepted: true
             }
         });
-        console.log('✅ Usuario Corporativo listo.');
+        console.log('✅ Usuarios maestros (Kelly Admin y Corporativo) listos.');
 
-        // 3. Crear Vehículos de Prueba (Taxis)
+        // 4. Vehículos de Prueba (KEV777 y otros)
         const testVehicles = [
-            { plate: 'KEV777', brand: 'Hyundai', model: 'Grand i10', color: 'Amarillo', type: 'CAR', ownerName: 'Kelly G.', ownerPhone: '3004019274', driverName: 'Juan Conductor', driverPhone: '3001234567' },
-            { plate: 'TAX123', brand: 'Kia', model: 'Picanto', color: 'Amarillo', type: 'CAR', ownerName: 'Admin Empresa', ownerPhone: '3000000000', driverName: 'Pedro Chofer', driverPhone: '3019876543' }
+            { plate: 'KEV777', brand: 'Hyundai', model: 'Grand i10', color: 'Amarillo', type: 'CAR', ownerName: 'Kelly G.', ownerPhone: '3004019274' },
+            { plate: 'TAX123', brand: 'Kia', model: 'Picanto', color: 'Amarillo', type: 'CAR', ownerName: 'Empresa Taxi', ownerPhone: '3000000000' }
         ];
 
         for (const v of testVehicles) {
             await prisma.vehicle.upsert({
                 where: { plate: v.plate },
-                update: { organizationId: org.id },
+                update: { organizationId: 'clorg0001' },
                 create: {
                     ...v,
-                    organizationId: org.id,
+                    organizationId: 'clorg0001',
                     userId: kelly.id
                 }
             });
         }
-        console.log(`✅ ${testVehicles.length} vehículos de prueba creados.`);
+        console.log('✅ Vehículos de prueba cargados.');
 
-        // 4. Asegurar Plantillas de Servicio
+        // 5. Plantillas de Servicio
         const templates = [
-            {
-                name: "🚖 No aceptó destino",
-                content: "Estimado {{role}}, un pasajero reporta que el vehículo {{plate}} no quiso prestar el servicio al destino indicado. Por favor verificar esta situación.",
-                category: "SERVICIO",
-                organizationId: org.id
-            },
-            {
-                name: "🗣️ Reporte de trato al usuario",
-                content: "Estimado {{role}}, se informa que un pasajero reportó un trato inadecuado en el vehículo {{plate}}. Por favor mantener los estándares de cordialidad de la flota.",
-                category: "SERVICIO",
-                organizationId: org.id
-            }
+            { name: "🚖 No aceptó destino", content: "Estimado {{role}}, un pasajero reporta que el vehículo {{plate}} no quiso prestar el servicio al destino indicado.", category: "SERVICE", organizationId: 'clorg0001' },
+            { name: "🗣️ Trato al usuario", content: "Estimado {{role}}, se informa de un reporte por trato inadecuado en el vehículo {{plate}}.", category: "SERVICE", organizationId: 'clorg0001' }
         ];
 
         for (const t of templates) {
             const existing = await prisma.notificationTemplate.findFirst({
                 where: { name: t.name, organizationId: t.organizationId }
             });
-
             if (existing) {
-                await prisma.notificationTemplate.update({
-                    where: { id: existing.id },
-                    data: t
-                });
+                await prisma.notificationTemplate.update({ where: { id: existing.id }, data: t });
             } else {
-                await prisma.notificationTemplate.create({
-                    data: t
-                });
+                await prisma.notificationTemplate.create({ data: t });
             }
         }
         console.log('✅ Plantillas de servicio restauradas.');
 
-        console.log('\n✨ RECONSTRUCCIÓN COMPLETADA CON ÉXITO');
-        console.log('--------------------------------------');
-        console.log('Ya puedes entrar con:');
-        console.log('Admin: kellyg@rowell.co / Admin123*');
-        console.log('Corp: corporate@notifycar.com / corporate123');
-        console.log('Busca la placa: KEV777');
+        console.log('\n✨ OPERACIÓN EXITOSA: PC Nuevo sincronizado al 100%.');
 
     } catch (e) {
-        console.error('❌ Error en el proceso:', e);
+        console.error('❌ Error fatal:', e);
     } finally {
         await prisma.$disconnect();
     }

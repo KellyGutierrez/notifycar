@@ -47,13 +47,16 @@ services:
         limits:
           memory: 2G
 
-  # Adminer - Database Management Tool
-  adminer:
-    image: adminer:latest
-    container_name: notifycar-adminer
+  # pgAdmin - Database Management Tool (Replaces Adminer)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: notifycar-pgadmin
     restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@notifycar.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
     ports:
-      - "8080:8080"
+      - "5050:80"
     depends_on:
       - db
 
