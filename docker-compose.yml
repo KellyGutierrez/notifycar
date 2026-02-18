@@ -1,3 +1,4 @@
+name: notifycar-v3
 services:
   # PostgreSQL Database
   db:
