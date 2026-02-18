@@ -6,17 +6,6 @@ export async function middleware(request: NextRequest) {
     const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
     const { pathname } = request.nextUrl
 
-    // Verificar modo mantenimiento
-    const maintenanceMode = await checkMaintenanceMode()
-
-    // Si está en modo mantenimiento y NO es admin, redirigir a página de mantenimiento
-    if (maintenanceMode && token?.role !== 'ADMIN') {
-        // Permitir acceso a la página de mantenimiento y recursos estáticos
-        if (!pathname.startsWith('/maintenance') && !pathname.startsWith('/_next') && !pathname.startsWith('/api/auth')) {
-            return NextResponse.redirect(new URL('/maintenance', request.url))
-        }
-    }
-
     // Proteger rutas de admin - solo ADMIN puede acceder
     if (pathname.startsWith('/admin')) {
         if (!token || token.role !== 'ADMIN') {
@@ -39,24 +28,6 @@ export async function middleware(request: NextRequest) {
     }
 
     return NextResponse.next()
-}
-
-async function checkMaintenanceMode(): Promise<boolean> {
-    // DESACTIVADO TEMPORALMENTE: Causa bucle infinito en Docker al llamarse a sí mismo
-    /*
-    try {
-        const response = await fetch(`${process.env.NEXTAUTH_URL}/api/admin/settings/maintenance`, {
-            cache: 'no-store'
-        })
-        if (response.ok) {
-            const data = await response.json()
-            return data.maintenanceMode === true
-        }
-    } catch (error) {
-        console.error('Error checking maintenance mode:', error)
-    }
-    */
-    return false
 }
 
 export const config = {
