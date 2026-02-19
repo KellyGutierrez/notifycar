@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { User, Mail, Phone, Globe, Shield, Bell, Save, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -21,6 +21,28 @@ export default function SettingsPage() {
         phoneNumber: user?.phoneNumber || "",
         country: user?.country || "",
     })
+
+    // Cargar datos reales desde el servidor al montar
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await fetch("/api/profile")
+                if (res.ok) {
+                    const data = await res.json()
+                    setFormData({
+                        name: data.name || "",
+                        email: data.email || "",
+                        phonePrefix: data.phonePrefix || "",
+                        phoneNumber: data.phoneNumber || "",
+                        country: data.country || "",
+                    })
+                }
+            } catch (error) {
+                console.error("Error fetching profile:", error)
+            }
+        }
+        fetchProfile()
+    }, [])
 
     // Form state for security
     const [securityData, setSecurityData] = useState({
