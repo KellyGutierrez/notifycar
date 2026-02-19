@@ -365,7 +365,7 @@ export default function SearchSection() {
                     )}
                 </div>
             )}
-            <p className="text-[9px] text-gray-300 text-center uppercase tracking-[0.2em] font-bold">NotifyCar v2.3 - Corporate Shield Active</p>
+            <p className="text-[9px] text-gray-300 text-center uppercase tracking-[0.2em] font-bold">NotifyCar v19.02.26 - Corporate Shield Active</p>
         </div>
     )
 }

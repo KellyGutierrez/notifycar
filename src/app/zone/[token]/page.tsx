@@ -264,7 +264,7 @@ export default function PublicZonePage() {
 
                 {/* Footer simple */}
                 <div className="pt-20 text-center">
-                    <p className="text-[10px] font-bold text-gray-700 uppercase tracking-[0.3em]">NotifyCar Institutional Security Protocol v2.5</p>
+                    <p className="text-[10px] font-bold text-gray-700 uppercase tracking-[0.3em]">NotifyCar Institutional Security Protocol v19.02.26</p>
                 </div>
             </div>
         </div>
