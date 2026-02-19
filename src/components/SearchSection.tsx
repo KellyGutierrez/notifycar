@@ -197,6 +197,12 @@ export default function SearchSection() {
                         </div>
 
                         <div className="flex items-center justify-center gap-6 pt-4">
+                            {result.isElectric && (
+                                <div className="flex items-center gap-2 bg-green-500/10 text-green-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-green-500/20 animate-pulse">
+                                    <Zap className="h-3 w-3 fill-green-600" />
+                                    V. ELÉCTRICO
+                                </div>
+                            )}
                             <div className="flex items-center gap-2 text-gray-500 font-bold text-sm">
                                 {result.organizationId ? (
                                     <span className="flex items-center gap-2">
@@ -305,7 +311,8 @@ export default function SearchSection() {
                                                     )}
                                                 >
                                                     <div className="flex items-center justify-between w-full">
-                                                        <span className={cn("text-base font-black uppercase tracking-tight", selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700 font-bold")}>
+                                                        <span className={cn("text-base font-black uppercase tracking-tight flex items-center gap-2", selectedTemplates.includes(t.id) ? "text-brand" : "text-gray-700 font-bold")}>
+                                                            {t.vehicleType === "ELECTRIC" && <Zap className="h-4 w-4 text-green-500 fill-green-500 shadow-sm" />}
                                                             {t.name}
                                                         </span>
                                                         <div className={cn("h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all", selectedTemplates.includes(t.id) ? "border-brand bg-brand" : "border-gray-200")}>

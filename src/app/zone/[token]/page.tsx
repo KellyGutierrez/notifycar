@@ -187,7 +187,15 @@ export default function PublicZonePage() {
                                             {result.type === "MOTORCYCLE" ? <Bike className="h-6 w-6 text-emerald-500" /> : <Car className="h-6 w-6 text-emerald-500" />}
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Vehículo Detectado</p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Vehículo Detectado</p>
+                                                {result.isElectric && (
+                                                    <div className="flex items-center gap-1 bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full text-[8px] font-black border border-green-500/20 animate-pulse">
+                                                        <Zap className="h-2 w-2 fill-green-500" />
+                                                        EV
+                                                    </div>
+                                                )}
+                                            </div>
                                             <h3 className="text-xl font-black text-white">{result.brand} {result.model}</h3>
                                         </div>
                                     </div>
@@ -212,7 +220,10 @@ export default function PublicZonePage() {
                                             >
                                                 <div className="flex items-center gap-4">
                                                     <MessageSquare className={cn("h-5 w-5", selectedTemplate === t.id ? "text-black" : "text-emerald-500")} />
-                                                    <span className="font-bold uppercase text-sm tracking-tight">{t.name}</span>
+                                                    <span className="font-bold uppercase text-sm tracking-tight flex items-center gap-2">
+                                                        {t.vehicleType === "ELECTRIC" && <Zap className="h-3 w-3 fill-emerald-500 text-emerald-500" />}
+                                                        {t.name}
+                                                    </span>
                                                 </div>
                                                 <div className={cn("h-2 w-2 rounded-full", selectedTemplate === t.id ? "bg-black" : "bg-emerald-500/30 group-hover:bg-emerald-500")} />
                                             </button>
