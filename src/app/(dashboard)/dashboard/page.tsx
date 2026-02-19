@@ -92,7 +92,7 @@ export default async function DashboardPage() {
             {/* Quick Actions / Recent */}
             <h3 className="text-xl font-bold text-white mt-8 mb-4">Acciones Rápidas</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <button className="flex items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-xl transition text-left group">
+                <Link href="/vehicles?add=true" className="flex items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-xl transition text-left group">
                     <div className="h-12 w-12 bg-green-500/20 rounded-full flex items-center justify-center text-green-400 group-hover:bg-green-500 group-hover:text-white transition-colors">
                         <Plus className="h-6 w-6" />
                     </div>
@@ -100,7 +100,7 @@ export default async function DashboardPage() {
                         <h4 className="font-semibold text-white">Registrar Nuevo Vehículo</h4>
                         <p className="text-sm text-gray-400">Agrega un auto a tu flota personal.</p>
                     </div>
-                </button>
+                </Link>
             </div>
         </div>
     )

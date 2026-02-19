@@ -1,10 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { Plus, Car, MoreVertical, Zap, Edit2, ShieldAlert, Trash2, Bike } from "lucide-react"
 import VehicleModal from "@/components/VehicleModal"
 
 export default function VehiclesPage() {
+    const searchParams = useSearchParams()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [editingVehicle, setEditingVehicle] = useState<any>(null)
     const [vehicles, setVehicles] = useState<any[]>([])
@@ -47,7 +49,10 @@ export default function VehiclesPage() {
 
     useEffect(() => {
         fetchVehicles()
-    }, [])
+        if (searchParams.get('add') === 'true') {
+            handleAdd()
+        }
+    }, [searchParams])
 
     const handleEdit = (vehicle: any) => {
         setEditingVehicle(vehicle)
