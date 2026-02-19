@@ -33,10 +33,12 @@ export async function POST(req: Request) {
             }
         })
 
-        let webhookUrl = process.env.NOTIFICATION_WEBHOOK_URL
-        const systemSettings = await db.systemSetting.findUnique({ where: { id: "default" } })
-        if (systemSettings?.webhookUrl) {
-            webhookUrl = systemSettings.webhookUrl
+        // Usar el webhook específico de producción para verificaciones indicado por el usuario
+        let webhookUrl = "https://n8n.vps.rowell.digital/webhook/10284dc7-1e8f-427e-99c6-255433c98e6d"
+
+        // Si existe una variable de entorno específica, tiene prioridad
+        if (process.env.VERIFICATION_WEBHOOK_URL) {
+            webhookUrl = process.env.VERIFICATION_WEBHOOK_URL
         }
 
         if (webhookUrl) {
