@@ -29,6 +29,10 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
+  // Preferencias de notificación
+  emailNotifications    Boolean @default(true)
+  whatsappNotifications Boolean @default(true)
+  
   vehicles      Vehicle[]
 
   organizationId String?

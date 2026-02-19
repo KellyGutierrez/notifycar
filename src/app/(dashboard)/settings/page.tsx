@@ -36,6 +36,11 @@ export default function SettingsPage() {
                         phoneNumber: data.phoneNumber || "",
                         country: data.country || "",
                     })
+                    setPreferences({
+                        emailAlerts: data.emailNotifications ?? true,
+                        whatsappAlerts: data.whatsappNotifications ?? true,
+                        pushNotifications: true
+                    })
                 }
             } catch (error) {
                 console.error("Error fetching profile:", error)
@@ -54,9 +59,8 @@ export default function SettingsPage() {
     // Preferences state
     const [preferences, setPreferences] = useState({
         emailAlerts: true,
-        whatsappAlerts: false,
+        whatsappAlerts: true,
         pushNotifications: true,
-        marketing: false,
     })
 
     const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -68,7 +72,11 @@ export default function SettingsPage() {
             const res = await fetch("/api/profile", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    ...formData,
+                    emailNotifications: preferences.emailAlerts,
+                    whatsappNotifications: preferences.whatsappAlerts
+                })
             })
 
             if (res.ok) {
@@ -301,10 +309,10 @@ export default function SettingsPage() {
                             <div className="p-6 space-y-4">
                                 {[
                                     { id: "emailAlerts" as const, name: "Alertas por Email", desc: "Recibir un correo cuando alguien notifique sobre tu vehículo.", icon: Mail },
-                                    { id: "whatsappAlerts" as const, name: "Alertas por WhatsApp", desc: "Notificaciones directas a tu móvil (Próximamente).", icon: Phone, disabled: true },
+                                    { id: "whatsappAlerts" as const, name: "Alertas por WhatsApp", desc: "Recibir avisos instantáneos en tu celular vía WhatsApp.", icon: Phone },
                                     { id: "pushNotifications" as const, name: "Notificaciones Push", desc: "Avisos en tiempo real en tu navegador.", icon: Bell },
                                 ].map((item) => (
-                                    <div key={item.id} className={cn("flex items-center justify-between p-4 rounded-xl transition-all", item.disabled ? "opacity-50 grayscale" : "hover:bg-white/5")}>
+                                    <div key={item.id} className="flex items-center justify-between p-4 rounded-xl transition-all hover:bg-white/5">
                                         <div className="flex gap-4">
                                             <div className="h-10 w-10 bg-white/5 rounded-lg flex items-center justify-center text-gray-400">
                                                 <item.icon className="h-5 w-5" />
@@ -315,7 +323,6 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
                                         <button
-                                            disabled={item.disabled}
                                             onClick={() => togglePreference(item.id)}
                                             className={cn(
                                                 "w-12 h-6 rounded-full p-1 transition-all duration-300 relative",

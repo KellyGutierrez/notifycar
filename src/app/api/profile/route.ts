@@ -19,6 +19,8 @@ export async function GET() {
                 phoneNumber: true,
                 country: true,
                 role: true,
+                emailNotifications: true,
+                whatsappNotifications: true,
             }
         })
         return NextResponse.json(user)
@@ -36,7 +38,7 @@ export async function PUT(req: Request) {
 
     try {
         const body = await req.json()
-        const { name, phonePrefix, phoneNumber, country } = body
+        const { name, phonePrefix, phoneNumber, country, emailNotifications, whatsappNotifications } = body
 
         const user = await db.user.update({
             where: { id: session.user.id },
@@ -44,7 +46,9 @@ export async function PUT(req: Request) {
                 name,
                 phonePrefix,
                 phoneNumber,
-                country
+                country,
+                emailNotifications,
+                whatsappNotifications
             }
         })
 
