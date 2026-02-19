@@ -52,7 +52,8 @@ function SignUpForm() {
         try {
             await axios.post("/api/auth/verify-phone/send", {
                 phonePrefix: data.phonePrefix,
-                phoneNumber: data.phoneNumber
+                phoneNumber: data.phoneNumber,
+                email: data.email
             })
             setShowCodeInput(true)
         } catch (err: any) {

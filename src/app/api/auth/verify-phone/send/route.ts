@@ -3,7 +3,7 @@ import { db } from "@/lib/db"
 
 export async function POST(req: Request) {
     try {
-        const { phonePrefix, phoneNumber } = await req.json()
+        const { phonePrefix, phoneNumber, email } = await req.json()
 
         if (!phonePrefix || !phoneNumber) {
             return new NextResponse("Faltan campos obligatorios", { status: 400 })
@@ -57,6 +57,7 @@ export async function POST(req: Request) {
                         raw_message: message,
                         message: message,
                         content: message,
+                        email: email || null,
                         timestamp: new Date()
                     })
                 });
