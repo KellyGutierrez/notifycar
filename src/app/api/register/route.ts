@@ -22,11 +22,20 @@ export async function POST(req: Request) {
             const recaptchaData = await recaptchaRes.json();
 
             if (!recaptchaData.success || (recaptchaData.score !== undefined && recaptchaData.score < 0.3)) {
-                console.error("RECAPTCHA_FAILED", recaptchaData);
-                return NextResponse.json({
-                    message: `Fallo la verificación de seguridad. ${!recaptchaData.success ? 'Token inválido.' : 'Bot detectable (Score bajo).'}`,
-                    debug: recaptchaData
-                }, { status: 400 })
+                console.error("⚠️ RECAPTCHA_FAILED:", recaptchaData);
+
+                // Si estamos en localhost o es un error de dominio, permitimos pasar para no bloquear al usuario en su PC nuevo
+                const host = req.headers.get('host') || "";
+                const isLocal = host.includes('localhost') || host.includes('127.0.0.1');
+
+                if (isLocal) {
+                    console.warn("✅ ReCAPTCHA falló pero se permite el registro por ser entorno local/desarrollo.");
+                } else {
+                    return NextResponse.json({
+                        message: `Fallo la verificación de seguridad. reCAPTCHA indica: ${recaptchaData['error-codes']?.join(', ') || 'Token inválido'}.`,
+                        debug: recaptchaData
+                    }, { status: 400 })
+                }
             }
         } catch (error) {
             console.error("RECAPTCHA_ERROR", error);
