@@ -8,21 +8,29 @@ export async function POST(req: Request) {
         const { email, password, name, country, phonePrefix, phoneNumber, termsAccepted, captchaToken } = body
 
         if (!email || !password || !name || !termsAccepted) {
-            return new NextResponse("Faltan campos obligatorios", { status: 400 })
+            return NextResponse.json({ message: "Faltan campos obligatorios" }, { status: 400 })
         }
 
         // 1. VALIDAR RECAPTCHA
         if (!captchaToken) {
-            return new NextResponse("La verificación de seguridad es obligatoria", { status: 400 })
+            return NextResponse.json({ message: "La verificación de seguridad es obligatoria" }, { status: 400 })
         }
 
-        const recaptchaUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${captchaToken}`;
-        const recaptchaRes = await fetch(recaptchaUrl, { method: "POST" });
-        const recaptchaData = await recaptchaRes.json();
+        try {
+            const recaptchaUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${captchaToken}`;
+            const recaptchaRes = await fetch(recaptchaUrl, { method: "POST" });
+            const recaptchaData = await recaptchaRes.json();
 
-        if (!recaptchaData.success || recaptchaData.score < 0.5) {
-            console.error("RECAPTCHA_FAILED", recaptchaData);
-            return new NextResponse("Fallo la verificación de seguridad (Bot detectable)", { status: 400 })
+            if (!recaptchaData.success || (recaptchaData.score !== undefined && recaptchaData.score < 0.3)) {
+                console.error("RECAPTCHA_FAILED", recaptchaData);
+                return NextResponse.json({
+                    message: `Fallo la verificación de seguridad. ${!recaptchaData.success ? 'Token inválido.' : 'Bot detectable (Score bajo).'}`,
+                    debug: recaptchaData
+                }, { status: 400 })
+            }
+        } catch (error) {
+            console.error("RECAPTCHA_ERROR", error);
+            // No bloqueamos por error de conexión a Google, pero avisamos
         }
 
         const exists = await db.user.findUnique({
@@ -32,26 +40,31 @@ export async function POST(req: Request) {
         })
 
         if (exists) {
-            return new NextResponse("El correo ya está registrado", { status: 400 })
+            return NextResponse.json({ message: "El correo ya está registrado" }, { status: 400 })
         }
 
         // VALIDAR VERIFICACIÓN TELEFÓNICA
         const identifier = `${phonePrefix}${phoneNumber}`
-        console.log("Verificando teléfono para:", identifier);
+        console.log("🔍 Verificando token para:", identifier);
+
+        // Intentamos buscarlo con y sin el '+' por si acaso
+        const identifiers = [identifier, identifier.startsWith('+') ? identifier.substring(1) : `+${identifier}`];
 
         const verifiedToken = await (db as any).verificationToken.findFirst({
             where: {
-                identifier,
+                identifier: { in: identifiers },
                 verified: true,
                 expires: { gt: new Date() }
-            }
+            },
+            orderBy: { createdAt: 'desc' }
         })
 
         if (!verifiedToken) {
-            console.warn("ADVERTENCIA: No se encontró token de verificación para:", identifier);
-            // Para facilitar el desarrollo inicial, si no hay token pero estamos configurando el sistema,
-            // podrías querer comentar esta restricción o asegurar que el token se cree.
-            return new NextResponse("El número de teléfono no ha sido verificado en la base de datos", { status: 400 })
+            console.warn("⚠️ No se encontró token de verificación para:", identifier);
+            return NextResponse.json({
+                message: "Tu número de teléfono no aparece como verificado. Por favor, vuelve a solicitar el código.",
+                debug: { identifier, timestamp: new Date() }
+            }, { status: 400 })
         }
 
         const hashedPassword = await hash(password, 10)
@@ -70,16 +83,23 @@ export async function POST(req: Request) {
         })
 
         // Limpiar tokens usados
-        await (db as any).verificationToken.deleteMany({
-            where: { identifier }
-        })
+        try {
+            await (db as any).verificationToken.deleteMany({
+                where: { identifier: { in: identifiers } }
+            })
+        } catch (e) {
+            console.error("Error al limpiar tokens:", e);
+        }
 
         // Remove password from response
         const { password: newUserPassword, ...rest } = user
 
         return NextResponse.json({ user: rest, message: "User created successfully" }, { status: 201 })
     } catch (error: any) {
-        console.error("REGISTRATION_FULL_ERROR:", error)
-        return new NextResponse(`Error interno: ${error.message || 'Desconocido'}`, { status: 500 })
+        console.error("🚨 REGISTRATION_FULL_ERROR:", error)
+        return NextResponse.json({
+            message: `Error interno al registrarse: ${error.message || 'Desconocido'}`,
+            error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        }, { status: 500 })
     }
 }
