@@ -57,7 +57,8 @@ function SignUpForm() {
             })
             setShowCodeInput(true)
         } catch (err: any) {
-            setError("No pudimos enviar el código. Revisa el número e intenta de nuevo.")
+            const msg = err.response?.data || "No pudimos enviar el código. Revisa el número e intenta de nuevo."
+            setError(msg)
         } finally {
             setIsVerifying(false)
         }
