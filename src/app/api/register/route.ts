@@ -30,14 +30,25 @@ export async function POST(req: Request) {
             // No bloqueamos por error de conexión a Google, pero avisamos
         }
 
-        const exists = await db.user.findUnique({
+        const exists = await db.user.findFirst({
             where: {
-                email,
-            },
+                OR: [
+                    { email },
+                    {
+                        AND: [
+                            { phonePrefix },
+                            { phoneNumber }
+                        ]
+                    }
+                ]
+            }
         })
 
         if (exists) {
-            return NextResponse.json({ message: "El correo ya está registrado" }, { status: 400 })
+            const message = exists.email === email
+                ? "El correo ya está registrado"
+                : "Este número de teléfono ya está registrado con otra cuenta";
+            return NextResponse.json({ message }, { status: 400 })
         }
 
         // VALIDAR VERIFICACIÓN TELEFÓNICA
