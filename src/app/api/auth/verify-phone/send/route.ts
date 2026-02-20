@@ -10,9 +10,33 @@ export async function POST(req: Request) {
         const authToken = process.env.TWILIO_AUTH_TOKEN;
         const verifyServiceSid = process.env.TWILIO_VERIFY_SERVICE_ID;
 
-        if (!phonePrefix || !phoneNumber) {
+        if (!phonePrefix || !phoneNumber || !email) {
             return new NextResponse("Faltan campos obligatorios", { status: 400 })
         }
+
+        // --- NUEVA VALIDACIÓN DE UNICIDAD ---
+        // Verificamos si el correo o el teléfono ya están registrados
+        const existingUser = await db.user.findFirst({
+            where: {
+                OR: [
+                    { email },
+                    {
+                        AND: [
+                            { phonePrefix },
+                            { phoneNumber }
+                        ]
+                    }
+                ]
+            }
+        })
+
+        if (existingUser) {
+            const message = existingUser.email === email
+                ? "El correo ya está registrado"
+                : "Este número de teléfono ya está registrado con otra cuenta";
+            return new NextResponse(message, { status: 400 })
+        }
+        // ------------------------------------
 
         // Formatear número para Twilio (E.164: +CCNumber)
         let digits = `${phonePrefix}${phoneNumber}`.replace(/\D/g, '')
