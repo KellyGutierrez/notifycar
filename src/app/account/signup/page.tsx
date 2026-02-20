@@ -32,8 +32,44 @@ function SignUpForm() {
     }, [data.phoneNumber, data.phonePrefix])
 
     const [error, setError] = useState("")
+    const [emailError, setEmailError] = useState("")
+    const [phoneError, setPhoneError] = useState("")
+    const [checkLoading, setCheckLoading] = useState(false)
+    const [phoneCheckLoading, setPhoneCheckLoading] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
+
+    const checkEmail = async (email: string) => {
+        if (!email || !email.includes("@")) return
+        setCheckLoading(true)
+        setEmailError("")
+        try {
+            const { data } = await axios.get(`/api/auth/check-email?email=${email}`)
+            if (data.exists) {
+                setEmailError("Este correo ya está registrado")
+            }
+        } catch (err) {
+            console.error("Error al validar email")
+        } finally {
+            setCheckLoading(false)
+        }
+    }
+
+    const checkPhone = async (prefix: string, phone: string) => {
+        if (!phone || phone.length < 7) return
+        setPhoneCheckLoading(true)
+        setPhoneError("")
+        try {
+            const { data } = await axios.get(`/api/auth/check-phone?phonePrefix=${encodeURIComponent(prefix)}&phoneNumber=${phone}`)
+            if (data.exists) {
+                setPhoneError("Este número ya tiene una cuenta")
+            }
+        } catch (err) {
+            console.error("Error al validar teléfono")
+        } finally {
+            setPhoneCheckLoading(false)
+        }
+    }
 
     // Estados de verificación
     const [isVerifying, setIsVerifying] = useState(false)
@@ -165,12 +201,25 @@ function SignUpForm() {
                                     <input
                                         type="email"
                                         required
-                                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
+                                        className={`w-full pl-10 pr-4 py-3 bg-gray-50 border rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all ${emailError ? "border-red-500 ring-red-200" : "border-gray-200"}`}
                                         placeholder="user@example.com"
                                         value={data.email}
-                                        onChange={(e) => setData({ ...data, email: e.target.value })}
+                                        onChange={(e) => {
+                                            const email = e.target.value;
+                                            setData({ ...data, email });
+                                            if (emailError) setEmailError("");
+                                        }}
+                                        onBlur={(e) => checkEmail(e.target.value)}
                                     />
                                 </div>
+                                {emailError && (
+                                    <p className="text-[10px] text-red-500 font-medium mt-1 ml-1">{emailError}</p>
+                                )}
+                                {checkLoading && (
+                                    <p className="text-[10px] text-gray-400 mt-1 ml-1 flex items-center gap-1">
+                                        <Loader2 className="h-3 w-3 animate-spin" /> Verificando correo...
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
@@ -220,13 +269,25 @@ function SignUpForm() {
                                     </div>
                                     <input
                                         type="tel"
-                                        required
-                                        disabled={isVerified}
-                                        className="w-full pl-16 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all font-mono disabled:opacity-50"
+                                        className={`w-full pl-16 pr-10 py-3 bg-gray-50 border rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all font-mono disabled:opacity-50 ${phoneError ? "border-red-500 ring-red-200" : "border-gray-200"}`}
                                         placeholder="300 123 4567"
                                         value={data.phoneNumber}
-                                        onChange={(e) => setData({ ...data, phoneNumber: e.target.value })}
+                                        onChange={(e) => {
+                                            const phoneNumber = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                            setData({ ...data, phoneNumber });
+                                            if (phoneError) setPhoneError("");
+                                        }}
+                                        onBlur={() => checkPhone(data.phonePrefix, data.phoneNumber)}
+                                        disabled={isVerified}
                                     />
+                                    {phoneError && (
+                                        <p className="absolute -bottom-5 left-0 text-[10px] text-red-500 font-medium ml-1 whitespace-nowrap">{phoneError}</p>
+                                    )}
+                                    {phoneCheckLoading && (
+                                        <p className="absolute -bottom-5 left-0 text-[10px] text-gray-400 ml-1 flex items-center gap-1 whitespace-nowrap">
+                                            <Loader2 className="h-3 w-3 animate-spin" /> Validando...
+                                        </p>
+                                    )}
                                     {isVerified ? (
                                         <Check className="absolute right-3 top-3.5 h-5 w-5 text-emerald-500" />
                                     ) : (
