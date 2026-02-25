@@ -1,5 +1,6 @@
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import GoogleProvider from "next-auth/providers/google"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { db } from "@/lib/db"
 import { compare } from "bcryptjs"
@@ -12,6 +13,19 @@ export const authOptions: NextAuthOptions = {
         signIn: "/account/signin",
     },
     providers: [
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            profile(profile) {
+                return {
+                    id: profile.sub,
+                    name: profile.name,
+                    email: profile.email,
+                    image: profile.picture,
+                    role: "USER",
+                }
+            }
+        }),
         CredentialsProvider({
             name: "Credentials",
             credentials: {
@@ -60,14 +74,29 @@ export const authOptions: NextAuthOptions = {
             }
             return session
         },
-        async jwt({ token, user }) {
+        async jwt({ token, user, account }) {
             if (user) {
                 token.id = user.id
-                token.role = user.role
-                token.organizationId = user.organizationId
+                token.role = (user as any).role
+                token.organizationId = (user as any).organizationId
                 token.phonePrefix = (user as any).phonePrefix
                 token.phoneNumber = (user as any).phoneNumber
                 token.country = (user as any).country
+            }
+            // Para usuarios OAuth (Google), obtener el rol desde la BD
+            if (account?.provider === "google" && token.email) {
+                const dbUser = await db.user.findUnique({
+                    where: { email: token.email },
+                    select: { id: true, role: true, organizationId: true, phonePrefix: true, phoneNumber: true, country: true }
+                })
+                if (dbUser) {
+                    token.id = dbUser.id
+                    token.role = dbUser.role
+                    token.organizationId = dbUser.organizationId
+                    token.phonePrefix = dbUser.phonePrefix
+                    token.phoneNumber = dbUser.phoneNumber
+                    token.country = dbUser.country
+                }
             }
             return token
         }
