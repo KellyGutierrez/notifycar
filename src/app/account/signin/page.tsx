@@ -106,6 +106,11 @@ export default function SignInPage() {
                                 />
                             </div>
                         </div>
+                        <div className="text-right mt-1">
+                            <Link href="/account/forgot-password" className="text-xs text-brand hover:underline font-medium">
+                                ¿Olvidaste tu contraseña?
+                            </Link>
+                        </div>
                     </div>
 
                     {error && (
