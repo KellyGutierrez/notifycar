@@ -5,8 +5,11 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { db } from "@/lib/db"
 import { compare } from "bcryptjs"
 
+// Log para verificar que los modelos están cargados (ver en logs de Coolify)
+console.log("🛠️ Prisma Models cargados:", Object.keys(db).filter(k => !k.startsWith("_")));
+
 export const authOptions: NextAuthOptions = {
-    adapter: PrismaAdapter(db),
+    adapter: PrismaAdapter(db as any),
     session: { strategy: "jwt" },
     secret: process.env.NEXTAUTH_SECRET,
     pages: {
