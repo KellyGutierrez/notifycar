@@ -10,6 +10,7 @@ declare module "next-auth" {
             phonePrefix?: string | null
             phoneNumber?: string | null
             country?: string | null
+            phoneVerified?: Date | null
         } & DefaultSession["user"]
     }
 
@@ -20,6 +21,7 @@ declare module "next-auth" {
         phonePrefix?: string | null
         phoneNumber?: string | null
         country?: string | null
+        phoneVerified?: Date | null
     }
 }
 
@@ -31,5 +33,6 @@ declare module "next-auth/jwt" {
         phonePrefix?: string | null
         phoneNumber?: string | null
         country?: string | null
+        phoneVerified?: Date | null
     }
 }
