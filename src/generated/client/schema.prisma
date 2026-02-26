@@ -1,0 +1,208 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../src/generated/client"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String?
+  image         String?
+  role          String    @default("USER") // USER, ADMIN, CORPORATE, INSTITUTIONAL, OPERATOR
+  country       String?
+  phonePrefix   String?
+  phoneNumber   String?
+  phoneVerified DateTime?
+  emailVerified DateTime?
+  termsAccepted Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Preferencias de notificación
+  emailNotifications    Boolean @default(true)
+  whatsappNotifications Boolean @default(true)
+
+  vehicles Vehicle[]
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  accounts       Account[]
+  sessions       Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  logo        String?
+  type        String   @default("PARKING") // PARKING, FLEET, BLUE_ZONE, INSTITUTIONAL, OTHER
+  isActive    Boolean  @default(true)
+  publicToken String?  @unique @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Custom WhatsApp layout for this organization
+  messageWrapper String? @db.Text
+
+  // Preferences
+  useGlobalTemplates Boolean @default(true)
+
+  users         User[]
+  templates     NotificationTemplate[]
+  vehicles      Vehicle[]
+  notifications Notification[]
+}
+
+model Vehicle {
+  id         String  @id @default(cuid())
+  plate      String  @unique
+  brand      String
+  model      String
+  type       String  @default("CAR") // CAR, MOTORCYCLE
+  color      String?
+  isElectric Boolean @default(false)
+  userId     String
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Fleet management: vehicle can belong to an organization
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  // Contact information for fleet management
+  ownerName   String?
+  ownerPhone  String?
+  driverName  String?
+  driverPhone String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  notifications Notification[]
+}
+
+model Notification {
+  id        String  @id @default(cuid())
+  type      String // WHATSAPP, EMAIL
+  status    String  @default("PENDING") // PENDING, SENT, FAILED
+  content   String
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NotificationTemplate {
+  id          String  @id @default(cuid())
+  name        String
+  content     String
+  vehicleType String  @default("ALL") // ALL, CAR, MOTORCYCLE
+  category    String  @default("COMMON") // COMMON, SEASONAL, URGENT
+  type        String  @default("APP") // APP, WHATSAPP, EMAIL
+  isActive    Boolean @default(true)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SystemSetting {
+  id                String  @id @default("default")
+  systemName        String  @default("NotifyCar")
+  maintenanceMode   Boolean @default(false)
+  allowRegistration Boolean @default(true)
+  gtmId             String?
+  webhookUrl        String?
+
+  // SMTP Settings
+  smtpHost String?
+  smtpPort Int?    @default(587)
+  smtpUser String?
+  smtpPass String?
+  smtpFrom String? @default("noreply@notifycar.com")
+
+  // Email Toggles
+  emailRegistration Boolean @default(true)
+  emailRecovery     Boolean @default(true)
+  emailVehicles     Boolean @default(true)
+
+  // WhatsApp Layout
+  messageWrapper String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  slug      String   @unique // registration, recovery, notification
+  subject   String
+  body      String   @db.Text
+  active    Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model EmergencyConfig {
+  id        String   @id @default(cuid())
+  country   String   @unique // Ej: "Colombia", "México", "España"
+  police    String   @default("123")
+  transit   String   @default("123")
+  emergency String   @default("123")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid())
+  identifier String // Email o Teléfono
+  token      String   @unique
+  expires    DateTime
+  verified   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@unique([identifier, token])
+}

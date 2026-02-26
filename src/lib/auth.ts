@@ -9,7 +9,7 @@ import { compare } from "bcryptjs"
 console.log("🛠️ Prisma Models cargados:", Object.keys(db).filter(k => !k.startsWith("_")));
 
 export const authOptions: NextAuthOptions = {
-    adapter: PrismaAdapter(db as any),
+    adapter: PrismaAdapter(db),
     session: { strategy: "jwt" },
     secret: process.env.NEXTAUTH_SECRET,
     pages: {

@@ -2,7 +2,7 @@ import { db } from "@/lib/db"
 import { BarChart3, TrendingUp, Users, Car, Bell, ArrowUpRight, ArrowDownRight, Activity } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ReportFilters } from "./ReportFilters"
-import { Prisma } from "@prisma/client"
+import { Prisma } from "@/generated/client"
 
 interface PageProps {
     searchParams: Promise<{

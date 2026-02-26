@@ -2,7 +2,7 @@ import { db } from "@/lib/db"
 import { Bell, Clock, CheckCircle2, XCircle, Send, Car, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { NotificationFilters } from "./NotificationFilters"
-import { Prisma } from "@prisma/client"
+import { Prisma } from "@/generated/client"
 
 interface PageProps {
     searchParams: Promise<{

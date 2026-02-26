@@ -3,7 +3,7 @@ import { Car, User, Hash, Upload, Zap } from "lucide-react"
 import { VehicleFilters } from "./VehicleFilters"
 import ExportVehiclesButton from "./ExportVehiclesButton"
 import Link from "next/link"
-import { Prisma } from "@prisma/client"
+import { Prisma } from "@/generated/client"
 
 interface PageProps {
     searchParams: Promise<{
