@@ -27,6 +27,11 @@ export async function middleware(request: NextRequest) {
         }
     }
 
+    // 4. Forzar completar teléfono si falta (solo para usuarios autenticados)
+    if (token && !token.phoneVerified && !pathname.startsWith('/account/complete-phone') && !pathname.startsWith('/api')) {
+        return NextResponse.redirect(new URL('/account/complete-phone', request.url))
+    }
+
     return NextResponse.next()
 }
 

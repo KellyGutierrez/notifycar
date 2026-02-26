@@ -87,11 +87,11 @@ export const authOptions: NextAuthOptions = {
                 token.phoneNumber = (user as any).phoneNumber
                 token.country = (user as any).country
             }
-            // Para usuarios OAuth (Google), obtener el rol desde la BD
-            if (account?.provider === "google" && token.email) {
+            // Para usuarios OAuth (Google), obtener el rol y verificación desde la BD
+            if (token.email) {
                 const dbUser = await db.user.findUnique({
                     where: { email: token.email },
-                    select: { id: true, role: true, organizationId: true, phonePrefix: true, phoneNumber: true, country: true }
+                    select: { id: true, role: true, organizationId: true, phonePrefix: true, phoneNumber: true, country: true, phoneVerified: true }
                 })
                 if (dbUser) {
                     token.id = dbUser.id
@@ -100,6 +100,7 @@ export const authOptions: NextAuthOptions = {
                     token.phonePrefix = dbUser.phonePrefix
                     token.phoneNumber = dbUser.phoneNumber
                     token.country = dbUser.country
+                    token.phoneVerified = dbUser.phoneVerified
                 }
             }
             return token
