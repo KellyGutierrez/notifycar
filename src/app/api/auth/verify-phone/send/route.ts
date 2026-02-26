@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import twilio from "twilio"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/lib/auth"
 
 export async function POST(req: Request) {
     try {
+        const session = await getServerSession(authOptions)
         const { phonePrefix, phoneNumber, email } = await req.json()
 
         const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -15,7 +18,7 @@ export async function POST(req: Request) {
         }
 
         // --- NUEVA VALIDACIÓN DE UNICIDAD ---
-        // Verificamos si el correo o el teléfono ya están registrados
+        // Verificamos si el correo o el teléfono ya están registrados por ALGUIEN MÁS
         const existingUser = await db.user.findFirst({
             where: {
                 OR: [
@@ -26,7 +29,9 @@ export async function POST(req: Request) {
                             { phoneNumber }
                         ]
                     }
-                ]
+                ],
+                // Si el usuario ya está autenticado (Google Login), ignorar su propio registro
+                NOT: session?.user?.id ? { id: session.user.id } : undefined
             }
         })
 
