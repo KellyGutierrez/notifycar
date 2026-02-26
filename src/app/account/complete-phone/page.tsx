@@ -219,8 +219,9 @@ export default function CompletePhonePage() {
                     {/* Secondary Actions */}
                     <div className="pt-6 border-t border-white/5 flex flex-col items-center gap-4">
                         <button
-                            onClick={() => signOut()}
-                            className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.25em] hover:text-white transition-colors flex items-center gap-2"
+                            type="button"
+                            onClick={() => signOut({ callbackUrl: "/account/signin" })}
+                            className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.25em] hover:text-white transition-colors flex items-center gap-2 cursor-pointer"
                         >
                             <LogOut className="h-3 w-3" /> Usar otra cuenta
                         </button>
