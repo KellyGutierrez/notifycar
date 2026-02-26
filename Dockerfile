@@ -12,8 +12,9 @@ RUN apt-get update -y && apt-get install -y openssl ca-certificates
 # Install pnpm (fast package manager)
 RUN npm install -g pnpm
 
-# Copy package manifests
+# Copy package manifests and prisma schema
 COPY package.json pnpm-lock.yaml ./
+COPY prisma ./prisma
 
 # Accept build arguments for public variables
 ARG NEXT_PUBLIC_RECAPTCHA_SITE_KEY
@@ -24,9 +25,6 @@ RUN pnpm install
 
 # Copy the rest of the source code
 COPY . .
-
-# Generate Prisma Client
-RUN pnpm exec prisma generate
 
 # Build the Next.js application
 RUN pnpm run build
@@ -45,11 +43,11 @@ COPY --from=builder /app/package.json ./
 COPY --from=builder /app/pnpm-lock.yaml ./
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/src/generated ./src/generated
 
 # Install only production dependencies
 RUN npm install -g pnpm
 RUN pnpm install --prod --frozen-lockfile || pnpm install --prod
-RUN pnpm exec prisma generate
 
 # Expose the port Next.js runs on
 EXPOSE 3000
