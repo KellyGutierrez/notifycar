@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { User, Mail, Phone, Globe, Shield, Bell, Save, Loader2 } from "lucide-react"
+import { useSession, signOut } from "next-auth/react"
+import { User, Mail, Phone, Globe, Shield, Bell, Save, Loader2, AlertTriangle, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export default function SettingsPage() {
@@ -216,6 +216,30 @@ export default function SettingsPage() {
         }
     }
 
+    const [isDeleting, setIsDeleting] = useState(false)
+
+    const handleDeleteAccount = async () => {
+        const confirmed = confirm("¿Estás ABSOLUTAMENTE SEGURO? Esta acción es irreversible y eliminará permanentemente tu cuenta, vehículos registrados y todas las notificaciones asociadas.")
+
+        if (!confirmed) return
+
+        setIsDeleting(true)
+        try {
+            const res = await fetch("/api/profile", { method: "DELETE" })
+            if (res.ok) {
+                await signOut({ callbackUrl: "/" })
+            } else {
+                const errText = await res.text()
+                alert(errText || "Error al eliminar la cuenta")
+            }
+        } catch (error) {
+            console.error(error)
+            alert("Error de conexión")
+        } finally {
+            setIsDeleting(false)
+        }
+    }
+
     const togglePreference = (key: keyof typeof preferences) => {
         setPreferences(prev => ({ ...prev, [key]: !prev[key] }))
     }
@@ -267,134 +291,169 @@ export default function SettingsPage() {
                 {/* Main Content */}
                 <div className="lg:col-span-2">
                     {activeTab === "perfil" && (
-                        <div className="bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden animate-in fade-in slide-in-from-right-4 duration-500 shadow-2xl backdrop-blur-3xl">
-                            <div className="p-8 border-b border-white/10 bg-white/[0.02]">
-                                <h3 className="text-xl font-black text-white uppercase italic leading-none">Información Personal</h3>
-                                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-3">Actualiza tus datos de contacto básicos.</p>
-                            </div>
-                            <div className="p-8 space-y-8">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">Nombre Completo</label>
-                                        <div className="relative group">
-                                            <User className="absolute left-4 top-3.5 h-4 w-4 text-gray-500 group-focus-within:text-green-400 transition-colors" />
-                                            <input
-                                                type="text"
-                                                value={formData.name}
-                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                className="w-full bg-black/20 border border-white/10 rounded-2xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-bold placeholder:text-gray-700"
-                                                placeholder="Tu nombre"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">Correo Electrónico</label>
-                                        <div className="relative">
-                                            <Mail className="absolute left-4 top-3.5 h-4 w-4 text-gray-700" />
-                                            <input
-                                                type="email"
-                                                value={formData.email}
-                                                disabled
-                                                className="w-full bg-black/40 border border-white/5 rounded-2xl pl-12 pr-4 py-3.5 text-gray-600 cursor-not-allowed font-bold"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">Prefijo</label>
-                                        <input
-                                            type="text"
-                                            value={formData.phonePrefix}
-                                            onChange={(e) => setFormData({ ...formData, phonePrefix: e.target.value })}
-                                            className="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-bold"
-                                        />
-                                    </div>
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">Teléfono</label>
-                                        <div className="relative group">
-                                            <Phone className="absolute left-4 top-3.5 h-4 w-4 text-gray-500 group-focus-within:text-green-400 transition-colors" />
-                                            <input
-                                                type="text"
-                                                value={formData.phoneNumber}
-                                                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                                                className={cn(
-                                                    "w-full bg-black/20 border rounded-2xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-bold",
-                                                    isPhoneChanged && !isPhoneVerified ? "border-amber-500/50" : "border-white/10"
-                                                )}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-3 md:col-span-2">
-                                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">País</label>
-                                        <div className="relative group">
-                                            <Globe className="absolute left-4 top-3.5 h-4 w-4 text-gray-500 group-focus-within:text-green-400 transition-colors" />
-                                            <input
-                                                type="text"
-                                                value={formData.country}
-                                                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                                                className="w-full bg-black/20 border border-white/10 rounded-2xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-bold"
-                                            />
-                                        </div>
-                                    </div>
+                        <>
+                            <form onSubmit={handleProfileSubmit} className="bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden animate-in fade-in slide-in-from-right-4 duration-500 shadow-2xl backdrop-blur-3xl">
+                                <div className="p-8 border-b border-white/10 bg-white/[0.02]">
+                                    <h3 className="text-xl font-black text-white uppercase italic leading-none">Información Personal</h3>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-3">Actualiza tus datos de contacto básicos.</p>
                                 </div>
-
-                                {/* Phone Verification Flow */}
-                                {isPhoneChanged && !isPhoneVerified && (
-                                    <div className="p-6 rounded-3xl bg-amber-500/5 border border-amber-500/20 space-y-4 animate-in zoom-in-95 duration-500">
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                                                <Shield className="h-5 w-5 text-amber-500" />
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-black text-amber-500 uppercase tracking-widest leading-none">Acción Requerida</p>
-                                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Verifica tu nuevo número para guardar</p>
-                                            </div>
-                                        </div>
-
-                                        {!showOtpInput ? (
-                                            <button
-                                                type="button"
-                                                onClick={handleSendOtp}
-                                                disabled={isSendingCode}
-                                                className="w-full py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border border-white/10"
-                                            >
-                                                {isSendingCode ? <Loader2 className="h-4 w-4 animate-spin" /> : "Solicitar Código SMS"}
-                                            </button>
-                                        ) : (
-                                            <div className="flex gap-3">
+                                <div className="p-8 space-y-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">Nombre Completo</label>
+                                            <div className="relative group">
+                                                <User className="absolute left-4 top-3.5 h-4 w-4 text-gray-500 group-focus-within:text-green-400 transition-colors" />
                                                 <input
                                                     type="text"
-                                                    maxLength={6}
-                                                    placeholder="000000"
-                                                    value={verificationCode}
-                                                    onChange={(e) => setVerificationCode(e.target.value)}
-                                                    className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-center font-bold tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-green-500/30"
+                                                    value={formData.name}
+                                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                    className="w-full bg-black/20 border border-white/10 rounded-2xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-bold placeholder:text-gray-700"
+                                                    placeholder="Tu nombre"
                                                 />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">Correo Electrónico</label>
+                                            <div className="relative">
+                                                <Mail className="absolute left-4 top-3.5 h-4 w-4 text-gray-700" />
+                                                <input
+                                                    type="email"
+                                                    value={formData.email}
+                                                    disabled
+                                                    className="w-full bg-black/40 border border-white/5 rounded-2xl pl-12 pr-4 py-3.5 text-gray-600 cursor-not-allowed font-bold"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">Prefijo</label>
+                                            <input
+                                                type="text"
+                                                value={formData.phonePrefix}
+                                                onChange={(e) => setFormData({ ...formData, phonePrefix: e.target.value })}
+                                                className="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-bold"
+                                            />
+                                        </div>
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">Teléfono</label>
+                                            <div className="relative group">
+                                                <Phone className="absolute left-4 top-3.5 h-4 w-4 text-gray-500 group-focus-within:text-green-400 transition-colors" />
+                                                <input
+                                                    type="text"
+                                                    value={formData.phoneNumber}
+                                                    onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                                                    className={cn(
+                                                        "w-full bg-black/20 border rounded-2xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-bold",
+                                                        isPhoneChanged && !isPhoneVerified ? "border-amber-500/50" : "border-white/10"
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-3 md:col-span-2">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">País</label>
+                                            <div className="relative group">
+                                                <Globe className="absolute left-4 top-3.5 h-4 w-4 text-gray-500 group-focus-within:text-green-400 transition-colors" />
+                                                <input
+                                                    type="text"
+                                                    value={formData.country}
+                                                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                                                    className="w-full bg-black/20 border border-white/10 rounded-2xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-bold"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Phone Verification Flow */}
+                                    {isPhoneChanged && !isPhoneVerified && (
+                                        <div className="p-6 rounded-3xl bg-amber-500/5 border border-amber-500/20 space-y-4 animate-in zoom-in-95 duration-500">
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                                                    <Shield className="h-5 w-5 text-amber-500" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs font-black text-amber-500 uppercase tracking-widest leading-none">Acción Requerida</p>
+                                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Verifica tu nuevo número para guardar</p>
+                                                </div>
+                                            </div>
+
+                                            {!showOtpInput ? (
                                                 <button
                                                     type="button"
-                                                    onClick={handleVerifyOtp}
-                                                    disabled={isConfirmingCode || verificationCode.length < 6}
-                                                    className="px-6 bg-green-600 hover:bg-green-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50"
+                                                    onClick={handleSendOtp}
+                                                    disabled={isSendingCode}
+                                                    className="w-full py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border border-white/10"
                                                 >
-                                                    {isConfirmingCode ? <Loader2 className="h-4 w-4 animate-spin" /> : "Validar"}
+                                                    {isSendingCode ? <Loader2 className="h-4 w-4 animate-spin" /> : "Solicitar Código SMS"}
                                                 </button>
-                                            </div>
-                                        )}
-                                        {otpError && <p className="text-[10px] text-red-500 font-bold uppercase text-center tracking-widest italic">{otpError}</p>}
+                                            ) : (
+                                                <div className="flex gap-3">
+                                                    <input
+                                                        type="text"
+                                                        maxLength={6}
+                                                        placeholder="000000"
+                                                        value={verificationCode}
+                                                        onChange={(e) => setVerificationCode(e.target.value)}
+                                                        className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-center font-bold tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-green-500/30"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleVerifyOtp}
+                                                        disabled={isConfirmingCode || verificationCode.length < 6}
+                                                        className="px-6 bg-green-600 hover:bg-green-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50"
+                                                    >
+                                                        {isConfirmingCode ? <Loader2 className="h-4 w-4 animate-spin" /> : "Validar"}
+                                                    </button>
+                                                </div>
+                                            )}
+                                            {otpError && <p className="text-[10px] text-red-500 font-bold uppercase text-center tracking-widest italic">{otpError}</p>}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="p-8 bg-black/20 border-t border-white/10 flex items-center justify-between">
+                                    <p className={cn("text-[10px] font-black uppercase tracking-widest transition-all", success ? "text-green-400 opacity-100" : "opacity-0")}>¡Perfil Actualizado!</p>
+                                    <button
+                                        type="submit"
+                                        disabled={loading || (isPhoneChanged && !isPhoneVerified)}
+                                        className="bg-green-600 hover:bg-green-700 disabled:opacity-30 text-white px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] transition-all flex items-center gap-3 shadow-xl shadow-green-600/20 transform hover:-translate-y-1 active:scale-95"
+                                    >
+                                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                                        Guardar Cambios
+                                    </button>
+                                </div>
+                            </form>
+
+                            {/* Danger Zone */}
+                            <div className="mt-8 bg-red-500/5 border border-red-500/20 rounded-[2.5rem] overflow-hidden backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-500 shadow-2xl">
+                                <div className="p-6 border-b border-red-500/10 bg-red-500/[0.02] flex items-center gap-4">
+                                    <div className="h-10 w-10 bg-red-500/10 rounded-xl flex items-center justify-center">
+                                        <AlertTriangle className="h-5 w-5 text-red-500" />
                                     </div>
-                                )}
+                                    <div>
+                                        <h3 className="text-sm font-black text-red-500 uppercase tracking-widest italic leading-none">Zona de Peligro</h3>
+                                        <p className="text-[10px] text-red-500/60 font-bold uppercase tracking-wider mt-2">Acciones irreversibles para tu cuenta</p>
+                                    </div>
+                                </div>
+                                <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-black/10">
+                                    <div className="space-y-1">
+                                        <h4 className="text-xs font-black text-white uppercase tracking-widest">Eliminar Cuenta Permanentemente</h4>
+                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed max-w-sm">
+                                            Se borrarán todos tus vehículos, historial y datos. Esta acción no se puede deshacer.
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={handleDeleteAccount}
+                                        disabled={isDeleting}
+                                        className="px-8 py-3.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-red-500/5 group"
+                                    >
+                                        {isDeleting ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <Trash2 className="h-4 w-4 transition-transform group-hover:scale-110" />
+                                        )}
+                                        Eliminar Definitivamente
+                                    </button>
+                                </div>
                             </div>
-                            <div className="p-8 bg-black/20 border-t border-white/10 flex items-center justify-between">
-                                <p className={cn("text-[10px] font-black uppercase tracking-widest transition-all", success ? "text-green-400 opacity-100" : "opacity-0")}>¡Perfil Actualizado!</p>
-                                <button
-                                    type="submit"
-                                    disabled={loading || (isPhoneChanged && !isPhoneVerified)}
-                                    className="bg-green-600 hover:bg-green-700 disabled:opacity-30 text-white px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] transition-all flex items-center gap-3 shadow-xl shadow-green-600/20 transform hover:-translate-y-1 active:scale-95"
-                                >
-                                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                                    Guardar Cambios
-                                </button>
-                            </div>
-                        </div>
+                        </>
                     )}
 
                     {activeTab === "seguridad" && (

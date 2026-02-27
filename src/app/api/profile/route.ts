@@ -101,3 +101,21 @@ export async function PUT(req: Request) {
         return new NextResponse("Internal Error", { status: 500 })
     }
 }
+
+export async function DELETE() {
+    const session = await getServerSession(authOptions)
+    if (!session) {
+        return new NextResponse("Unauthorized", { status: 401 })
+    }
+
+    try {
+        await db.user.delete({
+            where: { id: session.user.id }
+        })
+
+        return new NextResponse("Account deleted", { status: 200 })
+    } catch (error: any) {
+        console.error("[PROFILE_DELETE]", error)
+        return new NextResponse(`Error al eliminar la cuenta: ${error.message}`, { status: 500 })
+    }
+}
