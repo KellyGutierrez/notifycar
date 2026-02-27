@@ -78,8 +78,16 @@ export function AdminSidebar() {
                 })}
             </div>
 
-            {/* User Section / Logout */}
-            <div className="p-4 border-t border-white/5">
+            {/* User Section / Dashboard Link / Logout */}
+            <div className="p-4 border-t border-white/5 space-y-2">
+                <Link
+                    href="/dashboard"
+                    className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-emerald-400 hover:bg-emerald-500/10 border border-transparent hover:border-emerald-500/20 transition-all group"
+                >
+                    <Car className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                    <span className="font-bold uppercase text-[11px] tracking-wider text-emerald-500">Vista Usuario</span>
+                </Link>
+
                 <button
                     onClick={() => signOut({ callbackUrl: "/account/signin" })}
                     className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
