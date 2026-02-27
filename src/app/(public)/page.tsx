@@ -279,10 +279,10 @@ export default async function LandingPage() {
               </div>
               <div className="text-gray-600 text-xs font-medium flex flex-col items-center gap-2">
                 <span>&copy; {new Date().getFullYear()} NotifyCar</span>
-                <div className="flex items-center gap-1.5 opacity-50 hover:opacity-100 transition-opacity">
-                  <img src="/rowell_logo.jpg" alt="Rowell" className="h-4 w-4 rounded-sm grayscale" />
+                <a href="https://rowell.co/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 opacity-50 hover:opacity-100 transition-opacity group cursor-pointer">
+                  <img src="/rowell_logo.jpg" alt="Rowell" className="h-4 w-4 rounded-sm grayscale group-hover:grayscale-0 transition-all" />
                   <span className="italic">Una plataforma Rowell</span>
-                </div>
+                </a>
               </div>
             </div>
           </div>

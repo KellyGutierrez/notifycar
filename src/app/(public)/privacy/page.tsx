@@ -129,11 +129,11 @@ export default function PrivacyPage() {
                             </p>
                         </section>
 
-                        <div className="pt-10 border-t border-white/5 text-center space-y-4 flex flex-col items-center">
-                            <img src="/rowell_logo.jpg" alt="Rowell" className="h-6 w-6 rounded-md grayscale opacity-20" />
-                            <p className="text-gray-600 text-xs font-black uppercase tracking-widest">Protegido por la Legislación Colombiana</p>
-                            <p className="text-gray-400 italic font-medium">NotifyCar &bull; Rowell SAS</p>
-                        </div>
+                        <a href="https://rowell.co/" target="_blank" rel="noopener noreferrer" className="pt-10 border-t border-white/5 text-center space-y-4 flex flex-col items-center group cursor-pointer">
+                            <img src="/rowell_logo.jpg" alt="Rowell" className="h-6 w-6 rounded-md grayscale opacity-20 group-hover:opacity-100 group-hover:grayscale-0 transition-all" />
+                            <p className="text-gray-600 text-xs font-black uppercase tracking-widest group-hover:text-gray-400 transition-colors">Protegido por la Legislación Colombiana</p>
+                            <p className="text-gray-400 italic font-medium group-hover:text-white transition-colors">NotifyCar &bull; Rowell SAS</p>
+                        </a>
                     </div>
                 </div>
             </main>

@@ -101,10 +101,10 @@ export default function ContactPage() {
                             </a>
                         </div>
 
-                        <div className="pt-8 border-t border-white/10 flex items-center gap-2">
-                            <img src="/rowell_logo.jpg" alt="Rowell" className="h-4 w-4 rounded-sm grayscale opacity-50" />
-                            <p className="text-gray-500 italic font-bold">Una plataforma Rowell</p>
-                        </div>
+                        <a href="https://rowell.co/" target="_blank" rel="noopener noreferrer" className="pt-8 border-t border-white/10 flex items-center gap-2 group cursor-pointer w-fit">
+                            <img src="/rowell_logo.jpg" alt="Rowell" className="h-4 w-4 rounded-sm grayscale opacity-50 group-hover:opacity-100 group-hover:grayscale-0 transition-all" />
+                            <p className="text-gray-500 italic font-bold group-hover:text-gray-300 transition-colors">Una plataforma Rowell</p>
+                        </a>
                     </div>
 
                     {/* Right: Form */}
