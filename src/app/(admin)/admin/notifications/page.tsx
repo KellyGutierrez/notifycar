@@ -142,6 +142,26 @@ function NotificationCard({ notif }: { notif: any }) {
     const recipientMatch = notif.content.match(/Hola\s+([^,!\s]+)/i)
     const recipient = recipientMatch ? recipientMatch[1] : "Usuario"
 
+    // Lógica de resumen: Intentar extraer el "corazón" del mensaje
+    const extractSummary = (text: string) => {
+        // Buscar el patrón: Te dejó este mensaje: "..."
+        const msgMatch = text.match(/Te dejó este mensaje:\s*["“]([^"”]+)["”]/i)
+        if (msgMatch && msgMatch[1]) return msgMatch[1]
+
+        // Si no lo encuentra, intentar limpiar saludos y despedidas comunes
+        return text
+            .replace(/Hola\s+([^,!\s]+)[,\s!]*\s*/i, "") // Quitar Hola [Nombre]
+            .replace(/Recibiste un aviso automático de NotifyCar[\s\S]*?\./i, "") // Quitar aviso NotifyCar
+            .replace(/Una persona que se encontraba cerca de tu vehículo:[\s\S]*?\./i, "") // Quitar info vehículo
+            .replace(/📍 Recomendación de seguridad:[\s\S]*$/i, "") // Quitar avisos de seguridad
+            .replace(/📞 Números de emergencia:[\s\S]*$/i, "") // Quitar teléfonos
+            .replace(/Gracias por confiar en NotifyCar[\s\S]*$/i, "") // Quitar pie de página
+            .trim()
+    }
+
+    const summary = extractSummary(notif.content)
+    const hasSummary = summary !== notif.content && summary.length > 0
+
     return (
         <div className="group relative p-1 rounded-3xl bg-gradient-to-br from-white/10 to-transparent hover:from-cyan-500/20 active:scale-[0.99] transition-all duration-500 shadow-2xl">
             <div className="relative p-6 md:p-8 rounded-[1.4rem] bg-[#0a0a0a]/90 backdrop-blur-3xl overflow-hidden">
@@ -158,7 +178,7 @@ function NotificationCard({ notif }: { notif: any }) {
                             notif.status === "SENT"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/20"
                                 : notif.status === "FAILED"
-                                    ? "bg-red-500/10 text-red-400 border-red-500/20 shadow-red-500/20"
+                                    ? "bg-red-500/10 text-red-400 border-red-500/20 shadow-red-500/10"
                                     : "bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-amber-500/20"
                         )}>
                             {notif.status === "SENT" ? <CheckCircle2 className="h-10 w-10 drop-shadow-[0_0_12px_rgba(52,211,153,0.4)]" /> :
@@ -201,11 +221,24 @@ function NotificationCard({ notif }: { notif: any }) {
                                     </div>
                                 </div>
 
-                                <blockquote className="text-gray-300 font-medium text-lg md:text-xl leading-relaxed tracking-tight group-hover:text-white transition-colors">
-                                    <span className="text-cyan-500 font-black mr-2 opacity-50">"</span>
-                                    {notif.content}
-                                    <span className="text-cyan-500 font-black ml-2 opacity-50">"</span>
-                                </blockquote>
+                                {hasSummary && (
+                                    <div className="space-y-2">
+                                        <p className="text-[10px] font-black text-cyan-500/60 uppercase tracking-widest">Contenido Principal</p>
+                                        <p className="text-white font-bold text-2xl tracking-tight leading-tight">
+                                            {summary}
+                                        </p>
+                                    </div>
+                                )}
+
+                                <div className={cn(
+                                    "relative p-4 rounded-2xl bg-black/40 border border-white/5 group-hover:border-white/10 transition-all",
+                                    hasSummary && "opacity-40 group-hover:opacity-100"
+                                )}>
+                                    <p className="text-[9px] font-black text-gray-600 uppercase tracking-[0.2em] mb-2">Mensaje Completo</p>
+                                    <p className="text-gray-400 font-medium text-sm leading-relaxed italic">
+                                        "{notif.content}"
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
