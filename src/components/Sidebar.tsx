@@ -83,7 +83,8 @@ export function Sidebar() {
                     <LogOut className="h-5 w-5" />
                     <span className="font-medium">Cerrar Sesión</span>
                 </button>
-                <div className="text-center">
+                <div className="text-center flex items-center justify-center gap-2">
+                    <img src="/rowell_logo.jpg" alt="Rowell" className="h-3 w-3 rounded-sm grayscale opacity-40" />
                     <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Una plataforma Rowell</p>
                 </div>
             </div>

@@ -277,9 +277,12 @@ export default async function LandingPage() {
                   Contacto
                 </Link>
               </div>
-              <div className="text-gray-600 text-xs font-medium flex flex-col items-center gap-1">
+              <div className="text-gray-600 text-xs font-medium flex flex-col items-center gap-2">
                 <span>&copy; {new Date().getFullYear()} NotifyCar</span>
-                <span className="italic opacity-50">Una plataforma Rowell</span>
+                <div className="flex items-center gap-1.5 opacity-50 hover:opacity-100 transition-opacity">
+                  <img src="/rowell_logo.jpg" alt="Rowell" className="h-4 w-4 rounded-sm grayscale" />
+                  <span className="italic">Una plataforma Rowell</span>
+                </div>
               </div>
             </div>
           </div>

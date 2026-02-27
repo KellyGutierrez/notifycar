@@ -73,3 +73,30 @@ export async function sendPasswordResetEmail(email: string, name: string, resetU
         html,
     })
 }
+
+export async function sendContactEmail(data: { name: string, email: string, subject: string, message: string }) {
+    const transporter = await getTransporter()
+
+    const html = `
+    <div style="font-family: Arial, sans-serif; background:#f4f4f4; padding:20px;">
+        <div style="max-width:600px; margin:0 auto; background:white; padding:40px; border-radius:12px; border: 1px solid #eee;">
+            <h2 style="color:#10b981; margin-bottom:20px;">Nuevo Mensaje de Contacto</h2>
+            <p><strong>De:</strong> ${data.name} (${data.email})</p>
+            <p><strong>Asunto:</strong> ${data.subject}</p>
+            <div style="background:#f9fafb; padding:20px; border-radius:8px; margin-top:20px; border-left: 4px solid #10b981;">
+                <p style="margin:0; white-space:pre-wrap;">${data.message}</p>
+            </div>
+            <hr style="margin:40px 0; border:none; border-top:1px solid #eee;" />
+            <p style="color:#999; font-size:12px; text-align:center;">Este mensaje fue enviado desde el formulario de contacto de NotifyCar.</p>
+        </div>
+    </div>
+    `
+
+    await transporter.sendMail({
+        from: `"Formulario NotifyCar" <${process.env.SMTP_FROM || "noreply@notifycar.com"}>`,
+        to: "hola@notifycar.com",
+        replyTo: data.email,
+        subject: `[CONTACTO] ${data.subject}`,
+        html,
+    })
+}

@@ -6,15 +6,34 @@ import { useState } from "react"
 import { cn } from "@/lib/utils"
 
 export default function ContactPage() {
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        subject: "",
+        message: ""
+    })
     const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setStatus("submitting")
 
-        // Simular envío
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        setStatus("success")
+        try {
+            const res = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            })
+
+            if (res.ok) {
+                setStatus("success")
+            } else {
+                setStatus("error")
+            }
+        } catch (error) {
+            console.error("Error sending contact form:", error)
+            setStatus("error")
+        }
     }
 
     return (
@@ -82,7 +101,8 @@ export default function ContactPage() {
                             </a>
                         </div>
 
-                        <div className="pt-8 border-t border-white/10">
+                        <div className="pt-8 border-t border-white/10 flex items-center gap-2">
+                            <img src="/rowell_logo.jpg" alt="Rowell" className="h-4 w-4 rounded-sm grayscale opacity-50" />
                             <p className="text-gray-500 italic font-bold">Una plataforma Rowell</p>
                         </div>
                     </div>
@@ -103,7 +123,10 @@ export default function ContactPage() {
                                         <p className="text-gray-400">Te responderemos lo más pronto posible.</p>
                                     </div>
                                     <button
-                                        onClick={() => setStatus("idle")}
+                                        onClick={() => {
+                                            setStatus("idle")
+                                            setFormData({ name: "", email: "", subject: "", message: "" })
+                                        }}
                                         className="text-cyan-400 font-bold hover:underline"
                                     >
                                         Enviar otro mensaje
@@ -128,6 +151,8 @@ export default function ContactPage() {
                                                     type="text"
                                                     placeholder="Tu nombre completo"
                                                     className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 outline-none focus:border-brand/50 transition-all font-medium text-sm"
+                                                    value={formData.name}
+                                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                                 />
                                             </div>
                                         </div>
@@ -140,6 +165,8 @@ export default function ContactPage() {
                                                     type="email"
                                                     placeholder="ejemplo@correo.com"
                                                     className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 outline-none focus:border-brand/50 transition-all font-medium text-sm"
+                                                    value={formData.email}
+                                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                                 />
                                             </div>
                                         </div>
@@ -152,6 +179,8 @@ export default function ContactPage() {
                                             type="text"
                                             placeholder="¿En qué podemos ayudarte?"
                                             className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 outline-none focus:border-brand/50 transition-all font-medium text-sm"
+                                            value={formData.subject}
+                                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                                         />
                                     </div>
 
@@ -162,8 +191,14 @@ export default function ContactPage() {
                                             rows={5}
                                             placeholder="Escribe aquí tu mensaje detallado..."
                                             className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 outline-none focus:border-brand/50 transition-all font-medium text-sm resize-none"
+                                            value={formData.message}
+                                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                         />
                                     </div>
+
+                                    {status === "error" && (
+                                        <p className="text-red-500 text-xs font-bold text-center italic">⚠️ Error al enviar el mensaje. Inténtalo de nuevo.</p>
+                                    )}
 
                                     <button
                                         type="submit"
