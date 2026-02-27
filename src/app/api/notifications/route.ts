@@ -49,10 +49,13 @@ export async function POST(req: Request) {
                 plate: "TEST-999",
                 brand: "MASTER TEST",
                 model: "BYPASS",
+                type: "CAR",
+                isElectric: true,
                 user: {
                     name: "Rowell (Tester)",
                     phonePrefix: "+57",
-                    phoneNumber: "3004019274"
+                    phoneNumber: "3004019274",
+                    country: "COLOMBIA"
                 }
             }
         } else {
@@ -204,17 +207,31 @@ export async function POST(req: Request) {
             .replace(/{{NUM_EMERGENCIAS}}/g, emergency.general)
             .replace(/{{role}}/g, recipientRole === "OWNER" ? "Propietario" : recipientRole === "DRIVER" ? "Conductor" : "Usuario");
 
-        // Create the notification in DB
-        const notification = await db.notification.create({
-            data: {
-                vehicleId,
+        // Create the notification in DB (or mock it for virtual vehicle)
+        let notification: any;
+
+        if (vehicleId === "virtual-test-id") {
+            notification = {
+                id: "virtual-notif-id-" + Date.now(),
+                vehicleId: "virtual-test-id",
                 content: finalMessage,
                 type: type || "APP",
                 status: "SENT",
-                // @ts-ignore
-                organizationId: (templateId ? (await db.notificationTemplate.findUnique({ where: { id: templateId }, select: { organizationId: true } }))?.organizationId : null)
-            }
-        })
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+        } else {
+            notification = await db.notification.create({
+                data: {
+                    vehicleId,
+                    content: finalMessage,
+                    type: type || "APP",
+                    status: "SENT",
+                    // @ts-ignore
+                    organizationId: (templateId ? (await db.notificationTemplate.findUnique({ where: { id: templateId }, select: { organizationId: true } }))?.organizationId : null)
+                }
+            })
+        }
 
         // Fetch webhook from DB settings first, then env
         let webhookUrl = process.env.NOTIFICATION_WEBHOOK_URL;
