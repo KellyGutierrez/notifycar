@@ -221,22 +221,10 @@ function NotificationCard({ notif }: { notif: any }) {
                                     </div>
                                 </div>
 
-                                {hasSummary && (
-                                    <div className="space-y-2">
-                                        <p className="text-[10px] font-black text-cyan-500/60 uppercase tracking-widest">Contenido Principal</p>
-                                        <p className="text-white font-bold text-2xl tracking-tight leading-tight">
-                                            {summary}
-                                        </p>
-                                    </div>
-                                )}
-
-                                <div className={cn(
-                                    "relative p-4 rounded-2xl bg-black/40 border border-white/5 group-hover:border-white/10 transition-all",
-                                    hasSummary && "opacity-40 group-hover:opacity-100"
-                                )}>
-                                    <p className="text-[9px] font-black text-gray-600 uppercase tracking-[0.2em] mb-2">Mensaje Completo</p>
-                                    <p className="text-gray-400 font-medium text-sm leading-relaxed italic">
-                                        "{notif.content}"
+                                <div className="space-y-3">
+                                    <p className="text-[10px] font-black text-cyan-500/60 uppercase tracking-widest">Aviso Enviado</p>
+                                    <p className="text-white font-bold text-2xl md:text-3xl tracking-tight leading-tight group-hover:text-cyan-400 transition-colors duration-500">
+                                        "{summary}"
                                     </p>
                                 </div>
                             </div>
