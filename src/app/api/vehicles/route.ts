@@ -36,12 +36,23 @@ export async function POST(req: Request) {
         const { plate, brand, model, color, type, isElectric } = body
 
         if (!plate || !brand || !model) {
-            return new NextResponse("Missing required fields", { status: 400 })
+            return new NextResponse("Faltan campos obligatorios (Placa, Marca, Modelo)", { status: 400 })
+        }
+
+        const normalizedPlate = plate.toUpperCase().trim()
+
+        // Verificar si la placa ya existe
+        const existingPlate = await db.vehicle.findUnique({
+            where: { plate: normalizedPlate }
+        })
+
+        if (existingPlate) {
+            return new NextResponse("Esta placa ya está registrada con otro vehículo", { status: 400 })
         }
 
         const vehicle = await db.vehicle.create({
             data: {
-                plate: plate.toUpperCase(),
+                plate: normalizedPlate,
                 brand,
                 model,
                 type: type || "CAR",
@@ -82,13 +93,26 @@ export async function PUT(req: Request) {
         }
 
         if (existingVehicle.userId !== session.user.id) {
-            return new NextResponse("Unauthorized", { status: 401 })
+            return new NextResponse("No autorizado", { status: 401 })
+        }
+
+        const normalizedPlate = plate?.toUpperCase().trim()
+
+        // Si la placa cambia, verificar que la nueva no esté en uso
+        if (normalizedPlate && normalizedPlate !== existingVehicle.plate) {
+            const plateExists = await db.vehicle.findUnique({
+                where: { plate: normalizedPlate }
+            })
+
+            if (plateExists) {
+                return new NextResponse("Esta placa ya está registrada con otro vehículo", { status: 400 })
+            }
         }
 
         const vehicle = await db.vehicle.update({
             where: { id },
             data: {
-                plate: plate?.toUpperCase(),
+                plate: normalizedPlate,
                 brand,
                 model,
                 type: type || "CAR",

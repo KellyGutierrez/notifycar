@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { X, Car, Hash, Palette, Info, Zap, Bike } from "lucide-react"
+import { X, Car, Hash, Palette, Info, Zap, Bike, ShieldAlert } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
@@ -14,6 +14,7 @@ interface VehicleModalProps {
 export default function VehicleModal({ isOpen, onClose, initialData }: VehicleModalProps) {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const [formData, setFormData] = useState({
         brand: "",
         model: "",
@@ -24,6 +25,7 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
     })
 
     useEffect(() => {
+        setError(null)
         if (initialData) {
             setFormData({
                 brand: initialData.brand || "",
@@ -50,6 +52,7 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
+        setError(null)
 
         try {
             const method = initialData ? "PUT" : "POST"
@@ -67,12 +70,12 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                 onClose()
                 router.refresh()
             } else {
-                const error = await response.text()
-                alert(`Error al ${initialData ? 'actualizar' : 'registrar'} el vehículo: ` + error)
+                const errorMsg = await response.text()
+                setError(errorMsg || "Error al procesar la solicitud")
             }
         } catch (error) {
             console.error(error)
-            alert(`Error de conexión al ${initialData ? 'actualizar' : 'registrar'} el vehículo`)
+            setError("Error de conexión con el servidor")
         } finally {
             setLoading(false)
         }
@@ -215,6 +218,15 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                             </label>
                         </div>
                     </div>
+
+                    {error && (
+                        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <ShieldAlert className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                            <p className="text-sm font-bold text-red-500 italic uppercase tracking-tight">
+                                {error}
+                            </p>
+                        </div>
+                    )}
 
                     <div className="pt-6 flex gap-3">
                         <button
