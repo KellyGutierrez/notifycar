@@ -29,25 +29,31 @@ export async function POST(req: Request) {
             return new NextResponse("Error de configuración del servidor", { status: 500 })
         }
 
-        // 1. Verificar el código con Twilio
-        let check;
-        try {
-            check = await client.verify.v2
-                .services(verifyServiceSid)
-                .verificationChecks.create({
-                    to: fullPhone,
-                    code: code,
-                });
+        // 1. Verificar el código con Twilio (o Bypass de Prueba)
+        let checkSid = "BYPASS_TEST";
+        const isTestPhone = phonePrefix === "+99" && phoneNumber === "1234567";
 
-            if (check.status !== 'approved') {
-                console.warn(`⚠️ Intento de verificación fallido para ${fullPhone}: ${check.status}`);
-                return new NextResponse("Código incorrecto o expirado", { status: 400 })
+        if (isTestPhone && code === "000000") {
+            console.log("🛠️ BYPASS ACTIVADO para número de prueba");
+        } else {
+            try {
+                const check = await client.verify.v2
+                    .services(verifyServiceSid)
+                    .verificationChecks.create({
+                        to: fullPhone,
+                        code: code,
+                    });
+
+                if (check.status !== 'approved') {
+                    console.warn(`⚠️ Intento de verificación fallido para ${fullPhone}: ${check.status}`);
+                    return new NextResponse("Código incorrecto o expirado", { status: 400 })
+                }
+                checkSid = check.sid;
+                console.log("✅ Twilio Verify Aprobado para:", fullPhone);
+            } catch (twilioError: any) {
+                console.error("❌ Error en Twilio Verify Check:", twilioError);
+                return new NextResponse(`Error de Twilio: ${twilioError.message}`, { status: 500 })
             }
-
-            console.log("✅ Twilio Verify Aprobado para:", fullPhone);
-        } catch (twilioError: any) {
-            console.error("❌ Error en Twilio Verify Check:", twilioError);
-            return new NextResponse(`Error de Twilio: ${twilioError.message}`, { status: 500 })
         }
 
         // 2. Compatibilidad: Guardar en nuestra DB que este número está verificado
@@ -56,7 +62,7 @@ export async function POST(req: Request) {
         await (db as any).verificationToken.create({
             data: {
                 identifier,
-                token: check.sid, // Usamos el SID de Twilio como token único
+                token: checkSid, // Usamos el SID de Twilio como token único (o el bypass)
                 expires: new Date(Date.now() + 20 * 60 * 1000), // 20 min validez
                 verified: true
             }

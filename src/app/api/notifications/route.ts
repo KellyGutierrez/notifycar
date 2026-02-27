@@ -41,25 +41,6 @@ export async function POST(req: Request) {
             return new NextResponse("Missing required fields", { status: 400 })
         }
 
-        // ... (cooldown logic remains)
-        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000)
-        const lastNotification = await db.notification.findFirst({
-            where: {
-                vehicleId,
-                createdAt: {
-                    gte: tenMinutesAgo
-                }
-            },
-            orderBy: {
-                createdAt: 'desc'
-            }
-        })
-
-        if (lastNotification) {
-            const timeLeft = Math.ceil((lastNotification.createdAt.getTime() + 10 * 60 * 1000 - Date.now()) / 1000 / 60)
-            return new NextResponse(`Este vehículo ya recibió un mensaje recientemente. Por favor, espera ${timeLeft} minuto(s) antes de enviar otro.`, { status: 429 })
-        }
-
         // Obtener el vehículo para incluir la placa en el mensaje y saber de qué país es el dueño
         const vehicle = await db.vehicle.findUnique({
             where: { id: vehicleId },
@@ -77,6 +58,24 @@ export async function POST(req: Request) {
 
         if (!vehicle) {
             return new NextResponse("Vehículo no encontrado", { status: 404 });
+        }
+
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000)
+        const lastNotification = await db.notification.findFirst({
+            where: {
+                vehicleId,
+                createdAt: {
+                    gte: tenMinutesAgo
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        })
+
+        if (lastNotification && vehicle.plate.toUpperCase() !== "TEST-999") {
+            const timeLeft = Math.ceil((lastNotification.createdAt.getTime() + 10 * 60 * 1000 - Date.now()) / 1000 / 60)
+            return new NextResponse(`Este vehículo ya recibió un mensaje recientemente. Por favor, espera ${timeLeft} minuto(s) antes de enviar otro.`, { status: 429 })
         }
 
         // Determine target contact and name based on role
