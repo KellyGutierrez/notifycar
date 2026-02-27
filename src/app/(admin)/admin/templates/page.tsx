@@ -8,7 +8,13 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+import { useSearchParams } from "next/navigation"
+import { ViewSwitcher, ViewMode } from "@/components/ViewSwitcher"
+
 export default function AdminTemplatesPage() {
+    const searchParams = useSearchParams()
+    const view = (searchParams.get("view") as ViewMode) || "grid"
+
     const [templates, setTemplates] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -123,17 +129,25 @@ export default function AdminTemplatesPage() {
         }
     }
 
+    const filteredTemplates = templates.filter(t => {
+        if (!filterOrg) return true;
+        if (filterOrg === "GLOBAL") return !t.organizationId;
+        return t.organizationId === filterOrg;
+    });
+
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Gestión de Mensajes</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-white uppercase italic bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Gestión de Mensajes</h1>
                     <p className="text-gray-400">Personaliza los mensajes predefinidos y crea plantillas de temporada.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                    <ViewSwitcher currentView={view} />
+
                     <select
-                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 outline-none focus:border-cyan-500/50 transition-all font-medium appearance-none cursor-pointer"
+                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 outline-none focus:border-cyan-500/50 transition-all font-medium appearance-none cursor-pointer text-white"
                         value={filterOrg}
                         onChange={(e) => setFilterOrg(e.target.value)}
                     >
@@ -161,90 +175,167 @@ export default function AdminTemplatesPage() {
                 <div className="flex justify-center py-20">
                     <Loader2 className="h-8 w-8 text-cyan-400 animate-spin" />
                 </div>
+            ) : filteredTemplates.length === 0 ? (
+                <div className="py-24 bg-white/[0.02] border-2 border-white/5 rounded-3xl border-dashed flex flex-col items-center justify-center space-y-6 text-center">
+                    <div className="h-20 w-20 rounded-full bg-white/5 flex items-center justify-center">
+                        <MessageSquare className="h-10 w-10 text-gray-700 animate-pulse" />
+                    </div>
+                    <div className="space-y-2">
+                        <p className="text-xl font-bold text-gray-400">No se encontraron mensajes</p>
+                        <p className="text-sm text-gray-600">Comienza creando una nueva plantilla o cambia el filtro.</p>
+                    </div>
+                </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {templates
-                        .filter(t => {
-                            if (!filterOrg) return true;
-                            if (filterOrg === "GLOBAL") return !t.organizationId;
-                            return t.organizationId === filterOrg;
-                        })
-                        .map((template) => (
-                            <div
-                                key={template.id}
-                                className={cn(
-                                    "group p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm transition-all hover:border-cyan-500/30 flex flex-col justify-between h-full",
-                                    !template.isActive && "opacity-60 grayscale"
-                                )}
-                            >
-                                <div className="space-y-4">
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className={cn(
-                                                "p-2 rounded-lg",
-                                                template.category === "SEASONAL" ? "bg-purple-500/10" :
-                                                    template.category === "URGENT" ? "bg-red-500/10" : "bg-cyan-500/10"
-                                            )}>
-                                                <MessageSquare className={cn(
-                                                    "h-5 w-5",
-                                                    template.category === "SEASONAL" ? "text-purple-400" :
-                                                        template.category === "URGENT" ? "text-red-400" : "text-cyan-400"
-                                                )} />
-                                            </div>
-                                            <div>
-                                                <h3 className="font-bold text-lg leading-tight">{template.name}</h3>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">
-                                                        {template.category}
-                                                    </span>
-                                                    <span className="h-1 w-1 rounded-full bg-gray-700" />
-                                                    <div className="flex items-center gap-1">
-                                                        {template.vehicleType === "ALL" && <span className="text-[10px] text-gray-400">Todos</span>}
-                                                        {template.vehicleType === "CAR" && <Car className="h-3 w-3 text-gray-400" />}
-                                                        {template.vehicleType === "MOTORCYCLE" && <Bike className="h-3 w-3 text-gray-400" />}
-                                                        {template.vehicleType === "ELECTRIC" && <Zap className="h-3 w-3 text-green-400" />}
+                <>
+                    {/* VISTA CUADRÍCULA */}
+                    {view === "grid" && (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                            {filteredTemplates.map((template) => (
+                                <div
+                                    key={template.id}
+                                    className={cn(
+                                        "group p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm transition-all hover:border-cyan-500/30 flex flex-col justify-between h-full",
+                                        !template.isActive && "opacity-60 grayscale"
+                                    )}
+                                >
+                                    <div className="space-y-4">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className={cn(
+                                                    "p-2 rounded-lg",
+                                                    template.category === "SEASONAL" ? "bg-purple-500/10" :
+                                                        template.category === "URGENT" ? "bg-red-500/10" : "bg-cyan-500/10"
+                                                )}>
+                                                    <MessageSquare className={cn(
+                                                        "h-5 w-5",
+                                                        template.category === "SEASONAL" ? "text-purple-400" :
+                                                            template.category === "URGENT" ? "text-red-400" : "text-cyan-400"
+                                                    )} />
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-bold text-lg leading-tight">{template.name}</h3>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                                            {template.category}
+                                                        </span>
+                                                        <span className="h-1 w-1 rounded-full bg-gray-700" />
+                                                        <div className="flex items-center gap-1">
+                                                            {template.vehicleType === "ALL" && <span className="text-[10px] text-gray-400">Todos</span>}
+                                                            {template.vehicleType === "CAR" && <Car className="h-3 w-3 text-gray-400" />}
+                                                            {template.vehicleType === "MOTORCYCLE" && <Bike className="h-3 w-3 text-gray-400" />}
+                                                            {template.vehicleType === "ELECTRIC" && <Zap className="h-3 w-3 text-green-400" />}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            {!template.isActive && (
+                                                <span className="bg-white/10 text-gray-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter">Inactivo</span>
+                                            )}
+                                            {template.organization ? (
+                                                <div className="flex items-center gap-1 bg-cyan-500/10 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter border border-cyan-500/20">
+                                                    <Building2 className="h-3 w-3" />
+                                                    {template.organization.name}
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-1 bg-gray-500/10 text-gray-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter border border-white/5">
+                                                    Global
+                                                </div>
+                                            )}
                                         </div>
-                                        {!template.isActive && (
-                                            <span className="bg-white/10 text-gray-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter">Inactivo</span>
-                                        )}
-                                        {template.organization ? (
-                                            <div className="flex items-center gap-1 bg-cyan-500/10 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter border border-cyan-500/20">
-                                                <Building2 className="h-3 w-3" />
-                                                {template.organization.name}
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center gap-1 bg-gray-500/10 text-gray-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter border border-white/5">
-                                                Global
-                                            </div>
-                                        )}
+                                        <p className="text-gray-400 text-sm italic leading-relaxed">
+                                            "{template.content}"
+                                        </p>
                                     </div>
-                                    <p className="text-gray-400 text-sm italic leading-relaxed">
-                                        "{template.content}"
-                                    </p>
-                                </div>
 
-                                <div className="mt-6 flex items-center justify-end gap-2 pt-4 border-t border-white/5">
-                                    <button
-                                        onClick={() => handleOpenModal(template)}
-                                        className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all"
-                                        title="Editar"
-                                    >
-                                        <Edit2 className="h-5 w-5" />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(template.id)}
-                                        className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
-                                        title="Eliminar"
-                                    >
-                                        <Trash2 className="h-5 w-5" />
-                                    </button>
+                                    <div className="mt-6 flex items-center justify-end gap-2 pt-4 border-t border-white/5">
+                                        <button
+                                            onClick={() => handleOpenModal(template)}
+                                            className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-400/10 rounded-lg transition-all"
+                                            title="Editar"
+                                        >
+                                            <Edit2 className="h-5 w-5" />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(template.id)}
+                                            className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                                            title="Eliminar"
+                                        >
+                                            <Trash2 className="h-5 w-5" />
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* VISTA LISTA */}
+                    {view === "list" && (
+                        <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-sm">
+                            <table className="w-full text-left">
+                                <thead className="bg-white/5 border-b border-white/10">
+                                    <tr>
+                                        <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-cyan-500">Nombre</th>
+                                        <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-cyan-500">Mensaje</th>
+                                        <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-cyan-500">Categoría</th>
+                                        <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-cyan-500 text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {filteredTemplates.map((template) => (
+                                        <tr key={template.id} className={cn("hover:bg-white/5 transition-colors group", !template.isActive && "opacity-50")}>
+                                            <td className="px-6 py-4">
+                                                <p className="font-bold text-white">{template.name}</p>
+                                                {template.organization && <p className="text-[10px] text-cyan-400 uppercase font-black tracking-widest">{template.organization.name}</p>}
+                                            </td>
+                                            <td className="px-6 py-4 max-w-md">
+                                                <p className="text-sm text-gray-400 truncate italic">"{template.content}"</p>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className={cn(
+                                                    "px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter",
+                                                    template.category === "SEASONAL" ? "bg-purple-500/10 text-purple-400" :
+                                                        template.category === "URGENT" ? "bg-red-500/10 text-red-400" : "bg-cyan-500/10 text-cyan-400"
+                                                )}>
+                                                    {template.category}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <button onClick={() => handleOpenModal(template)} className="p-1.5 text-gray-500 hover:text-cyan-400 transition-colors"><Edit2 className="h-4 w-4" /></button>
+                                                    <button onClick={() => handleDelete(template.id)} className="p-1.5 text-gray-500 hover:text-red-400 transition-colors"><Trash2 className="h-4 w-4" /></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    {/* VISTA COMPACTA */}
+                    {view === "compact" && (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                            {filteredTemplates.map((template) => (
+                                <button
+                                    key={template.id}
+                                    onClick={() => handleOpenModal(template)}
+                                    className={cn(
+                                        "p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-500 transition-all text-left flex flex-col justify-between gap-3 group relative overflow-hidden",
+                                        !template.isActive && "opacity-50"
+                                    )}
+                                >
+                                    <div className="p-2 w-fit rounded-lg bg-cyan-500/10 border border-cyan-500/20 group-hover:bg-cyan-500 group-hover:text-white transition-all">
+                                        <MessageSquare className="h-4 w-4 text-cyan-400 group-hover:text-white" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="font-bold text-sm text-white truncate">{template.name}</p>
+                                        <p className="text-[10px] text-gray-500 uppercase font-black truncate">{template.category}</p>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </>
             )}
 
             {/* Modal de Edición/Creación */}

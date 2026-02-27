@@ -6,12 +6,15 @@ import { Prisma } from "@/generated/client"
 import { format, isToday, isYesterday } from "date-fns"
 import { es } from "date-fns/locale"
 
+import { ViewSwitcher, ViewMode } from "@/components/ViewSwitcher"
+
 interface PageProps {
     searchParams: Promise<{
         search?: string
         status?: string
         startDate?: string
         endDate?: string
+        view?: ViewMode
     }>
 }
 
@@ -51,7 +54,7 @@ async function getNotifications(search?: string, status?: string, startDate?: st
 }
 
 export default async function AdminNotificationsPage({ searchParams }: PageProps) {
-    const { search, status, startDate, endDate } = await searchParams
+    const { search, status, startDate, endDate, view = "list" } = await searchParams
     const notifications = await getNotifications(search, status, startDate, endDate)
 
     // Agrupar por fechas
@@ -90,47 +93,114 @@ export default async function AdminNotificationsPage({ searchParams }: PageProps
                     </p>
                 </div>
 
-                <div className="flex items-center gap-5 bg-white/[0.03] border border-white/10 rounded-3xl px-6 py-4 backdrop-blur-2xl shadow-2xl relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="text-right relative z-10">
-                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Total Filtrado</p>
-                        <p className="text-3xl font-black text-white tabular-nums">{notifications.length}</p>
-                    </div>
-                    <div className="h-12 w-[1px] bg-white/10 relative z-10" />
-                    <div className="p-3 bg-cyan-500/10 rounded-2xl relative z-10">
-                        <Bell className="h-6 w-6 text-cyan-500 animate-bounce group-hover:animate-none" />
+                <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-5 bg-white/[0.03] border border-white/10 rounded-3xl px-6 py-4 backdrop-blur-2xl shadow-2xl relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="text-right relative z-10">
+                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Total Filtrado</p>
+                            <p className="text-3xl font-black text-white tabular-nums">{notifications.length}</p>
+                        </div>
+                        <div className="h-12 w-[1px] bg-white/10 relative z-10" />
+                        <div className="p-3 bg-cyan-500/10 rounded-2xl relative z-10">
+                            <Bell className="h-6 w-6 text-cyan-500 animate-bounce group-hover:animate-none" />
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Filtros */}
-            <NotificationFilters />
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="flex-1 w-full">
+                    <NotificationFilters />
+                </div>
+                <ViewSwitcher currentView={view} />
+            </div>
 
             {/* Timeline/Feed */}
             <div className="space-y-12 pb-24">
-                {groupKeys.length > 0 ? groupKeys.map((dateKey) => (
-                    <div key={dateKey} className="space-y-8 relative">
-                        {/* Date Divider */}
-                        <div className="sticky top-0 z-20 flex items-center gap-6 py-4 pointer-events-none">
-                            <div className="bg-[#050505] pr-6 flex items-center gap-3 pointer-events-auto">
-                                <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-lg">
-                                    <Calendar className="h-5 w-5 text-gray-400" />
+                {groupKeys.length > 0 ? (
+                    <>
+                        {view === "list" && groupKeys.map((dateKey) => (
+                            <div key={dateKey} className="space-y-8 relative">
+                                <div className="sticky top-0 z-20 flex items-center gap-6 py-4 pointer-events-none">
+                                    <div className="bg-[#050505] pr-6 flex items-center gap-3 pointer-events-auto">
+                                        <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-lg">
+                                            <Calendar className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <h2 className="text-sm font-black text-gray-400 uppercase tracking-[0.4em] drop-shadow-sm">
+                                            {getDateLabel(dateKey)}
+                                        </h2>
+                                    </div>
+                                    <div className="h-[1px] flex-1 bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
                                 </div>
-                                <h2 className="text-sm font-black text-gray-400 uppercase tracking-[0.4em] drop-shadow-sm">
-                                    {getDateLabel(dateKey)}
-                                </h2>
+                                <div className="grid grid-cols-1 gap-6 px-2">
+                                    {groupedNotifications[dateKey].map((notif: any) => (
+                                        <NotificationCard key={notif.id} notif={notif} />
+                                    ))}
+                                </div>
                             </div>
-                            <div className="h-[1px] flex-1 bg-gradient-to-r from-white/10 via-white/5 to-transparent" />
-                        </div>
+                        ))}
 
-                        {/* Notifications in this day */}
-                        <div className="grid grid-cols-1 gap-6 px-2">
-                            {groupedNotifications[dateKey].map((notif: any) => (
-                                <NotificationCard key={notif.id} notif={notif} />
-                            ))}
-                        </div>
-                    </div>
-                )) : (
+                        {view === "grid" && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {notifications.map((notif: any) => (
+                                    <div key={notif.id} className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm hover:border-cyan-500/30 transition-all flex flex-col justify-between space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <span className={cn(
+                                                "px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border",
+                                                notif.status === "SENT" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
+                                            )}>
+                                                {notif.status}
+                                            </span>
+                                            <span className="text-[10px] text-gray-500 font-mono">{format(notif.createdAt, "HH:mm")}</span>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <h4 className="font-bold text-white uppercase truncate">{notif.vehicle.plate}</h4>
+                                            <p className="text-xs text-gray-400 line-clamp-2 italic">"{notif.content.slice(0, 100)}..."</p>
+                                        </div>
+                                        <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <Car className="h-3 w-3 text-cyan-500" />
+                                                <span className="text-[10px] text-gray-500 uppercase font-black">{notif.vehicle.brand}</span>
+                                            </div>
+                                            <span className="text-[8px] text-gray-600 font-mono">REF: {notif.id.slice(-6).toUpperCase()}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {view === "compact" && (
+                            <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-sm">
+                                <table className="w-full text-left">
+                                    <thead className="bg-white/5 border-b border-white/10">
+                                        <tr>
+                                            <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-cyan-500">Hora</th>
+                                            <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-cyan-500">Placa</th>
+                                            <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-cyan-500">Estado</th>
+                                            <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-cyan-500">Tipo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-white/5">
+                                        {notifications.map((notif: any) => (
+                                            <tr key={notif.id} className="hover:bg-white/5 transition-colors group">
+                                                <td className="px-6 py-3 text-xs text-gray-400 font-mono">{format(notif.createdAt, "dd/MM HH:mm")}</td>
+                                                <td className="px-6 py-3 font-bold text-white uppercase">{notif.vehicle.plate}</td>
+                                                <td className="px-6 py-3">
+                                                    <div className={cn(
+                                                        "h-2 w-2 rounded-full shadow-[0_0_8px]",
+                                                        notif.status === "SENT" ? "bg-emerald-500 shadow-emerald-500" : "bg-red-500 shadow-red-500"
+                                                    )} />
+                                                </td>
+                                                <td className="px-6 py-3 text-[10px] text-gray-500 font-black uppercase">{notif.type}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </>
+                ) : (
                     <EmptyState />
                 )}
             </div>
