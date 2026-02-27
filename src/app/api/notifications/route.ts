@@ -50,9 +50,9 @@ export async function POST(req: Request) {
                 brand: "MASTER TEST",
                 model: "BYPASS",
                 user: {
-                    name: "Tester Bypass",
-                    phonePrefix: "+99",
-                    phoneNumber: "1234567"
+                    name: "Rowell (Tester)",
+                    phonePrefix: "+57",
+                    phoneNumber: "3004019274"
                 }
             }
         } else {
