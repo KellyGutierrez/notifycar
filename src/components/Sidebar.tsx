@@ -75,7 +75,7 @@ export function Sidebar() {
             </div>
 
             {/* User Section / Logout */}
-            <div className="p-4 border-t border-white/5">
+            <div className="p-4 border-t border-white/5 space-y-4">
                 <button
                     onClick={() => signOut({ callbackUrl: "/account/signin" })}
                     className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
@@ -83,6 +83,9 @@ export function Sidebar() {
                     <LogOut className="h-5 w-5" />
                     <span className="font-medium">Cerrar Sesión</span>
                 </button>
+                <div className="text-center">
+                    <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Una plataforma Rowell</p>
+                </div>
             </div>
         </div>
     )

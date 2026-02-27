@@ -277,8 +277,9 @@ export default async function LandingPage() {
                   Contacto
                 </Link>
               </div>
-              <div className="text-gray-600 text-xs font-medium">
-                &copy; {new Date().getFullYear()} NotifyCar
+              <div className="text-gray-600 text-xs font-medium flex flex-col items-center gap-1">
+                <span>&copy; {new Date().getFullYear()} NotifyCar</span>
+                <span className="italic opacity-50">Una plataforma Rowell</span>
               </div>
             </div>
           </div>
