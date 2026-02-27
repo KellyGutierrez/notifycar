@@ -13,6 +13,22 @@ export async function GET(req: Request) {
         const normalizedPlate = plate.toUpperCase().replace(/[^A-Z0-9]/g, "")
         console.log(`🔍 BUSCANDO PLACA: "${plate}" -> Normalizada: "${normalizedPlate}"`);
 
+        // 0. BYPASS VIRTUAL para TEST-999 / TEST999
+        if (normalizedPlate === "TEST999") {
+            return NextResponse.json({
+                found: true,
+                vehicle: {
+                    id: "virtual-test-id",
+                    plate: "TEST-999",
+                    brand: "MASTER TEST",
+                    model: "BYPASS",
+                    color: "ESPECIAL",
+                    type: "CAR",
+                    isElectric: true
+                }
+            })
+        }
+
         // Buscamos coincidencia exacta o normalizada
         const vehicle = await db.vehicle.findFirst({
             where: {

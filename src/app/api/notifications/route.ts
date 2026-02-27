@@ -41,20 +41,35 @@ export async function POST(req: Request) {
             return new NextResponse("Missing required fields", { status: 400 })
         }
 
-        // Obtener el vehículo para incluir la placa en el mensaje y saber de qué país es el dueño
-        const vehicle = await db.vehicle.findUnique({
-            where: { id: vehicleId },
-            include: {
+        let vehicle: any;
+
+        if (vehicleId === "virtual-test-id") {
+            vehicle = {
+                id: "virtual-test-id",
+                plate: "TEST-999",
+                brand: "MASTER TEST",
+                model: "BYPASS",
                 user: {
-                    select: {
-                        name: true,
-                        country: true,
-                        phonePrefix: true,
-                        phoneNumber: true
-                    }
+                    name: "Tester Bypass",
+                    phonePrefix: "+99",
+                    phoneNumber: "1234567"
                 }
             }
-        }) as any;
+        } else {
+            vehicle = await db.vehicle.findUnique({
+                where: { id: vehicleId },
+                include: {
+                    user: {
+                        select: {
+                            name: true,
+                            country: true,
+                            phonePrefix: true,
+                            phoneNumber: true
+                        }
+                    }
+                }
+            }) as any;
+        }
 
         if (!vehicle) {
             return new NextResponse("Vehículo no encontrado", { status: 404 });
