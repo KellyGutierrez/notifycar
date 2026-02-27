@@ -9,7 +9,7 @@ export default function SettingsPage() {
     const { data: session, update } = useSession()
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
-    const [activeTab, setActiveTab] = useState<"perfil" | "seguridad" | "notificaciones">("perfil")
+    const [activeTab, setActiveTab] = useState<"perfil" | "seguridad" | "notificaciones" | "cuenta">("perfil")
 
     const user = session?.user as any
 
@@ -267,6 +267,7 @@ export default function SettingsPage() {
                             { id: "perfil", name: "Perfil", icon: User },
                             { id: "seguridad", name: "Seguridad", icon: Shield },
                             { id: "notificaciones", name: "Notificaciones", icon: Bell },
+                            { id: "cuenta", name: "Cuenta", icon: AlertTriangle },
                         ].map((item) => (
                             <button
                                 key={item.id}
@@ -420,39 +421,6 @@ export default function SettingsPage() {
                                     </button>
                                 </div>
                             </form>
-
-                            {/* Danger Zone */}
-                            <div className="mt-8 bg-red-500/5 border border-red-500/20 rounded-[2.5rem] overflow-hidden backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-500 shadow-2xl">
-                                <div className="p-6 border-b border-red-500/10 bg-red-500/[0.02] flex items-center gap-4">
-                                    <div className="h-10 w-10 bg-red-500/10 rounded-xl flex items-center justify-center">
-                                        <AlertTriangle className="h-5 w-5 text-red-500" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-sm font-black text-red-500 uppercase tracking-widest italic leading-none">Zona de Peligro</h3>
-                                        <p className="text-[10px] text-red-500/60 font-bold uppercase tracking-wider mt-2">Acciones irreversibles para tu cuenta</p>
-                                    </div>
-                                </div>
-                                <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-black/10">
-                                    <div className="space-y-1">
-                                        <h4 className="text-xs font-black text-white uppercase tracking-widest">Eliminar Cuenta Permanentemente</h4>
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed max-w-sm">
-                                            Se borrarán todos tus vehículos, historial y datos. Esta acción no se puede deshacer.
-                                        </p>
-                                    </div>
-                                    <button
-                                        onClick={handleDeleteAccount}
-                                        disabled={isDeleting}
-                                        className="px-8 py-3.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-red-500/5 group"
-                                    >
-                                        {isDeleting ? (
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                        ) : (
-                                            <Trash2 className="h-4 w-4 transition-transform group-hover:scale-110" />
-                                        )}
-                                        Eliminar Definitivamente
-                                    </button>
-                                </div>
-                            </div>
                         </>
                     )}
 
@@ -555,6 +523,49 @@ export default function SettingsPage() {
                                 >
                                     Guardar Preferencias
                                 </button>
+                            </div>
+                        </div>
+                    )}
+                    {activeTab === "cuenta" && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                            <div className="bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl backdrop-blur-3xl">
+                                <div className="p-8 border-b border-white/10 bg-white/[0.02]">
+                                    <h3 className="text-xl font-black text-white uppercase italic leading-none">Gestión de Cuenta</h3>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-3">Administra la permanencia de tu cuenta en NotifyCar.</p>
+                                </div>
+                                <div className="p-8">
+                                    <div className="bg-red-500/5 border border-red-500/20 rounded-[2rem] overflow-hidden">
+                                        <div className="p-6 border-b border-red-500/10 bg-red-500/[0.02] flex items-center gap-4">
+                                            <div className="h-10 w-10 bg-red-500/10 rounded-xl flex items-center justify-center">
+                                                <AlertTriangle className="h-5 w-5 text-red-500" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-sm font-black text-red-500 uppercase tracking-widest italic leading-none">Zona de Peligro</h3>
+                                                <p className="text-[10px] text-red-500/60 font-bold uppercase tracking-wider mt-2">Acciones críticas e irreversibles</p>
+                                            </div>
+                                        </div>
+                                        <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-8 bg-black/10">
+                                            <div className="space-y-2">
+                                                <h4 className="text-sm font-black text-white uppercase tracking-widest">Eliminar Cuenta NotifyCar</h4>
+                                                <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-md">
+                                                    Al eliminar tu cuenta, todos tus vehículos registrados, historial de alertas y configuraciones personales serán borrados permanentemente. Esta acción no tiene vuelta atrás.
+                                                </p>
+                                            </div>
+                                            <button
+                                                onClick={handleDeleteAccount}
+                                                disabled={isDeleting}
+                                                className="px-10 py-4 bg-red-600 hover:bg-red-700 text-white border border-red-500/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-300 flex items-center justify-center gap-3 shadow-2xl shadow-red-600/20 group transform hover:-translate-y-1 active:scale-95"
+                                            >
+                                                {isDeleting ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <Trash2 className="h-4 w-4 transition-transform group-hover:scale-110" />
+                                                )}
+                                                Borrar mi Cuenta Ahora
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}
