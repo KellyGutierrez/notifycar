@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { X, Car, Hash, Palette, Info, Zap, Bike, ShieldAlert } from "lucide-react"
+import { X, Car, Hash, Palette, Info, Zap, Bike, ShieldAlert, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
@@ -14,6 +14,7 @@ interface VehicleModalProps {
 export default function VehicleModal({ isOpen, onClose, initialData }: VehicleModalProps) {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
+    const [checkingPlate, setCheckingPlate] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [formData, setFormData] = useState({
         brand: "",
@@ -26,6 +27,7 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
 
     useEffect(() => {
         setError(null)
+        setCheckingPlate(false)
         if (initialData) {
             setFormData({
                 brand: initialData.brand || "",
@@ -46,6 +48,30 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
             })
         }
     }, [initialData, isOpen])
+
+    const checkPlate = async (plate: string) => {
+        if (!plate || plate.length < 3) return
+        if (initialData && plate.toUpperCase().trim() === initialData.plate.toUpperCase()) {
+            setError(null)
+            return
+        }
+
+        setCheckingPlate(true)
+        setError(null)
+        try {
+            const res = await fetch(`/api/vehicles/check-plate?plate=${encodeURIComponent(plate)}`)
+            if (res.ok) {
+                const data = await res.json()
+                if (data.exists) {
+                    setError("Esta placa ya está registrada con otro vehículo")
+                }
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setCheckingPlate(false)
+        }
+    }
 
     if (!isOpen) return null
 
@@ -148,10 +174,22 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                                     required
                                     type="text"
                                     placeholder="ABC-123"
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-gray-600 focus:ring-2 focus:ring-green-500/50 outline-none transition uppercase"
+                                    className={cn(
+                                        "w-full bg-white/5 border rounded-xl py-3 pl-11 pr-10 text-white placeholder:text-gray-600 focus:ring-2 focus:ring-green-500/50 outline-none transition uppercase",
+                                        error && error.includes("placa") ? "border-red-500/50" : "border-white/10"
+                                    )}
                                     value={formData.plate}
-                                    onChange={(e) => setFormData({ ...formData, plate: e.target.value })}
+                                    onChange={(e) => {
+                                        setFormData({ ...formData, plate: e.target.value })
+                                        if (error) setError(null)
+                                    }}
+                                    onBlur={(e) => checkPlate(e.target.value)}
                                 />
+                                {checkingPlate && (
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                        <Loader2 className="h-4 w-4 text-green-500 animate-spin" />
+                                    </div>
+                                )}
                             </div>
                         </div>
 
