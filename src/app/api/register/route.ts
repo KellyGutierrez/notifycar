@@ -47,7 +47,7 @@ export async function POST(req: Request) {
         if (exists) {
             const message = exists.email === email
                 ? "El correo ya está registrado"
-                : "Este número de teléfono ya está registrado con otra cuenta";
+                : "Este número de teléfono ya está en uso";
             return NextResponse.json({ message }, { status: 400 })
         }
 

@@ -17,6 +17,19 @@ export async function POST(req: Request) {
             return new NextResponse("Campos incompletos", { status: 400 })
         }
 
+        // Validar que el teléfono no esté en uso por otro usuario
+        const existingUser = await db.user.findFirst({
+            where: {
+                phonePrefix,
+                phoneNumber,
+                NOT: { id: session.user.id }
+            }
+        })
+
+        if (existingUser) {
+            return new NextResponse("Este número de teléfono ya está en uso", { status: 400 })
+        }
+
         // Verificar que el número realmente se verificó hace poco
         const identifier = `${phonePrefix}${phoneNumber}`
         const verifiedToken = await (db as any).verificationToken.findFirst({

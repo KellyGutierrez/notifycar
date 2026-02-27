@@ -75,7 +75,7 @@ function SignUpForm() {
         try {
             const { data } = await axios.get(`/api/auth/check-phone?phonePrefix=${encodeURIComponent(prefix)}&phoneNumber=${phone}`)
             if (data.exists) {
-                setPhoneError("Este número ya tiene una cuenta")
+                setPhoneError("Este número ya está en uso")
             }
         } catch (err) {
             console.error("Error al validar teléfono")
