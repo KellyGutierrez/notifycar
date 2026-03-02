@@ -22,7 +22,20 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icon.png?v=1",
   },
-  manifest: "/manifest.json"
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "NotifyCar"
+  }
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover"
 };
 
 export const dynamic = "force-dynamic";

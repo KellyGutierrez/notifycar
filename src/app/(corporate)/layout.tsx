@@ -1,5 +1,5 @@
 import { CorporateSidebar } from "@/components/CorporateSidebar"
-import { MobileHeader } from "@/components/MobileHeader"
+import { CorporateMobileNav } from "@/components/CorporateMobileNav"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
@@ -12,7 +12,6 @@ export default async function CorporateLayout({
 }) {
     const session = await getServerSession(authOptions)
 
-    // Redirect if not authenticated or not corporate/admin
     if (!session || (session.user.role !== "CORPORATE" && session.user.role !== "ADMIN")) {
         redirect("/dashboard")
     }
@@ -25,14 +24,14 @@ export default async function CorporateLayout({
                 <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-purple-900/10 rounded-full blur-[100px] opacity-30" />
             </div>
 
-            <MobileHeader themeColor="indigo" title="NotifyCar Corporate" logo="/logo_white.png" notificationsLink="/corporate/notifications">
-                <CorporateSidebar isMobile />
-            </MobileHeader>
+            {/* Mobile: Top bar + Drawer + Bottom Tabs */}
+            <CorporateMobileNav />
 
+            {/* Desktop: Sidebar */}
             <CorporateSidebar />
 
-            <main className="flex-1 overflow-auto relative z-10 pt-16 md:pt-0 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                <div className="h-full w-full p-4 md:p-8 max-w-7xl mx-auto">
+            <main className="flex-1 overflow-auto relative z-10 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                <div className="h-full w-full p-4 pt-20 md:p-8 md:pt-8 pb-nav md:pb-8 max-w-7xl mx-auto">
                     {children}
                 </div>
             </main>

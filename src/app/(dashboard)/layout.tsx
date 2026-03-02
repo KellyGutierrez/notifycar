@@ -1,5 +1,5 @@
 import { Sidebar } from "@/components/Sidebar"
-import { MobileHeader } from "@/components/MobileHeader"
+import { DashboardMobileNav } from "@/components/DashboardMobileNav"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
@@ -24,14 +24,16 @@ export default async function DashboardLayout({
                 <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-emerald-900/20 rounded-full blur-[100px] opacity-40" />
             </div>
 
-            <MobileHeader themeColor="green">
-                <Sidebar isMobile />
-            </MobileHeader>
+            {/* Mobile: Top bar + Drawer + Bottom Tabs (client component) */}
+            <DashboardMobileNav />
 
+            {/* Desktop: Sidebar */}
             <Sidebar />
 
-            <main className="flex-1 overflow-auto relative z-10 pt-16 md:pt-0 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                <div className="h-full w-full p-4 md:p-8 max-w-7xl mx-auto">
+            {/* Main content */}
+            <main className="flex-1 overflow-auto relative z-10 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                {/* pt-16 → clears mobile top bar; pb-nav → clears mobile bottom nav + safe area */}
+                <div className="h-full w-full p-4 pt-20 md:p-8 md:pt-8 pb-nav md:pb-8 max-w-7xl mx-auto">
                     {children}
                 </div>
             </main>
