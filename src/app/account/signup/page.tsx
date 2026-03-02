@@ -264,8 +264,10 @@ function SignUpForm() {
                         {/* País y Teléfono */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Celular / WhatsApp</label>
-                            <div className="flex gap-2 mb-3">
+                            <div className="flex items-start gap-2 mb-3">
                                 <CountrySelect
+                                    variant="light"
+                                    className="w-[88px]"
                                     value={data.country}
                                     onChange={(code) => {
                                         const country = countries.find(c => c.code === code)
@@ -278,11 +280,11 @@ function SignUpForm() {
                                 />
                                 <div className="relative flex-1 group">
                                     <div className="absolute left-3 top-0 bottom-0 flex items-center">
-                                        <span className="text-gray-500 text-sm border-r border-gray-200 pr-2 mr-2 font-medium">{data.phonePrefix}</span>
+                                        <span className="text-gray-500 text-xs sm:text-sm border-r border-gray-200 pr-2 mr-2 font-medium">{data.phonePrefix}</span>
                                     </div>
                                     <input
                                         type="tel"
-                                        className={`w-full pl-16 pr-10 py-3 bg-gray-50 border rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all font-mono disabled:opacity-50 ${phoneError ? "border-red-500 ring-red-200" : "border-gray-200"}`}
+                                        className={`w-full pl-14 sm:pl-16 pr-8 py-3 bg-gray-50 border rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-all font-mono text-sm sm:text-base disabled:opacity-50 ${phoneError ? "border-red-500 ring-red-200" : "border-gray-200"}`}
                                         placeholder="300 123 4567"
                                         value={data.phoneNumber}
                                         onChange={(e) => {
@@ -301,18 +303,20 @@ function SignUpForm() {
                                             <Loader2 className="h-3 w-3 animate-spin" /> Validando...
                                         </p>
                                     )}
-                                    {isVerified ? (
-                                        <Check className="absolute right-3 top-3.5 h-5 w-5 text-emerald-500" />
-                                    ) : (
-                                        <Phone className="absolute right-3 top-3.5 h-5 w-5 text-gray-400" />
-                                    )}
+                                    <div className="absolute right-2 top-3">
+                                        {isVerified ? (
+                                            <Check className="h-5 w-5 text-emerald-500" />
+                                        ) : (
+                                            <Phone className="h-4 w-4 text-gray-400" />
+                                        )}
+                                    </div>
                                 </div>
                                 {!isVerified && !showCodeInput && (
                                     <button
                                         type="button"
                                         onClick={handleSendCode}
                                         disabled={isVerifying || !data.phoneNumber}
-                                        className="px-4 py-3 bg-brand/10 text-brand border border-brand/20 rounded-xl font-bold text-sm hover:bg-brand/20 transition-all disabled:opacity-50"
+                                        className="shrink-0 px-3 sm:px-4 py-3 bg-brand/10 text-brand border border-brand/20 rounded-xl font-bold text-xs sm:text-sm hover:bg-brand/20 transition-all disabled:opacity-50 min-w-[80px] flex items-center justify-center"
                                     >
                                         {isVerifying ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verificar"}
                                     </button>
@@ -327,7 +331,7 @@ function SignUpForm() {
                                         <input
                                             type="text"
                                             maxLength={6}
-                                            className="w-full pl-10 pr-4 py-3 bg-emerald-50/50 border border-emerald-200 rounded-xl text-emerald-900 placeholder:text-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all font-mono tracking-[0.5em] text-center text-lg"
+                                            className="w-full pl-10 pr-4 py-3 bg-emerald-50/50 border border-emerald-200 rounded-xl text-emerald-900 placeholder:text-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all font-mono tracking-[0.3em] sm:tracking-[0.5em] text-center text-base sm:text-lg"
                                             placeholder="------"
                                             value={verificationCode}
                                             onChange={(e) => setVerificationCode(e.target.value)}
@@ -337,7 +341,7 @@ function SignUpForm() {
                                         type="button"
                                         onClick={handleConfirmCode}
                                         disabled={verifyingCode || verificationCode.length < 6}
-                                        className="px-6 py-3 bg-emerald-500 text-white rounded-xl font-bold text-sm hover:bg-emerald-600 transition-all disabled:opacity-50 shadow-lg shadow-emerald-500/20"
+                                        className="shrink-0 px-4 sm:px-6 py-3 bg-emerald-500 text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-emerald-600 transition-all disabled:opacity-50 shadow-lg shadow-emerald-500/20"
                                     >
                                         {verifyingCode ? <Loader2 className="h-4 w-4 animate-spin" /> : "Validar"}
                                     </button>
