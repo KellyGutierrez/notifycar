@@ -518,6 +518,54 @@ export default function AdminSettingsPage() {
                                             </button>
                                         </div>
                                     </div>
+
+                                    <div className="pt-6 border-t border-red-500/20 space-y-6">
+                                        <div className="flex items-center gap-2 text-red-400">
+                                            <Shield className="h-4 w-4" />
+                                            <h4 className="text-xs font-bold uppercase tracking-widest">Limpieza Extrema (Fuerza Bruta)</h4>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={async () => {
+                                                    if (confirm("¿ELIMINAR TODAS LAS NOTIFICACIONES? Esta acción es irreversible.")) {
+                                                        const res = await fetch("/api/admin/reset", { method: "POST", body: JSON.stringify({ action: "DELETE_ALL_NOTIFICATIONS" }) })
+                                                        if (res.ok) alert("Notificaciones eliminadas");
+                                                    }
+                                                }}
+                                                className="p-4 rounded-2xl bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 hover:border-red-500/30 transition-all text-left space-y-1 group"
+                                            >
+                                                <p className="text-xs font-bold text-red-400 uppercase">Eliminar Notificaciones</p>
+                                                <p className="text-[10px] text-gray-500 group-hover:text-gray-400 transition-colors">Limpia el historial completo de avisos enviados.</p>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={async () => {
+                                                    if (confirm("¿ELIMINAR TODOS LOS VEHÍCULOS? Esta acción es irreversible.")) {
+                                                        const res = await fetch("/api/admin/reset", { method: "POST", body: JSON.stringify({ action: "DELETE_ALL_VEHICLES" }) })
+                                                        if (res.ok) alert("Vehículos eliminados");
+                                                    }
+                                                }}
+                                                className="p-4 rounded-2xl bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 hover:border-red-500/30 transition-all text-left space-y-1 group"
+                                            >
+                                                <p className="text-xs font-bold text-red-400 uppercase">Eliminar Vehículos</p>
+                                                <p className="text-[10px] text-gray-500 group-hover:text-gray-400 transition-colors">Vacía el inventario de placas de todo el sistema.</p>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={async () => {
+                                                    if (confirm("¿ELIMINAR TODOS LOS USUARIOS NO-ADMINS? Esta acción es irreversible.")) {
+                                                        const res = await fetch("/api/admin/reset", { method: "POST", body: JSON.stringify({ action: "DELETE_ALL_USERS" }) })
+                                                        if (res.ok) alert("Usuarios eliminados");
+                                                    }
+                                                }}
+                                                className="p-4 rounded-2xl bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 hover:border-red-500/30 transition-all text-left space-y-1 group md:col-span-2"
+                                            >
+                                                <p className="text-xs font-bold text-red-400 uppercase">Reset General de Usuarios</p>
+                                                <p className="text-[10px] text-gray-500 group-hover:text-gray-400 transition-colors">Elimina todas las cuentas registradas excepto los administradores.</p>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>

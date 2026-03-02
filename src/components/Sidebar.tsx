@@ -13,13 +13,20 @@ const navigation = [
     { name: "Configuración", href: "/settings", icon: Settings },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+    isMobile?: boolean
+}
+
+export function Sidebar({ isMobile }: SidebarProps) {
     const pathname = usePathname()
     const { data: session } = useSession()
     const isAdmin = session?.user?.role === "ADMIN"
 
     return (
-        <div className="flex flex-col h-full bg-black/40 backdrop-blur-xl border-r border-white/10 w-64 text-white hidden md:flex">
+        <div className={cn(
+            "flex flex-col h-full bg-black/40 backdrop-blur-xl text-white",
+            !isMobile ? "border-r border-white/10 w-64 hidden md:flex" : "w-full"
+        )}>
             {/* Logo Area */}
             <div className="p-6 flex items-center justify-center border-b border-white/5">
                 <Link href="/" className="flex items-center justify-center">

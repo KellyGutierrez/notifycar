@@ -23,11 +23,18 @@ const corporateNavigation = [
     { name: "Plantilla Wpp", href: "/corporate/settings", icon: Layout },
 ]
 
-export function CorporateSidebar() {
+interface CorporateSidebarProps {
+    isMobile?: boolean
+}
+
+export function CorporateSidebar({ isMobile }: CorporateSidebarProps) {
     const pathname = usePathname()
 
     return (
-        <div className="flex flex-col h-full bg-[#050505] backdrop-blur-xl border-r border-indigo-500/10 w-64 text-white hidden md:flex overflow-y-auto custom-scrollbar">
+        <div className={cn(
+            "flex flex-col h-full bg-[#050505] backdrop-blur-xl text-white overflow-y-auto custom-scrollbar",
+            !isMobile ? "border-r border-indigo-500/10 w-64 hidden md:flex" : "w-full"
+        )}>
             {/* Logo Area */}
             <div className="p-6 flex flex-col items-center gap-2 border-b border-white/5">
                 <Link href="/" className="flex items-center justify-center mb-1">
@@ -74,7 +81,7 @@ export function CorporateSidebar() {
 
             {/* User Section / Logout */}
             <div className="p-4 border-t border-white/5 space-y-4">
-                <div className="p-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 hidden md:block">
+                <div className="p-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10">
                     <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">MODO</p>
                     <p className="text-sm font-bold text-indigo-400">Control Flotas</p>
                 </div>

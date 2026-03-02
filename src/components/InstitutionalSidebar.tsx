@@ -24,11 +24,18 @@ const institutionalNavigation = [
     { name: "Plantilla Wpp", href: "/institutional/settings", icon: Settings },
 ]
 
-export function InstitutionalSidebar() {
+interface InstitutionalSidebarProps {
+    isMobile?: boolean
+}
+
+export function InstitutionalSidebar({ isMobile }: InstitutionalSidebarProps) {
     const pathname = usePathname()
 
     return (
-        <div className="flex flex-col h-full bg-[#050505] backdrop-blur-xl border-r border-emerald-500/10 w-64 text-white hidden md:flex overflow-y-auto custom-scrollbar">
+        <div className={cn(
+            "flex flex-col h-full bg-[#050505] backdrop-blur-xl text-white overflow-y-auto custom-scrollbar",
+            !isMobile ? "border-r border-emerald-500/10 w-64 hidden md:flex" : "w-full"
+        )}>
             {/* Logo Area */}
             <div className="p-6 flex flex-col items-center gap-2 border-b border-white/5">
                 <Link href="/" className="flex items-center justify-center mb-1">

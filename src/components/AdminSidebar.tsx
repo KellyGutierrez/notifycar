@@ -32,11 +32,18 @@ const adminNavigation = [
     { name: "Configuración", href: "/admin/settings", icon: Settings },
 ]
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+    isMobile?: boolean
+}
+
+export function AdminSidebar({ isMobile }: AdminSidebarProps) {
     const pathname = usePathname()
 
     return (
-        <div className="flex flex-col h-full bg-[#050505] backdrop-blur-xl border-r border-cyan-500/10 w-64 text-white hidden md:flex overflow-y-auto custom-scrollbar">
+        <div className={cn(
+            "flex flex-col h-full bg-[#050505] backdrop-blur-xl text-white overflow-y-auto custom-scrollbar",
+            !isMobile ? "border-r border-cyan-500/10 w-64 hidden md:flex" : "w-full"
+        )}>
             {/* Logo Area */}
             <div className="p-6 flex flex-col items-center gap-2 border-b border-white/5">
                 <Link href="/" className="flex items-center justify-center mb-1">

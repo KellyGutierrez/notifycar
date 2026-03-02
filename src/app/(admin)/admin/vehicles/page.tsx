@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Prisma } from "@/generated/client"
 import { ViewSwitcher, ViewMode } from "@/components/ViewSwitcher"
 import { cn } from "@/lib/utils"
+import VehicleActions from "./VehicleActions"
 
 interface PageProps {
     searchParams: Promise<{
@@ -110,9 +111,12 @@ export default async function AdminVehiclesPage({ searchParams }: PageProps) {
                                             <div className="px-4 py-1.5 bg-gradient-to-br from-cyan-600 to-blue-700 text-white font-black text-xl rounded-xl shadow-2xl shadow-cyan-900/40 tracking-widest border border-white/10 uppercase">
                                                 {vehicle.plate}
                                             </div>
-                                            <div className="text-right">
-                                                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Registrado el</p>
-                                                <p className="text-xs text-cyan-400 font-mono">{new Date(vehicle.createdAt).toLocaleDateString()}</p>
+                                            <div className="flex items-center gap-3">
+                                                <div className="text-right">
+                                                    <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Registrado el</p>
+                                                    <p className="text-xs text-cyan-400 font-mono">{new Date(vehicle.createdAt).toLocaleDateString()}</p>
+                                                </div>
+                                                <VehicleActions vehicle={vehicle} view="grid" />
                                             </div>
                                         </div>
 
@@ -162,6 +166,7 @@ export default async function AdminVehiclesPage({ searchParams }: PageProps) {
                                         <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-cyan-500">Propietario</th>
                                         <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-cyan-500">Registro</th>
                                         <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-cyan-500">Estado</th>
+                                        <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-cyan-500 text-right">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
@@ -202,6 +207,9 @@ export default async function AdminVehiclesPage({ searchParams }: PageProps) {
                                                     <span className="text-[10px] font-black text-gray-500 bg-white/5 px-2 py-0.5 rounded-full uppercase">Estándar</span>
                                                 )}
                                             </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <VehicleActions vehicle={vehicle} view="list" /> {/* Added VehicleActions */}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -220,6 +228,7 @@ export default async function AdminVehiclesPage({ searchParams }: PageProps) {
                                     <div className="p-3 bg-gradient-to-br from-white/10 to-transparent rounded-full border border-white/5 group-hover:scale-110 transition-transform">
                                         <Car className="h-6 w-6 text-cyan-400" />
                                     </div>
+                                    <VehicleActions vehicle={vehicle} view="compact" /> {/* Added VehicleActions */}
                                     <div>
                                         <p className="text-lg font-black text-white uppercase tracking-tighter leading-none">{vehicle.plate}</p>
                                         <p className="text-[8px] text-gray-500 font-bold uppercase mt-1 truncate max-w-full italic">{vehicle.brand} {vehicle.model}</p>

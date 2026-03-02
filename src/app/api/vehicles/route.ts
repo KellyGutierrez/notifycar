@@ -92,7 +92,7 @@ export async function PUT(req: Request) {
             return new NextResponse("Vehicle not found", { status: 404 })
         }
 
-        if (existingVehicle.userId !== session.user.id) {
+        if (existingVehicle.userId !== session.user.id && session.user.role !== "ADMIN") {
             return new NextResponse("No autorizado", { status: 401 })
         }
 
@@ -124,6 +124,38 @@ export async function PUT(req: Request) {
         return NextResponse.json(vehicle)
     } catch (error) {
         console.error("[VEHICLES_PUT]", error)
+        return new NextResponse("Internal Error", { status: 500 })
+    }
+}
+
+export async function DELETE(req: Request) {
+    try {
+        const session = await getServerSession(authOptions)
+        if (!session) {
+            return new NextResponse("Unauthorized", { status: 401 })
+        }
+
+        const { searchParams } = new URL(req.url)
+        const id = searchParams.get("id")
+
+        if (!id) {
+            return new NextResponse("Vehicle ID required", { status: 400 })
+        }
+
+        const vehicle = await db.vehicle.findUnique({ where: { id } })
+        if (!vehicle) {
+            return new NextResponse("Vehicle not found", { status: 404 })
+        }
+
+        // Allow owner OR Admin
+        if (vehicle.userId !== session.user.id && session.user.role !== "ADMIN") {
+            return new NextResponse("No autorizado", { status: 401 })
+        }
+
+        await db.vehicle.delete({ where: { id } })
+        return new NextResponse(null, { status: 204 })
+    } catch (error) {
+        console.error("[VEHICLES_DELETE]", error)
         return new NextResponse("Internal Error", { status: 500 })
     }
 }
