@@ -118,16 +118,16 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
     const buttonText = initialData ? "Actualizar" : "Guardar"
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-gray-900 border border-white/10 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 text-white">
-                <div className="flex justify-between items-center p-6 border-b border-white/10">
+        <div className="fixed inset-0 z-[60] flex items-start sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto pt-safe pb-safe">
+            <div className="bg-gray-900 border border-white/10 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 text-white my-auto">
+                <div className="sticky top-0 z-10 bg-gray-900 flex justify-between items-center p-5 sm:p-6 border-b border-white/10">
                     <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 bg-green-500/10 rounded-xl flex items-center justify-center">
-                            <Car className="h-6 w-6 text-green-500" />
+                        <div className="h-9 w-9 sm:h-10 sm:w-10 bg-green-500/10 rounded-xl flex items-center justify-center">
+                            <Car className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold">{title}</h2>
-                            <p className="text-xs text-gray-400">{description}</p>
+                            <h2 className="text-lg sm:text-xl font-bold">{title}</h2>
+                            <p className="text-[10px] sm:text-xs text-gray-400">{description}</p>
                         </div>
                     </div>
                     <button
@@ -138,7 +138,7 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
                     {/* Vehicle Type Selection */}
                     <div className="grid grid-cols-2 gap-3 mb-6">
                         <button
