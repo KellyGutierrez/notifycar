@@ -204,9 +204,9 @@ export default function SearchSection() {
                             </h2>
                         </div>
 
-                        <div className="pt-4 flex justify-center">
-                            <div className="bg-white border-4 border-gray-900 rounded-2xl px-12 py-6 shadow-xl relative overflow-hidden group hover:scale-105 transition-transform duration-500">
-                                <p className="text-6xl font-black text-gray-900 tracking-tighter">
+                        <div className="pt-4 flex justify-center px-4">
+                            <div className="bg-white border-[3px] sm:border-4 border-gray-900 rounded-xl sm:rounded-2xl px-6 py-3 sm:px-12 sm:py-6 shadow-xl relative overflow-hidden flex items-center justify-center group hover:scale-105 transition-transform duration-500 min-w-[200px]">
+                                <p className="text-4xl sm:text-6xl font-black text-gray-900 tracking-tighter leading-none text-center">
                                     {result.plate.replace(/-/g, '')}
                                 </p>
                             </div>
