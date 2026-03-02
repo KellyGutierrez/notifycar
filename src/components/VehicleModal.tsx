@@ -96,8 +96,14 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                 onClose()
                 router.refresh()
             } else {
-                const errorMsg = await response.text()
-                setError(errorMsg || "Error al procesar la solicitud")
+                const contentType = response.headers.get("content-type")
+                if (contentType && contentType.includes("application/json")) {
+                    const errorData = await response.json()
+                    setError(errorData.message || "Error al procesar la solicitud")
+                } else {
+                    const errorMsg = await response.text()
+                    setError(errorMsg || "Error al procesar la solicitud")
+                }
             }
         } catch (error) {
             console.error(error)

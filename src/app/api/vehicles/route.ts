@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { db } from "@/lib/db"
+import { sendWhatsAppMessage } from "@/lib/evolution"
+import crypto from "crypto"
 
 export async function GET() {
     const session = await getServerSession(authOptions)
@@ -43,11 +45,60 @@ export async function POST(req: Request) {
 
         // Verificar si la placa ya existe
         const existingPlate = await db.vehicle.findUnique({
-            where: { plate: normalizedPlate }
+            where: { plate: normalizedPlate },
+            include: {
+                user: true
+            }
         })
 
         if (existingPlate) {
-            return new NextResponse("Esta placa ya está registrada con otro vehículo", { status: 400 })
+            // Si el vehículo ya es mío, no hacemos nada más
+            if (existingPlate.userId === session.user.id) {
+                return new NextResponse("Ya tienes este vehículo registrado", { status: 400 })
+            }
+
+            // --- FEATURE: NOTIFICAR AL ANTIGUO DUEÑO ---
+            try {
+                // Generar token de eliminación (Link de un solo uso o temporal)
+                const token = crypto.randomBytes(32).toString('hex')
+
+                // Guardar el token en VerificationToken (usamos identifier = plate)
+                // Expira en 24 horas
+                await db.verificationToken.create({
+                    data: {
+                        identifier: normalizedPlate,
+                        token: token,
+                        expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+                    }
+                });
+
+                // Obtener teléfono del dueño actual
+                const owner = existingPlate.user;
+                const ownerPhone = owner?.phoneNumber ? `${owner.phonePrefix || ""}${owner.phoneNumber}` : existingPlate.ownerPhone;
+                const ownerName = owner?.name || existingPlate.ownerName || "Usuario";
+
+                if (ownerPhone) {
+                    const host = req.headers.get("host");
+                    const protocol = host?.includes("localhost") ? "http" : "https";
+                    const deleteUrl = `${protocol}://${host}/vehicles/delete?token=${token}&plate=${normalizedPlate}`;
+
+                    const message = `⚠️ *NotifyCar: Aviso de propiedad*\n\nHola ${ownerName}, otro usuario está intentando registrar el vehículo con placa *${normalizedPlate}*.\n\nSi ya no eres el propietario de este vehículo, por favor pulsa el siguiente link para eliminarlo de tu cuenta y permitir que el nuevo dueño lo registre:\n\n🔗 ${deleteUrl}\n\nSi aún eres el dueño, simplemente ignora este mensaje.`;
+
+                    await sendWhatsAppMessage(ownerPhone, message);
+                }
+
+                return new NextResponse(
+                    JSON.stringify({
+                        error: "PLATE_EXISTS",
+                        message: "Esta placa ya está registrada. Hemos enviado un mensaje al propietario actual para que lo libere si ya no es el dueño."
+                    }),
+                    { status: 409, headers: { 'Content-Type': 'application/json' } }
+                );
+
+            } catch (notifErr) {
+                console.error("Error sending plate release notification:", notifErr);
+                return new NextResponse("Esta placa ya está registrada con otro vehículo", { status: 400 })
+            }
         }
 
         const vehicle = await db.vehicle.create({

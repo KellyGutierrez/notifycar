@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { db } from "@/lib/db"
+import { sendWhatsAppMessage } from "@/lib/evolution"
 
 export async function GET() {
     const session = await getServerSession(authOptions)
@@ -10,8 +11,6 @@ export async function GET() {
     }
 
     try {
-        // Fetch notifications related to the user's vehicles or created by the user
-        // For now, let's fetch notifications for vehicles owned by the current user
         const notifications = await db.notification.findMany({
             where: {
                 vehicle: {
@@ -96,43 +95,27 @@ export async function POST(req: Request) {
             return new NextResponse(`Este vehículo ya recibió un mensaje recientemente. Por favor, espera ${timeLeft} minuto(s) antes de enviar otro.`, { status: 429 })
         }
 
-        // Determine target contact and name based on role
-        // Default values from the main user
         let targetName = vehicle.user?.name || "Usuario"
         let targetPhone = `${vehicle.user?.phonePrefix || ""}${vehicle.user?.phoneNumber || ""}`
 
-        console.log("🔍 [DEBUG] Vehicle Data:", {
-            organizationId: vehicle.organizationId,
-            ownerPhone: vehicle.ownerPhone,
-            driverPhone: vehicle.driverPhone
-        });
-
-        // If it's a corporate vehicle and no role is specified, we try to find a direct contact
         if (!recipientRole && vehicle.organizationId) {
             if (vehicle.driverPhone) {
                 recipientRole = "DRIVER";
-                console.log("ℹ️ Corporate vehicle detected, defaulting to DRIVER contact");
             } else if (vehicle.ownerPhone) {
                 recipientRole = "OWNER";
-                console.log("ℹ️ Corporate vehicle detected, defaulting to OWNER contact");
             }
         }
 
         if (recipientRole === "OWNER" && vehicle.ownerPhone) {
             targetPhone = vehicle.ownerPhone
             targetName = vehicle.ownerName || targetName || "Propietario"
-            console.log("✅ Target: OWNER", targetPhone);
         } else if (recipientRole === "DRIVER" && vehicle.driverPhone) {
             targetPhone = vehicle.driverPhone
             targetName = vehicle.driverName || targetName || "Conductor"
-            console.log("✅ Target: DRIVER", targetPhone);
-        } else {
-            console.log("ℹ️ Final target: User phone", targetPhone);
         }
 
-        // Buscar números de emergencia según el país
         let emergency = { police: "123", transit: "123", general: "123" };
-        const userCountry = (vehicle.user.country || "").trim().toUpperCase();
+        const userCountry = (vehicle.user?.country || "").trim().toUpperCase();
 
         if (userCountry) {
             const config = await db.emergencyConfig.findUnique({
@@ -145,12 +128,10 @@ export async function POST(req: Request) {
                     transit: config.transit,
                     general: config.emergency
                 };
-            } else {
-                if (userCountry === "CO" || userCountry === "COLOMBIA") {
-                    emergency = { police: "123", transit: "127", general: "123" };
-                } else if (userCountry === "MX" || userCountry === "MEXICO" || userCountry === "MÉXICO") {
-                    emergency = { police: "911", transit: "911", general: "911" };
-                }
+            } else if (userCountry === "CO" || userCountry === "COLOMBIA") {
+                emergency = { police: "123", transit: "127", general: "123" };
+            } else if (userCountry === "MX" || userCountry === "MEXICO" || userCountry === "MÉXICO") {
+                emergency = { police: "911", transit: "911", general: "911" };
             }
         }
 
@@ -158,10 +139,7 @@ export async function POST(req: Request) {
         const vehicleTypeLabel = vehicle.type === 'MOTORCYCLE' ? 'MOTOCICLETA' : 'VEHÍCULO';
         const electricTag = vehicle.isElectric ? '⚡ *VEHÍCULO ELÉCTRICO*' : '';
 
-        // 1. Intentar obtener wrapper de la organización vinculada
         let wrapper = "";
-
-        // Primero, si el vehículo pertenece a una organización, intentamos usar su wrapper
         if (vehicle.organizationId) {
             const org = await db.organization.findUnique({
                 where: { id: vehicle.organizationId },
@@ -172,7 +150,6 @@ export async function POST(req: Request) {
             }
         }
 
-        // 2. Si no hay wrapper de org (o el vehículo no tiene org), buscar el global en settings
         if (!wrapper) {
             const settings = await db.systemSetting.findUnique({ where: { id: "default" } });
             if (settings?.messageWrapper) {
@@ -180,12 +157,10 @@ export async function POST(req: Request) {
             }
         }
 
-        // 3. Fallback al diseño por defecto si todo lo anterior falla
         if (!wrapper) {
             wrapper = `Hola {{name}} 👋🏻\nRecibiste un aviso automático de NotifyCar 🚗💚.\n\nUna persona que se encontraba cerca de tu vehículo:\n🚗 {{marca}} - {{modelo}} {{electrico}}\n\nℹ️ Este aviso fue enviado a través de NotifyCar usando únicamente la placa de tu vehículo.\n\n📞 Emergencias: {{NUM_EMERGENCIAS}}`;
         }
 
-        // 4. Reemplazo de etiquetas (Insertamos el mensaje de primero para que sus etiquetas internas se reemplacen luego)
         const finalMessage = wrapper
             .replace(/{{mensaje}}/g, content)
             .replace(/{{raw_message}}/g, content)
@@ -207,9 +182,7 @@ export async function POST(req: Request) {
             .replace(/{{NUM_EMERGENCIAS}}/g, emergency.general)
             .replace(/{{role}}/g, recipientRole === "OWNER" ? "Propietario" : recipientRole === "DRIVER" ? "Conductor" : "Usuario");
 
-        // Create the notification in DB (or mock it for virtual vehicle)
         let notification: any;
-
         if (vehicleId === "virtual-test-id") {
             notification = {
                 id: "virtual-notif-id-" + Date.now(),
@@ -217,8 +190,7 @@ export async function POST(req: Request) {
                 content: finalMessage,
                 type: type || "APP",
                 status: "SENT",
-                createdAt: new Date(),
-                updatedAt: new Date()
+                createdAt: new Date()
             };
         } else {
             notification = await db.notification.create({
@@ -233,7 +205,6 @@ export async function POST(req: Request) {
             })
         }
 
-        // Fetch webhook from DB settings first, then env
         let webhookUrl = process.env.NOTIFICATION_WEBHOOK_URL;
         const systemSettings = await db.systemSetting.findUnique({ where: { id: "default" } });
         if (systemSettings?.webhookUrl) {
@@ -242,45 +213,16 @@ export async function POST(req: Request) {
 
         if (targetPhone) {
             try {
-                // Limpiar: dejar solo dígitos
                 let fullPhone = targetPhone.replace(/\D/g, '');
-
-                // Si tiene 10 dígitos (Colombia) y no empieza por 57, se lo ponemos
                 if (fullPhone.length === 10 && !fullPhone.startsWith('57')) {
                     fullPhone = `57${fullPhone}`;
                 }
 
-                // --- ENVÍO POR EVOLUTION API (OPCIONAL) ---
-                const evolutionUrl = process.env.EVOLUTION_API_URL;
-                const evolutionKey = process.env.EVOLUTION_API_KEY;
-                const evolutionInstance = process.env.EVOLUTION_INSTANCE || "Notifycar";
+                // WhatsApp via central utility
+                await sendWhatsAppMessage(fullPhone, finalMessage);
 
-                if (evolutionUrl && evolutionKey && evolutionKey !== "TU_API_KEY_AQUÍ") {
-                    console.log("🚀 Enviando vía Evolution API...");
-                    fetch(`${evolutionUrl}/message/sendText/${evolutionInstance}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'apikey': evolutionKey
-                        },
-                        body: JSON.stringify({
-                            number: fullPhone,
-                            options: {
-                                delay: 1200,
-                                presence: "composing",
-                                linkPreview: true
-                            },
-                            textMessage: {
-                                text: finalMessage
-                            }
-                        })
-                    }).then(r => console.log("📱 Evolution API Response Status:", r.status))
-                        .catch(err => console.error("❌ Evolution API Error:", err));
-                }
-
-                // --- ENVÍO POR WEBHOOK N8N (EXISTENTE) ---
+                // Webhook
                 if (webhookUrl) {
-                    console.log("🚀 Enviando a n8n Webhook...");
                     fetch(webhookUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -289,19 +231,14 @@ export async function POST(req: Request) {
                             plate: vehicle.plate,
                             ownerName: targetName,
                             phoneNumber: fullPhone,
-                            raw_message: content,
                             message: finalMessage,
-                            content: finalMessage,
                             timestamp: notification.createdAt
                         })
-                    }).then(r => console.log("📡 Webhook Response Status:", r.status))
-                        .catch(err => console.error("❌ Webhook fetch error:", err));
+                    }).catch(err => console.error("❌ Webhook error:", err));
                 }
             } catch (err) {
-                console.error("Error preparing notification data:", err);
+                console.error("Error preparing notification:", err);
             }
-        } else {
-            console.log("⚠️ Notification skipped. Phone:", targetPhone);
         }
 
         return NextResponse.json(notification)
