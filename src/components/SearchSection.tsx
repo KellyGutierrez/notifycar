@@ -143,14 +143,14 @@ export default function SearchSection() {
                 className="bg-white rounded-2xl border border-gray-100 shadow-sm group focus-within:ring-2 focus-within:ring-brand/20 transition-all overflow-hidden"
             >
                 {/* Single-row layout: icon + input + button */}
-                <div className="flex items-center gap-2 p-2">
-                    <div className="pl-3 text-gray-400 shrink-0">
-                        <Search className="h-5 w-5 group-focus-within:text-brand transition-colors" />
+                <div className="flex items-center gap-1 sm:gap-2 p-1.5 sm:p-2">
+                    <div className="pl-2 sm:pl-3 text-gray-400 shrink-0">
+                        <Search className="h-4 w-4 sm:h-5 sm:w-5 group-focus-within:text-brand transition-colors" />
                     </div>
                     <input
                         type="text"
-                        placeholder="Ingrese la placa (Ej: ABC-123)"
-                        className="flex-1 min-w-0 py-3 text-base sm:text-lg outline-none text-gray-700 placeholder:text-gray-400 font-medium uppercase bg-transparent"
+                        placeholder="Placa (Ej: ABC-123)"
+                        className="flex-1 w-0 min-w-0 py-3 text-base sm:text-lg outline-none text-gray-700 placeholder:text-gray-400 font-medium uppercase bg-transparent"
                         value={plate}
                         onChange={(e) => setPlate(e.target.value)}
                         autoCapitalize="characters"
@@ -162,12 +162,16 @@ export default function SearchSection() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="shrink-0 bg-brand hover:bg-brand-dark active:scale-95 text-white px-5 sm:px-8 py-3 rounded-xl font-bold transition-all disabled:opacity-70 flex items-center gap-2 text-sm sm:text-base"
+                        className="shrink-0 bg-brand hover:bg-brand-dark active:scale-95 text-white px-4 sm:px-8 py-3 rounded-xl font-bold transition-all disabled:opacity-70 flex items-center justify-center min-w-[48px] sm:min-w-[120px]"
                     >
-                        {loading
-                            ? <Loader2 className="h-5 w-5 animate-spin" />
-                            : <><Search className="h-4 w-4 sm:hidden" /><span className="hidden sm:inline">Buscar</span><span className="sm:hidden">Buscar</span></>
-                        }
+                        {loading ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                            <>
+                                <Search className="h-5 w-5 sm:hidden" />
+                                <span className="hidden sm:inline">Buscar</span>
+                            </>
+                        )}
                     </button>
                 </div>
             </form>
