@@ -118,9 +118,10 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
     const buttonText = initialData ? "Actualizar" : "Guardar"
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-start sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto pt-safe pb-safe">
-            <div className="bg-gray-900 border border-white/10 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 text-white my-auto">
-                <div className="sticky top-0 z-10 bg-gray-900 flex justify-between items-center p-5 sm:p-6 border-b border-white/10">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm pt-safe pb-safe">
+            <div className="bg-gray-900 border border-white/10 w-full max-w-md rounded-[2rem] shadow-2xl flex flex-col max-h-[90dvh] max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-200 text-white">
+                {/* Header - Fixed */}
+                <div className="shrink-0 flex justify-between items-center p-5 sm:p-6 border-b border-white/10">
                     <div className="flex items-center gap-3">
                         <div className="h-9 w-9 sm:h-10 sm:w-10 bg-green-500/10 rounded-xl flex items-center justify-center">
                             <Car className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
@@ -138,7 +139,8 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
+                {/* Body - Scrollable */}
+                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 custom-scrollbar">
                     {/* Vehicle Type Selection */}
                     <div className="grid grid-cols-2 gap-3 mb-6">
                         <button
