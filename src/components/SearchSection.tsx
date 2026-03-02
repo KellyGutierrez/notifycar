@@ -140,24 +140,36 @@ export default function SearchSection() {
         <div className="w-full max-w-2xl mx-auto mt-2 space-y-6">
             <form
                 onSubmit={handleSearch}
-                className="bg-white p-2 rounded-2xl border border-gray-100 flex items-center gap-2 group focus-within:ring-2 focus-within:ring-brand/20 transition-all"
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm group focus-within:ring-2 focus-within:ring-brand/20 transition-all overflow-hidden"
             >
-                <div className="pl-4 text-gray-400">
-                    <Search className="h-5 w-5 group-focus-within:text-brand transition-colors" />
+                {/* Single-row layout: icon + input + button */}
+                <div className="flex items-center gap-2 p-2">
+                    <div className="pl-3 text-gray-400 shrink-0">
+                        <Search className="h-5 w-5 group-focus-within:text-brand transition-colors" />
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="Ingrese la placa (Ej: ABC-123)"
+                        className="flex-1 min-w-0 py-3 text-base sm:text-lg outline-none text-gray-700 placeholder:text-gray-400 font-medium uppercase bg-transparent"
+                        value={plate}
+                        onChange={(e) => setPlate(e.target.value)}
+                        autoCapitalize="characters"
+                        autoCorrect="off"
+                        autoComplete="off"
+                        spellCheck={false}
+                        inputMode="text"
+                    />
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="shrink-0 bg-brand hover:bg-brand-dark active:scale-95 text-white px-5 sm:px-8 py-3 rounded-xl font-bold transition-all disabled:opacity-70 flex items-center gap-2 text-sm sm:text-base"
+                    >
+                        {loading
+                            ? <Loader2 className="h-5 w-5 animate-spin" />
+                            : <><Search className="h-4 w-4 sm:hidden" /><span className="hidden sm:inline">Buscar</span><span className="sm:hidden">Buscar</span></>
+                        }
+                    </button>
                 </div>
-                <input
-                    type="text"
-                    placeholder="Ingrese la placa (Ej: ABC-123)"
-                    className="flex-1 py-3 text-lg outline-none text-gray-700 placeholder:text-gray-400 font-medium uppercase"
-                    value={plate}
-                    onChange={(e) => setPlate(e.target.value)}
-                />
-                <button
-                    disabled={loading}
-                    className="bg-brand hover:bg-brand-dark text-white px-8 py-3 rounded-xl font-bold transition-all disabled:opacity-70 flex items-center gap-2"
-                >
-                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Buscar"}
-                </button>
             </form>
 
             {error && (
