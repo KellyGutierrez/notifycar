@@ -97,7 +97,7 @@ export default function SearchSection() {
         if (!result || selectedTemplates.length === 0) return
 
         // Scroll al inicio para ver feedback
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        // window.scrollTo({ top: 0, behavior: "smooth" });
 
         const selected = templates.filter(t => selectedTemplates.includes(t.id))
         if (selected.length === 0) return
@@ -295,15 +295,7 @@ export default function SearchSection() {
                                         const cat = t.category?.toUpperCase();
                                         if (userProfile === "PASSENGER") return cat === "SERVICIO";
                                         return cat === "COMÚN" || cat === "URGENTE" || cat === "COMMON" || cat === "URGENT";
-                                    })
-                                    .filter(t => {
-                                        // Si hay algo seleccionado, solo mostramos ese
-                                        if (selectedTemplates.length > 0) {
-                                            return selectedTemplates.includes(t.id);
-                                        }
-                                        return true;
-                                    })
-                                    .length > 0 ? (
+                                    }).length > 0 ? (
                                     templates
                                         .filter(t => {
                                             if (!result.organizationId) return true;
@@ -311,19 +303,17 @@ export default function SearchSection() {
                                             if (userProfile === "PASSENGER") return cat === "SERVICIO";
                                             return cat === "COMÚN" || cat === "URGENTE" || cat === "COMMON" || cat === "URGENT";
                                         })
-                                        .filter(t => {
-                                            if (selectedTemplates.length > 0) {
-                                                return selectedTemplates.includes(t.id);
-                                            }
-                                            return true;
-                                        })
                                         .map(t => (
                                             <div key={t.id} className="space-y-4">
                                                 <button
                                                     onClick={() => toggleTemplate(t.id)}
                                                     className={cn(
                                                         "w-full p-5 rounded-2xl text-left border-2 transition-all relative group flex flex-col",
-                                                        selectedTemplates.includes(t.id) ? "bg-brand/5 border-brand shadow-md" : "bg-white border-gray-100 hover:border-brand/30 hover:scale-[1.02]"
+                                                        selectedTemplates.includes(t.id)
+                                                            ? "bg-brand/5 border-brand shadow-md"
+                                                            : selectedTemplates.length > 0
+                                                                ? "bg-white border-gray-100 opacity-40 scale-95 grayscale"
+                                                                : "bg-white border-gray-100 hover:border-brand/30 hover:scale-[1.02]"
                                                     )}
                                                 >
                                                     <div className="flex items-center justify-between w-full">
@@ -345,17 +335,6 @@ export default function SearchSection() {
                                                         </div>
                                                     )}
                                                 </button>
-
-                                                {selectedTemplates.includes(t.id) && (
-                                                    <div className="flex justify-center">
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); setSelectedTemplates([]); }}
-                                                            className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-brand transition-colors"
-                                                        >
-                                                            Cambiar mensaje
-                                                        </button>
-                                                    </div>
-                                                )}
                                             </div>
                                         ))
                                 ) : (
