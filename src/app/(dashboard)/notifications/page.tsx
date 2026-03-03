@@ -1,7 +1,7 @@
 import { authOptions } from "@/lib/auth"
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
-import { Bell, CheckCheck, Clock, AlertTriangle } from "lucide-react"
+import { Bell, CheckCheck, Clock, AlertTriangle, MessageSquare } from "lucide-react"
 import { db } from "@/lib/db"
 
 export default async function NotificationsPage() {
@@ -25,14 +25,16 @@ export default async function NotificationsPage() {
         }
     })
 
-    const formatTime = (date: Date) => {
-        const now = new Date()
-        const diff = now.getTime() - date.getTime()
-        const mins = Math.floor(diff / 60000)
-        if (mins < 60) return `Hace ${mins} min`
-        const hours = Math.floor(mins / 60)
-        if (hours < 24) return `Hace ${hours} horas`
-        return date.toLocaleDateString()
+    const formatDate = (date: Date) => {
+        return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    }
+
+    // Extracts only the essential user message from the full notification template
+    const extractMessage = (content: string): string => {
+        const msgMatch = content.match(/Te dej[oó] este mensaje[:\s]*["\u201c]?([^"\u201d\n]+)["\u201d]?/i)
+        if (msgMatch) return msgMatch[1].trim().replace(/["\u201c\u201d]/g, '')
+        const firstLine = content.split(/\n|\u2015|\u2500/)[0].trim()
+        return firstLine.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim().slice(0, 120)
     }
 
     return (
@@ -51,31 +53,34 @@ export default async function NotificationsPage() {
 
             <div className="space-y-4">
                 {notifications.length > 0 ? (
-                    notifications.map((notif) => (
-                        <div key={notif.id} className="bg-white/5 border border-white/10 rounded-xl p-4 flex gap-4 hover:bg-white/10 transition group">
-                            <div className={`h-12 w-12 rounded-full flex items-center justify-center flex-shrink-0 ${notif.type === 'alert' || notif.content.toLowerCase().includes('emergencia') || notif.content.toLowerCase().includes('peligro') ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'
-                                }`}>
-                                {(notif.type === 'alert' || notif.content.toLowerCase().includes('emergencia')) ? <AlertTriangle className="h-6 w-6" /> : <Bell className="h-6 w-6" />}
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between items-start">
-                                    <div className="flex flex-col">
-                                        <h3 className="font-semibold text-white group-hover:text-green-400 transition-colors">
-                                            {notif.vehicle.plate} - {notif.vehicle.brand}
-                                        </h3>
-                                        <div className="flex items-center gap-1 text-[10px] text-gray-500 uppercase font-bold mt-0.5">
-                                            Status: {notif.status}
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                                        <Clock className="h-3 w-3" />
-                                        {formatTime(new Date(notif.createdAt))}
-                                    </div>
+                    notifications.map((notif) => {
+                        const isAlert = notif.type === 'alert' || notif.content.toLowerCase().includes('emergencia') || notif.content.toLowerCase().includes('peligro')
+                        const summary = extractMessage(notif.content)
+                        return (
+                            <div key={notif.id} className="bg-white/5 border border-white/10 rounded-xl p-4 flex gap-3 hover:bg-white/10 transition group">
+                                <div className={`h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${isAlert ? 'bg-red-500/20 text-red-400' : 'bg-green-500/15 text-green-400'}`}>
+                                    {isAlert ? <AlertTriangle className="h-5 w-5" /> : <MessageSquare className="h-5 w-5" />}
                                 </div>
-                                <p className="text-gray-400 text-sm mt-2">{notif.content}</p>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <h3 className="font-semibold text-white text-sm group-hover:text-green-400 transition-colors truncate">
+                                            {notif.vehicle.plate} · {notif.vehicle.brand}
+                                        </h3>
+                                        <span className="text-[11px] text-gray-500 shrink-0 flex items-center gap-1">
+                                            <Clock className="h-3 w-3" />
+                                            {formatDate(new Date(notif.createdAt))}
+                                        </span>
+                                    </div>
+                                    <p className="text-gray-400 text-sm mt-1 line-clamp-2">
+                                        {summary}
+                                    </p>
+                                    <span className={`inline-block mt-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${notif.status === 'SENT' ? 'bg-green-500/10 text-green-400' : 'bg-gray-500/10 text-gray-400'}`}>
+                                        {notif.status === 'SENT' ? 'Enviado' : notif.status}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    ))
+                        )
+                    })
                 ) : (
                     <div className="flex flex-col items-center justify-center py-20 bg-white/5 border border-white/10 rounded-2xl text-center">
                         <div className="h-16 w-16 bg-white/5 rounded-full flex items-center justify-center mb-4">

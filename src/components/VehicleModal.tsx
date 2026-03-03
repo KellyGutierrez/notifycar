@@ -118,8 +118,8 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
     const buttonText = initialData ? "Actualizar" : "Guardar"
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm pt-safe pb-safe">
-            <div className="bg-gray-900 border border-white/10 w-full max-w-md rounded-[2rem] shadow-2xl flex flex-col max-h-[90dvh] max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-200 text-white">
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm">
+            <div className="bg-gray-900 border border-white/10 w-full max-w-md sm:rounded-[2rem] rounded-t-[2rem] shadow-2xl flex flex-col max-h-[92dvh] overflow-hidden animate-in fade-in slide-in-from-bottom-4 sm:zoom-in duration-200 text-white">
                 {/* Header - Fixed */}
                 <div className="shrink-0 flex justify-between items-center p-5 sm:p-6 border-b border-white/10">
                     <div className="flex items-center gap-3">
@@ -140,7 +140,7 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                 </div>
 
                 {/* Body - Scrollable */}
-                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 custom-scrollbar">
+                <form id="vehicle-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 custom-scrollbar">
                     {/* Vehicle Type Selection */}
                     <div className="grid grid-cols-2 gap-3 mb-6">
                         <button
@@ -273,28 +273,30 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                             </p>
                         </div>
                     )}
-
-                    <div className="pt-6 flex gap-3">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="flex-1 px-4 py-3 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition"
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="flex-1 px-4 py-3 rounded-xl bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:opacity-50 text-white font-bold shadow-lg shadow-green-900/20 transition flex items-center justify-center gap-2"
-                        >
-                            {loading ? (
-                                <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            ) : (
-                                buttonText
-                            )}
-                        </button>
-                    </div>
                 </form>
+
+                {/* Footer - Always visible, outside scroll area */}
+                <div className="shrink-0 flex gap-3 p-4 sm:p-5 border-t border-white/10 bg-gray-900">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="flex-1 px-4 py-3 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="submit"
+                        form="vehicle-form"
+                        disabled={loading}
+                        className="flex-1 px-4 py-3 rounded-xl bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:opacity-50 text-white font-bold shadow-lg shadow-green-900/20 transition flex items-center justify-center gap-2"
+                    >
+                        {loading ? (
+                            <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                            buttonText
+                        )}
+                    </button>
+                </div>
             </div>
         </div>
     )
