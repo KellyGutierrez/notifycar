@@ -114,7 +114,7 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
     }
 
     const title = initialData ? "Editar Vehículo" : "Registrar Vehículo"
-    const description = initialData ? "Actualiza los datos de tu auto" : "Completa los datos de tu auto"
+    const description = initialData ? "Actualiza los datos de tu vehículo (v2)" : "Completa los datos de tu vehículo (v2)"
     const buttonText = initialData ? "Actualizar" : "Guardar"
 
     return (
