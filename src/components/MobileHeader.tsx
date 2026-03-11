@@ -79,10 +79,7 @@ export function MobileHeader({
 
                 {/* Brand */}
                 <Link href="/" className="flex items-center gap-2 select-none">
-                    <img src={logo} alt={title} className="h-9 w-auto object-contain drop-shadow-sm" />
-                    <span className={cn("text-[11px] font-black uppercase tracking-widest", textClass)}>
-                        {title}
-                    </span>
+                    <img src={logo} alt={title} className="h-10 w-auto object-contain" />
                 </Link>
 
                 {/* Bell */}

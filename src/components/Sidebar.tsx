@@ -31,9 +31,9 @@ export function Sidebar({ isMobile }: SidebarProps) {
             <div className="p-6 flex items-center justify-center border-b border-white/5">
                 <Link href="/" className="flex items-center justify-center">
                     <img
-                        src="/logo.png"
+                        src="/logo_white.png"
                         alt="NotifyCar"
-                        className="h-20 w-auto object-contain"
+                        className="h-16 w-auto object-contain"
                     />
                 </Link>
             </div>
