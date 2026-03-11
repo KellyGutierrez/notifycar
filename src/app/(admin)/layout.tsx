@@ -30,7 +30,7 @@ export default async function AdminLayout({
             {/* Desktop: Sidebar */}
             <AdminSidebar />
 
-            <main className="flex-1 overflow-auto relative z-10 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+            <main className="flex-1 overflow-auto relative scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                 <div className="min-h-full w-full p-4 pt-20 md:p-8 md:pt-8 pb-28 md:pb-8 max-w-7xl mx-auto">
                     {children}
                 </div>

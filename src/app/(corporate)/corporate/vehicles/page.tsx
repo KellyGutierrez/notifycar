@@ -357,8 +357,8 @@ export default function CorporateVehiclesPage() {
 
             {/* Modal de Registro / Edición */}
             {isAddModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/80 backdrop-blur-sm">
-                    <div className="bg-[#0A0A0A] border border-white/10 w-full max-w-2xl rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl relative z-10 flex flex-col max-h-[92dvh] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="bg-[#0A0A0A] border border-white/10 w-full max-w-2xl rounded-[2.5rem] shadow-2xl relative z-10 flex flex-col max-h-[85dvh] overflow-hidden animate-in fade-in zoom-in duration-300">
                         <div className="p-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 animate-gradient-x shrink-0" />
                         
                         {/* Header */}
@@ -546,8 +546,8 @@ export default function CorporateVehiclesPage() {
 
             {/* Modal de Notificación */}
             {isNotificationModalOpen && selectedVehicle && (
-                <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/80 backdrop-blur-sm">
-                    <div className="bg-[#0A0A0A] border border-white/10 w-full max-w-lg rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl relative z-10 flex flex-col max-h-[92dvh] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="bg-[#0A0A0A] border border-white/10 w-full max-w-lg rounded-[2.5rem] shadow-2xl relative z-10 flex flex-col max-h-[85dvh] overflow-hidden animate-in fade-in zoom-in duration-300">
                         <div className="p-1 bg-gradient-to-r from-emerald-500 via-indigo-500 to-emerald-500 animate-gradient-x shrink-0" />
                         
                         {/* Header */}
