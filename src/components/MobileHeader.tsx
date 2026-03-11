@@ -32,7 +32,7 @@ const textMap = {
 
 export function MobileHeader({
     children,
-    logo = "/logo.png",
+    logo = "/logo_white_horizontal.png",
     title = "NotifyCar",
     themeColor = "green",
     notificationsLink = "/notifications",
