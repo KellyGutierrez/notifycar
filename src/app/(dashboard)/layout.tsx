@@ -32,8 +32,8 @@ export default async function DashboardLayout({
 
             {/* Main content */}
             <main className="flex-1 overflow-auto relative z-10 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                {/* pt-16 → clears mobile top bar; pb-nav → clears mobile bottom nav + safe area */}
-                <div className="h-full w-full p-4 pt-20 md:p-8 md:pt-8 pb-nav md:pb-8 max-w-7xl mx-auto">
+                {/* pt-16 → clears mobile top bar; pb-28 → clears mobile bottom nav + extra space */}
+                <div className="min-h-full w-full p-4 pt-20 pb-28 md:p-8 md:pt-8 md:pb-8 max-w-7xl mx-auto">
                     {children}
                 </div>
             </main>

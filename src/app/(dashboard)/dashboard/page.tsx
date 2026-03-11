@@ -32,9 +32,9 @@ export default async function DashboardPage() {
     return (
         <div className="space-y-8">
             {/* Hero Section */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-green-600 to-emerald-800 p-8 shadow-2xl">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-green-600 to-emerald-800 p-6 md:p-8 shadow-2xl">
                 <div className="relative z-10">
-                    <h2 className="text-3xl font-bold text-white mb-2">Bienvenido de nuevo, {session.user?.name}</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Bienvenido de nuevo, {session.user?.name}</h2>
                     <p className="text-green-100 max-w-lg">
                         Gestiona tus vehículos y mantente al día con las notificaciones de tu comunidad.
                     </p>

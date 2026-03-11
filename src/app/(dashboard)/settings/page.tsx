@@ -247,8 +247,8 @@ export default function SettingsPage() {
     return (
         <div className="max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div>
-                <h1 className="text-3xl font-bold text-white tracking-tight italic uppercase">Configuración</h1>
-                <p className="text-gray-400 mt-1 font-medium italic">Gestiona tu perfil y preferencias de cuenta.</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight italic uppercase">Configuración</h1>
+                <p className="text-sm text-gray-400 mt-1 font-medium italic">Gestiona tu perfil y preferencias de cuenta.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -301,7 +301,7 @@ export default function SettingsPage() {
                                 <div className="p-8 space-y-8">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">Nombre Completo</label>
+                                            <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Nombre Completo</label>
                                             <div className="relative group">
                                                 <User className="absolute left-4 top-3.5 h-4 w-4 text-gray-500 group-focus-within:text-green-400 transition-colors" />
                                                 <input
@@ -314,7 +314,7 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">Correo Electrónico</label>
+                                            <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Correo Electrónico</label>
                                             <div className="relative">
                                                 <Mail className="absolute left-4 top-3.5 h-4 w-4 text-gray-700" />
                                                 <input
@@ -326,7 +326,7 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">Prefijo</label>
+                                            <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Prefijo</label>
                                             <input
                                                 type="text"
                                                 value={formData.phonePrefix}
@@ -335,7 +335,7 @@ export default function SettingsPage() {
                                             />
                                         </div>
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">Teléfono</label>
+                                            <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Teléfono</label>
                                             <div className="relative group">
                                                 <Phone className="absolute left-4 top-3.5 h-4 w-4 text-gray-500 group-focus-within:text-green-400 transition-colors" />
                                                 <input
@@ -350,7 +350,7 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
                                         <div className="space-y-3 md:col-span-2">
-                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] ml-1">País</label>
+                                            <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">País</label>
                                             <div className="relative group">
                                                 <Globe className="absolute left-4 top-3.5 h-4 w-4 text-gray-500 group-focus-within:text-green-400 transition-colors" />
                                                 <input
