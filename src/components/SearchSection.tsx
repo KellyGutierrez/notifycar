@@ -35,6 +35,7 @@ export default function SearchSection() {
     const [templates, setTemplates] = useState<any[]>([])
     const [selectedTemplates, setSelectedTemplates] = useState<string[]>([])
     const [userProfile, setUserProfile] = useState<"GENERAL" | "PASSENGER" | null>(null)
+    const [version, setVersion] = useState(process.env.NEXT_PUBLIC_APP_VERSION || "v11.03.26")
 
     useEffect(() => {
         fetch("/api/templates")
@@ -372,7 +373,7 @@ export default function SearchSection() {
                     )}
                 </div>
             )}
-            <p className="text-[9px] text-gray-300 text-center uppercase tracking-[0.2em] font-bold">NotifyCar v19.02.26 - Corporate Shield Active</p>
+            <p className="text-[9px] text-gray-300 text-center uppercase tracking-[0.2em] font-bold">NotifyCar {version} - Corporate Shield Active</p>
         </div>
     )
 }

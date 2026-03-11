@@ -4,7 +4,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // La configuración de eslint se maneja por separado en esta versión o se omite para evitar advertencias
+  env: {
+    NEXT_PUBLIC_APP_VERSION: `v${new Date().getDate().toString().padStart(2, '0')}.${(new Date().getMonth() + 1).toString().padStart(2, '0')}.${new Date().getFullYear().toString().slice(-2)}`,
+  },
 };
 
 export default nextConfig;
