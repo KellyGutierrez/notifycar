@@ -140,7 +140,7 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                 </div>
 
                 {/* Body - Scrollable */}
-                <form id="vehicle-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 custom-scrollbar">
+                <form id="vehicle-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 pb-10 space-y-4 custom-scrollbar">
                     {/* Vehicle Type Selection */}
                     <div className="grid grid-cols-2 gap-3 mb-6">
                         <button
@@ -276,11 +276,11 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                 </form>
 
                 {/* Footer - Always visible, outside scroll area */}
-                <div className="shrink-0 flex gap-3 p-4 sm:p-5 border-t border-white/10 bg-gray-900">
+                <div className="shrink-0 flex gap-3 p-5 sm:p-6 border-t border-white/10 bg-gray-900 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex-1 px-4 py-3 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition"
+                        className="flex-1 px-4 py-3.5 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition text-sm"
                     >
                         Cancelar
                     </button>
@@ -288,7 +288,7 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                         type="submit"
                         form="vehicle-form"
                         disabled={loading}
-                        className="flex-1 px-4 py-3 rounded-xl bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:opacity-50 text-white font-bold shadow-lg shadow-green-900/20 transition flex items-center justify-center gap-2"
+                        className="flex-1 px-4 py-3.5 rounded-xl bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:opacity-50 text-white font-bold shadow-lg shadow-green-900/20 transition flex items-center justify-center gap-2 text-sm"
                     >
                         {loading ? (
                             <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

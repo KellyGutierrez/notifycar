@@ -17,7 +17,7 @@ export default async function AdminLayout({
     }
 
     return (
-        <div className="flex h-screen w-full bg-[#050505] overflow-hidden selection:bg-cyan-500/30 text-white">
+        <div className="flex h-dvh w-full bg-[#050505] overflow-hidden selection:bg-cyan-500/30 text-white">
             {/* Background Ambience - Cyan themed */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-cyan-900/20 rounded-full blur-[120px] opacity-40" />
@@ -31,7 +31,7 @@ export default async function AdminLayout({
             <AdminSidebar />
 
             <main className="flex-1 overflow-auto relative z-10 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                <div className="h-full w-full p-4 pt-20 md:p-8 md:pt-8 pb-nav md:pb-8 max-w-7xl mx-auto">
+                <div className="min-h-full w-full p-4 pt-20 md:p-8 md:pt-8 pb-28 md:pb-8 max-w-7xl mx-auto">
                     {children}
                 </div>
             </main>

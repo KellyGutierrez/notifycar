@@ -357,184 +357,188 @@ export default function CorporateVehiclesPage() {
 
             {/* Modal de Registro / Edición */}
             {isAddModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsAddModalOpen(false)} />
-                    <div className="bg-[#0A0A0A] border border-white/10 w-full max-w-2xl rounded-3xl shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-                        <div className="p-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 animate-gradient-x" />
-                        <div className="p-8">
-                            <div className="flex justify-between items-center mb-8">
-                                <h3 className="text-2xl font-black text-white uppercase italic tracking-tight">
-                                    {editingVehicle ? "Editar Vehículo" : "Registrar Vehículo"}
-                                </h3>
-                                <button onClick={() => setIsAddModalOpen(false)} className="text-gray-500 hover:text-white transition-colors">
-                                    <X className="h-6 w-6" />
-                                </button>
-                            </div>
+                <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="bg-[#0A0A0A] border border-white/10 w-full max-w-2xl rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl relative z-10 flex flex-col max-h-[92dvh] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
+                        <div className="p-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 animate-gradient-x shrink-0" />
+                        
+                        {/* Header */}
+                        <div className="p-6 sm:p-8 flex justify-between items-center border-b border-white/10 shrink-0">
+                            <h3 className="text-xl sm:text-2xl font-black text-white uppercase italic tracking-tight">
+                                {editingVehicle ? "Editar Vehículo" : "Registrar Vehículo"}
+                            </h3>
+                            <button onClick={() => setIsAddModalOpen(false)} className="text-gray-500 hover:text-white transition-colors p-2">
+                                <X className="h-6 w-6" />
+                            </button>
+                        </div>
 
-                            <form onSubmit={handleAddVehicle} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {/* Info Básica */}
-                                    <div className="space-y-6">
+                        {/* Scrollable Form */}
+                        <form id="corporate-vehicle-form" onSubmit={handleAddVehicle} className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 custom-scrollbar pb-10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* Info Básica */}
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Placa / Matrícula</label>
+                                        <input
+                                            required
+                                            type="text"
+                                            placeholder="ABC-123"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all font-black uppercase placeholder:text-gray-700"
+                                            value={formData.plate}
+                                            onChange={(e) => setFormData({ ...formData, plate: e.target.value })}
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Placa / Matrícula</label>
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Marca</label>
                                             <input
                                                 required
                                                 type="text"
-                                                placeholder="ABC-123"
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all font-black uppercase placeholder:text-gray-700"
-                                                value={formData.plate}
-                                                onChange={(e) => setFormData({ ...formData, plate: e.target.value })}
+                                                placeholder="Mazda"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all font-bold placeholder:text-gray-700"
+                                                value={formData.brand}
+                                                onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
                                             />
                                         </div>
-
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Marca</label>
-                                                <input
-                                                    required
-                                                    type="text"
-                                                    placeholder="Mazda"
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all font-bold placeholder:text-gray-700"
-                                                    value={formData.brand}
-                                                    onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Modelo</label>
-                                                <input
-                                                    required
-                                                    type="text"
-                                                    placeholder="CX-30"
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all font-bold placeholder:text-gray-700"
-                                                    value={formData.model}
-                                                    onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-4">
-                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Tipo de Vehículo</label>
-                                            <div className="grid grid-cols-2 gap-3">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setFormData({ ...formData, type: "CAR" })}
-                                                    className={cn(
-                                                        "py-3 rounded-xl border font-bold text-xs uppercase transition-all flex items-center justify-center gap-2",
-                                                        formData.type === "CAR" ? "bg-indigo-600 border-indigo-400 text-white" : "bg-white/5 border-white/10 text-gray-500 hover:bg-white/10"
-                                                    )}
-                                                >
-                                                    <Car className="h-4 w-4" /> Auto / Taxi
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setFormData({ ...formData, type: "MOTORCYCLE" })}
-                                                    className={cn(
-                                                        "py-3 rounded-xl border font-bold text-xs uppercase transition-all flex items-center justify-center gap-2",
-                                                        formData.type === "MOTORCYCLE" ? "bg-indigo-600 border-indigo-400 text-white" : "bg-white/5 border-white/10 text-gray-500 hover:bg-white/10"
-                                                    )}
-                                                >
-                                                    <Bike className="h-4 w-4" /> Motocicleta
-                                                </button>
-                                            </div>
-
-                                            {/* Toggle Eléctrico */}
-                                            <div
-                                                onClick={() => setFormData({ ...formData, isElectric: !formData.isElectric })}
-                                                className={cn(
-                                                    "flex items-center justify-between p-4 rounded-xl border border-white/10 cursor-pointer transition-all",
-                                                    formData.isElectric ? "bg-emerald-500/10 border-emerald-500/30" : "bg-white/5 hover:bg-white/10"
-                                                )}
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <div className={cn(
-                                                        "p-2 rounded-lg",
-                                                        formData.isElectric ? "bg-emerald-500/20" : "bg-white/5 text-gray-500"
-                                                    )}>
-                                                        <Zap className={cn("h-4 w-4 transition-all", formData.isElectric ? "text-emerald-400 animate-pulse fill-emerald-400" : "text-gray-500")} />
-                                                    </div>
-                                                    <div>
-                                                        <p className={cn("text-xs font-black uppercase tracking-tight transition-colors", formData.isElectric ? "text-white" : "text-gray-400")}>Vehículo Eléctrico</p>
-                                                        <p className="text-[10px] text-gray-500 font-bold italic tracking-tighter">Habilitar funciones ecológicas</p>
-                                                    </div>
-                                                </div>
-                                                <div className={cn(
-                                                    "h-5 w-10 rounded-full transition-all relative overflow-hidden p-1",
-                                                    formData.isElectric ? "bg-emerald-500" : "bg-gray-800"
-                                                )}>
-                                                    <div className={cn(
-                                                        "h-3 w-3 rounded-full bg-white transition-all shadow-sm",
-                                                        formData.isElectric ? "translate-x-5" : "translate-x-0"
-                                                    )} />
-                                                </div>
-                                            </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Modelo</label>
+                                            <input
+                                                required
+                                                type="text"
+                                                placeholder="CX-30"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all font-bold placeholder:text-gray-700"
+                                                value={formData.model}
+                                                onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                                            />
                                         </div>
                                     </div>
 
-                                    {/* Info de Contacto */}
-                                    <div className="space-y-6 bg-white/[0.02] p-4 rounded-2xl border border-white/5">
-                                        <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Información de Contacto</p>
-
-                                        {/* Propietario */}
-                                        <div className="space-y-4">
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Nombre Propietario</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Juan Propietario"
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all font-medium"
-                                                    value={formData.ownerName}
-                                                    onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Teléfono Propietario (WhatsApp)</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="+573001234567"
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all font-medium"
-                                                    value={formData.ownerPhone}
-                                                    onChange={(e) => setFormData({ ...formData, ownerPhone: e.target.value })}
-                                                />
-                                            </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Tipo de Vehículo</label>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, type: "CAR" })}
+                                                className={cn(
+                                                    "py-3 rounded-xl border font-bold text-xs uppercase transition-all flex items-center justify-center gap-2",
+                                                    formData.type === "CAR" ? "bg-indigo-600 border-indigo-400 text-white" : "bg-white/5 border-white/10 text-gray-500 hover:bg-white/10"
+                                                )}
+                                            >
+                                                <Car className="h-4 w-4" /> Auto / Taxi
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, type: "MOTORCYCLE" })}
+                                                className={cn(
+                                                    "py-3 rounded-xl border font-bold text-xs uppercase transition-all flex items-center justify-center gap-2",
+                                                    formData.type === "MOTORCYCLE" ? "bg-indigo-600 border-indigo-400 text-white" : "bg-white/5 border-white/10 text-gray-500 hover:bg-white/10"
+                                                )}
+                                            >
+                                                <Bike className="h-4 w-4" /> Motocicleta
+                                            </button>
                                         </div>
 
-                                        <div className="h-px bg-white/5" />
-
-                                        {/* Conductor */}
-                                        <div className="space-y-4">
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Nombre Conductor</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Pedro Conductor"
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all font-medium"
-                                                    value={formData.driverName}
-                                                    onChange={(e) => setFormData({ ...formData, driverName: e.target.value })}
-                                                />
+                                        {/* Toggle Eléctrico */}
+                                        <div
+                                            onClick={() => setFormData({ ...formData, isElectric: !formData.isElectric })}
+                                            className={cn(
+                                                "flex items-center justify-between p-4 rounded-xl border border-white/10 cursor-pointer transition-all",
+                                                formData.isElectric ? "bg-emerald-500/10 border-emerald-500/30" : "bg-white/5 hover:bg-white/10"
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className={cn(
+                                                    "p-2 rounded-lg",
+                                                    formData.isElectric ? "bg-emerald-500/20" : "bg-white/5 text-gray-500"
+                                                )}>
+                                                    <Zap className={cn("h-4 w-4 transition-all", formData.isElectric ? "text-emerald-400 animate-pulse fill-emerald-400" : "text-gray-500")} />
+                                                </div>
+                                                <div>
+                                                    <p className={cn("text-xs font-black uppercase tracking-tight transition-colors", formData.isElectric ? "text-white" : "text-gray-400")}>Vehículo Eléctrico</p>
+                                                    <p className="text-[10px] text-gray-500 font-bold italic tracking-tighter">Habilitar funciones ecológicas</p>
+                                                </div>
                                             </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Teléfono Conductor (WhatsApp)</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="+573007654321"
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all font-medium"
-                                                    value={formData.driverPhone}
-                                                    onChange={(e) => setFormData({ ...formData, driverPhone: e.target.value })}
-                                                />
+                                            <div className={cn(
+                                                "h-5 w-10 rounded-full transition-all relative overflow-hidden p-1",
+                                                formData.isElectric ? "bg-emerald-500" : "bg-gray-800"
+                                            )}>
+                                                <div className={cn(
+                                                    "h-3 w-3 rounded-full bg-white transition-all shadow-sm",
+                                                    formData.isElectric ? "translate-x-5" : "translate-x-0"
+                                                )} />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <button
-                                    disabled={saving}
-                                    type="submit"
-                                    className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white py-4 rounded-xl font-black uppercase tracking-widest transition-all shadow-xl shadow-indigo-900/40 flex items-center justify-center gap-3"
-                                >
-                                    {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
-                                    {editingVehicle ? "Actualizar Vehículo" : "Guardar Vehículo"}
-                                </button>
-                            </form>
+                                {/* Info de Contacto */}
+                                <div className="space-y-6 bg-white/[0.02] p-5 rounded-2xl border border-white/5">
+                                    <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Información de Contacto</p>
+
+                                    {/* Propietario */}
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Nombre Propietario</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Juan Propietario"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                                                value={formData.ownerName}
+                                                onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Teléfono Propietario (WhatsApp)</label>
+                                            <input
+                                                type="text"
+                                                placeholder="+573001234567"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                                                value={formData.ownerPhone}
+                                                onChange={(e) => setFormData({ ...formData, ownerPhone: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="h-px bg-white/5" />
+
+                                    {/* Conductor */}
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Nombre Conductor</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Pedro Conductor"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                                                value={formData.driverName}
+                                                onChange={(e) => setFormData({ ...formData, driverName: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Teléfono Conductor (WhatsApp)</label>
+                                            <input
+                                                type="text"
+                                                placeholder="+573007654321"
+                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                                                value={formData.driverPhone}
+                                                onChange={(e) => setFormData({ ...formData, driverPhone: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        {/* Footer */}
+                        <div className="p-6 sm:p-8 border-t border-white/10 bg-[#0A0A0A] shrink-0 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] sm:pb-8">
+                            <button
+                                disabled={saving}
+                                type="submit"
+                                form="corporate-vehicle-form"
+                                className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white py-4 rounded-xl font-black uppercase tracking-widest transition-all shadow-xl shadow-indigo-900/40 flex items-center justify-center gap-3 active:scale-95"
+                            >
+                                {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+                                {editingVehicle ? "Actualizar Vehículo" : "Guardar Vehículo"}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -542,27 +546,29 @@ export default function CorporateVehiclesPage() {
 
             {/* Modal de Notificación */}
             {isNotificationModalOpen && selectedVehicle && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsNotificationModalOpen(false)} />
-                    <div className="bg-[#0A0A0A] border border-white/10 w-full max-w-lg rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden animate-in fade-in zoom-in duration-300">
-                        <div className="p-1 bg-gradient-to-r from-emerald-500 via-indigo-500 to-emerald-500 animate-gradient-x" />
-                        <div className="p-8">
-                            <div className="flex justify-between items-center mb-6">
-                                <div className="space-y-1">
-                                    <h3 className="text-2xl font-black text-white uppercase italic tracking-tight flex items-center gap-2">
-                                        <Bell className="h-6 w-6 text-indigo-400" />
-                                        Enviar Aviso
-                                    </h3>
-                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                                        Vehículo: <span className="text-white">{selectedVehicle.plate}</span>
-                                    </p>
-                                </div>
-                                <button onClick={() => setIsNotificationModalOpen(false)} className="text-gray-500 hover:text-white transition-colors">
-                                    <X className="h-6 w-6" />
-                                </button>
+                <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/80 backdrop-blur-sm">
+                    <div className="bg-[#0A0A0A] border border-white/10 w-full max-w-lg rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl relative z-10 flex flex-col max-h-[92dvh] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
+                        <div className="p-1 bg-gradient-to-r from-emerald-500 via-indigo-500 to-emerald-500 animate-gradient-x shrink-0" />
+                        
+                        {/* Header */}
+                        <div className="p-6 sm:p-8 flex justify-between items-center border-b border-white/10 shrink-0">
+                            <div className="space-y-1">
+                                <h3 className="text-xl sm:text-2xl font-black text-white uppercase italic tracking-tight flex items-center gap-2">
+                                    <Bell className="h-6 w-6 text-indigo-400" />
+                                    Enviar Aviso
+                                </h3>
+                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                                    Vehículo: <span className="text-white">{selectedVehicle.plate}</span>
+                                </p>
                             </div>
+                            <button onClick={() => setIsNotificationModalOpen(false)} className="text-gray-500 hover:text-white transition-colors p-2">
+                                <X className="h-6 w-6" />
+                            </button>
+                        </div>
 
-                            <form onSubmit={handleSendNotification} className="space-y-6">
+                        {/* Scrollable Content */}
+                        <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
+                            <form id="corporate-notif-form" onSubmit={handleSendNotification} className="space-y-6 pb-6">
                                 {/* Selección de Destinatario */}
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1 italic">¿A quién enviar el mensaje?</label>
@@ -591,7 +597,7 @@ export default function CorporateVehiclesPage() {
                                         </button>
                                     </div>
                                     {(!selectedVehicle.driverPhone && notifData.recipientRole === "DRIVER") || (!selectedVehicle.ownerPhone && notifData.recipientRole === "OWNER") ? (
-                                        <p className="text-[10px] text-red-400 font-bold italic animate-pulse px-2">⚠️ El destinatario seleccionado no tiene número de WhatsApp configurado.</p>
+                                        <p className="text-[10px] text-red-400 font-bold italic animate-pulse px-2">⚠️ Destinatario sin WhatsApp configurado.</p>
                                     ) : null}
                                 </div>
 
@@ -626,19 +632,23 @@ export default function CorporateVehiclesPage() {
                                         required
                                     />
                                 </div>
-
-                                <button
-                                    disabled={sending || notifSuccess || (!selectedVehicle.driverPhone && notifData.recipientRole === "DRIVER") || (!selectedVehicle.ownerPhone && notifData.recipientRole === "OWNER")}
-                                    type="submit"
-                                    className={cn(
-                                        "w-full py-5 rounded-2xl font-black uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-3 active:scale-95",
-                                        notifSuccess ? "bg-emerald-500 text-white shadow-emerald-900/40" : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-900/40 disabled:opacity-30"
-                                    )}
-                                >
-                                    {sending ? <Loader2 className="h-6 w-6 animate-spin" /> : notifSuccess ? <CheckCircle2 className="h-6 w-6" /> : <Send className="h-6 w-6" />}
-                                    {notifSuccess ? "¡ENVIADO!" : sending ? "ENVIANDO..." : "ENVIAR WHATSAPP"}
-                                </button>
                             </form>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-6 sm:p-8 border-t border-white/10 bg-[#0A0A0A] shrink-0 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] sm:pb-8">
+                            <button
+                                disabled={sending || notifSuccess || (!selectedVehicle.driverPhone && notifData.recipientRole === "DRIVER") || (!selectedVehicle.ownerPhone && notifData.recipientRole === "OWNER")}
+                                type="submit"
+                                form="corporate-notif-form"
+                                className={cn(
+                                    "w-full py-5 rounded-2xl font-black uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-3 active:scale-95",
+                                    notifSuccess ? "bg-emerald-500 text-white shadow-emerald-900/40" : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-900/40 disabled:opacity-30"
+                                )}
+                            >
+                                {sending ? <Loader2 className="h-6 w-6 animate-spin" /> : notifSuccess ? <CheckCircle2 className="h-6 w-6" /> : <Send className="h-6 w-6" />}
+                                {notifSuccess ? "¡ENVIADO!" : sending ? "ENVIANDO..." : "ENVIAR WHATSAPP"}
+                            </button>
                         </div>
                     </div>
                 </div>
