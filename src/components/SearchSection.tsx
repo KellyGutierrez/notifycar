@@ -273,14 +273,23 @@ export default function SearchSection() {
                         <div className="p-10 pt-6 border-t border-gray-100 bg-white">
                             <div className="flex items-center justify-between mb-8">
                                 <h3 className="text-2xl font-black text-gray-900">
-                                    {userProfile === "PASSENGER" ? "Opciones de Pasajero" : "¿Qué quieres notificar?"}
+                                    {selectedTemplates.length > 0
+                                        ? "Mensaje seleccionado"
+                                        : (userProfile === "PASSENGER" ? "Opciones de Pasajero" : "¿Qué quieres notificar?")
+                                    }
                                 </h3>
-                                {userProfile && (
+                                {(userProfile || selectedTemplates.length > 0) && (
                                     <button
-                                        onClick={() => { setUserProfile(null); setSelectedTemplates([]); }}
+                                        onClick={() => {
+                                            if (selectedTemplates.length > 0) {
+                                                setSelectedTemplates([]);
+                                            } else {
+                                                setUserProfile(null);
+                                            }
+                                        }}
                                         className="text-xs font-bold text-gray-400 hover:text-brand uppercase"
                                     >
-                                        Atrás
+                                        {selectedTemplates.length > 0 ? "Cambiar" : "Atrás"}
                                     </button>
                                 )}
                             </div>
@@ -298,6 +307,9 @@ export default function SearchSection() {
                                     }).length > 0 ? (
                                     templates
                                         .filter(t => {
+                                            // Si hay algo seleccionado, solo mostrar lo seleccionado
+                                            if (selectedTemplates.length > 0 && !selectedTemplates.includes(t.id)) return false;
+
                                             if (!result.organizationId) return true;
                                             const cat = t.category?.toUpperCase();
                                             if (userProfile === "PASSENGER") return cat === "SERVICIO";
