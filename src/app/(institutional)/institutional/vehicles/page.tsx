@@ -127,7 +127,17 @@ export default function InstitutionalVehiclesPage() {
                             </div>
                             <div>
                                 <h3 className="text-xl font-black text-white group-hover:text-emerald-400 transition-colors">{vehicle.brand} <span className="font-light text-gray-500">{vehicle.model}</span></h3>
-                                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">{vehicle.color || "Sin color"}</p>
+                                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1 flex items-center gap-2">
+                                    {vehicle.color || "Sin color"}
+                                    <span className={cn(
+                                        "px-2 py-0.5 rounded-full text-[8px] border font-black",
+                                        vehicle.type === "TAXI" ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
+                                        vehicle.type === "MOTORCYCLE" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
+                                        "bg-blue-500/10 border-blue-500/20 text-blue-400"
+                                    )}>
+                                        {vehicle.type === "TAXI" ? "TAXI" : vehicle.type === "MOTORCYCLE" ? "MOTO" : "PARTICULAR"}
+                                    </span>
+                                </p>
                             </div>
                             <div className="pt-6 border-t border-white/5 flex items-center justify-between">
                                 <div className="flex items-center gap-3">

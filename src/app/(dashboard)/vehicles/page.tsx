@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { Plus, Car, MoreVertical, Zap, Edit2, ShieldAlert, Trash2, Bike } from "lucide-react"
+import { cn } from "@/lib/utils"
 import VehicleModal from "@/components/VehicleModal"
 
 export default function VehiclesPage() {
@@ -158,15 +159,27 @@ export default function VehiclesPage() {
                                     <div>
                                         <div className="flex items-center gap-2 mb-0.5">
                                             <h3 className="text-lg font-bold text-white uppercase tracking-wide">{vehicle.plate}</h3>
-                                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/5 text-gray-400 border border-white/5 uppercase tracking-tighter">
-                                                {vehicle.type === "MOTORCYCLE" ? "Moto" : "Auto"}
+                                            <span className={cn(
+                                                "text-[10px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-tighter",
+                                                vehicle.type === "TAXI" ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20" :
+                                                vehicle.type === "MOTORCYCLE" ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
+                                                "bg-white/5 text-gray-400 border-white/5"
+                                            )}>
+                                                {vehicle.type === "TAXI" ? "Taxi" : vehicle.type === "MOTORCYCLE" ? "Moto" : "Normal"}
                                             </span>
                                         </div>
                                         <p className="text-sm text-gray-400">{vehicle.brand} {vehicle.model}</p>
                                     </div>
-                                    <span className="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded border border-green-500/20">
-                                        {vehicle.isElectric ? 'ELÉCTRICO' : 'ACTIVO'}
-                                    </span>
+                                    <div className="flex flex-col gap-1 items-end">
+                                        <span className="bg-green-500/20 text-green-400 text-[10px] px-2 py-0.5 rounded border border-green-500/20 font-bold">
+                                            ACTIVO
+                                        </span>
+                                        {vehicle.isElectric && (
+                                            <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded border border-emerald-500/20 font-bold flex items-center gap-1">
+                                                <Zap className="h-2 w-2 fill-current" /> ELÉCTRICO
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="mt-4 pt-4 border-t border-white/10 flex justify-between text-sm text-gray-400">
                                     <span>Color: <span className="text-gray-300">{vehicle.color || 'No especificado'}</span></span>

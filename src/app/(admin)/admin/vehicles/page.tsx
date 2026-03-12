@@ -124,10 +124,18 @@ export default async function AdminVehiclesPage({ searchParams }: PageProps) {
                                             <h3 className="text-2xl font-black text-white group-hover:text-cyan-400 transition-colors tracking-tight uppercase">
                                                 {vehicle.brand} <span className="font-light text-cyan-500/80">{vehicle.model}</span>
                                             </h3>
-                                            <div className="flex items-center gap-2 text-xs text-gray-400 font-bold uppercase tracking-widest">
-                                                <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/5">
+                                            <div className="flex flex-wrap items-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                                                <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/5 border border-white/10">
                                                     <Hash className="h-3 w-3 text-cyan-500" />
                                                     Color: {vehicle.color || "N/A"}
+                                                </span>
+                                                <span className={cn(
+                                                    "flex items-center gap-1.5 px-2 py-1 rounded-full border",
+                                                    vehicle.type === "TAXI" ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
+                                                    vehicle.type === "MOTORCYCLE" ? "bg-purple-500/10 border-purple-500/20 text-purple-400" :
+                                                    "bg-blue-500/10 border-blue-500/20 text-blue-400"
+                                                )}>
+                                                    {vehicle.type === "TAXI" ? "TAXI" : vehicle.type === "MOTORCYCLE" ? "MOTOCICLETA" : "PARTICULAR"}
                                                 </span>
                                                 {vehicle.isElectric && (
                                                     <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -198,14 +206,22 @@ export default async function AdminVehiclesPage({ searchParams }: PageProps) {
                                                 <p className="text-xs text-gray-400 font-mono">{new Date(vehicle.createdAt).toLocaleDateString()}</p>
                                             </td>
                                             <td className="px-6 py-4">
-                                                {vehicle.isElectric ? (
-                                                    <span className="flex items-center gap-1 text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 uppercase">
-                                                        <Zap className="h-3 w-3" />
-                                                        Eléctrico
+                                                <div className="flex flex-wrap gap-2">
+                                                    <span className={cn(
+                                                        "text-[10px] font-black px-2 py-0.5 rounded-full border uppercase",
+                                                        vehicle.type === "TAXI" ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
+                                                        vehicle.type === "MOTORCYCLE" ? "bg-purple-500/10 border-purple-500/20 text-purple-400" :
+                                                        "bg-blue-500/10 border-blue-500/20 text-blue-400"
+                                                    )}>
+                                                        {vehicle.type === "TAXI" ? "TAXI" : vehicle.type === "MOTORCYCLE" ? "MOTO" : "PARTICULAR"}
                                                     </span>
-                                                ) : (
-                                                    <span className="text-[10px] font-black text-gray-500 bg-white/5 px-2 py-0.5 rounded-full uppercase">Estándar</span>
-                                                )}
+                                                    {vehicle.isElectric && (
+                                                        <span className="flex items-center gap-1 text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 uppercase">
+                                                            <Zap className="h-2 w-2" />
+                                                            Eléctrico
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <VehicleActions vehicle={vehicle} view="list" /> {/* Added VehicleActions */}

@@ -306,9 +306,14 @@ export default function CorporateVehiclesPage() {
                                         <Hash className="h-3 w-3 text-indigo-500" />
                                         Color: {vehicle.color || "N/A"}
                                     </span>
-                                    <span className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/5">
-                                        {vehicle.type === "MOTORCYCLE" ? <Bike className="h-3 w-3 text-indigo-500" /> : <Car className="h-3 w-3 text-indigo-500" />}
-                                        {vehicle.type === "MOTORCYCLE" ? "Moto" : "Auto"}
+                                    <span className={cn(
+                                        "flex items-center gap-1.5 px-2 py-1 rounded-full border",
+                                        vehicle.type === "TAXI" ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
+                                        vehicle.type === "MOTORCYCLE" ? "bg-purple-500/10 border-purple-500/20 text-purple-400" :
+                                        "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
+                                    )}>
+                                        {vehicle.type === "TAXI" ? <Car className="h-3 w-3" /> : vehicle.type === "MOTORCYCLE" ? <Bike className="h-3 w-3" /> : <Car className="h-3 w-3" />}
+                                        {vehicle.type === "TAXI" ? "Taxi" : vehicle.type === "MOTORCYCLE" ? "Moto" : "Particular"}
                                     </span>
                                 </div>
 
@@ -416,26 +421,36 @@ export default function CorporateVehiclesPage() {
 
                                     <div className="space-y-4">
                                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Tipo de Vehículo</label>
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-3 gap-3">
                                             <button
                                                 type="button"
                                                 onClick={() => setFormData({ ...formData, type: "CAR" })}
                                                 className={cn(
-                                                    "py-3 rounded-xl border font-bold text-xs uppercase transition-all flex items-center justify-center gap-2",
+                                                    "py-3 rounded-xl border font-bold text-[10px] uppercase transition-all flex flex-col items-center justify-center gap-1",
                                                     formData.type === "CAR" ? "bg-indigo-600 border-indigo-400 text-white" : "bg-white/5 border-white/10 text-gray-500 hover:bg-white/10"
                                                 )}
                                             >
-                                                <Car className="h-4 w-4" /> Auto / Taxi
+                                                <Car className="h-4 w-4" /> Normal
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, type: "TAXI" })}
+                                                className={cn(
+                                                    "py-3 rounded-xl border font-bold text-[10px] uppercase transition-all flex flex-col items-center justify-center gap-1",
+                                                    formData.type === "TAXI" ? "bg-yellow-600 border-yellow-400 text-white" : "bg-white/5 border-white/10 text-gray-500 hover:bg-white/10"
+                                                )}
+                                            >
+                                                <Car className="h-4 w-4" /> Taxi
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => setFormData({ ...formData, type: "MOTORCYCLE" })}
                                                 className={cn(
-                                                    "py-3 rounded-xl border font-bold text-xs uppercase transition-all flex items-center justify-center gap-2",
+                                                    "py-3 rounded-xl border font-bold text-[10px] uppercase transition-all flex flex-col items-center justify-center gap-1",
                                                     formData.type === "MOTORCYCLE" ? "bg-indigo-600 border-indigo-400 text-white" : "bg-white/5 border-white/10 text-gray-500 hover:bg-white/10"
                                                 )}
                                             >
-                                                <Bike className="h-4 w-4" /> Motocicleta
+                                                <Bike className="h-4 w-4" /> Moto
                                             </button>
                                         </div>
 

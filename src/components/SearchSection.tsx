@@ -221,7 +221,7 @@ export default function SearchSection() {
                                 </div>
                             )}
                             <div className="flex items-center gap-2 text-gray-500 font-bold text-sm">
-                                {result.organizationId ? (
+                                {result.type === "TAXI" || result.organizationId ? (
                                     <span className="flex items-center gap-2">
                                         <div className="p-1 px-2 bg-yellow-400 text-black text-[10px] font-black rounded flex items-center gap-1 shadow-sm">
                                             🚕 TAXI
@@ -230,7 +230,7 @@ export default function SearchSection() {
                                     </span>
                                 ) : (
                                     <span className="flex items-center gap-2">
-                                        <Car className="h-4 w-4 text-brand" />
+                                        {result.type === "MOTORCYCLE" ? <Bike className="h-4 w-4 text-brand" /> : <Car className="h-4 w-4 text-brand" />}
                                         <span>{result.type === "MOTORCYCLE" ? "Motocicleta" : "Automóvil"}</span>
                                     </span>
                                 )}
@@ -239,9 +239,9 @@ export default function SearchSection() {
                             <div className="flex items-center gap-2 text-gray-500 font-bold text-sm">
                                 <div
                                     className="h-4 w-4 rounded-full border-2 border-gray-100"
-                                    style={{ backgroundColor: result.organizationId ? '#CA8A04' : getColorHex(result.color) }}
+                                    style={{ backgroundColor: (result.type === "TAXI" || result.organizationId) ? '#CA8A04' : getColorHex(result.color) }}
                                 />
-                                <span>{result.organizationId ? 'Color Amarillo' : `Color ${result.color || 'Gris'}`}</span>
+                                <span>{(result.type === "TAXI" || result.organizationId) ? 'Color Amarillo' : `Color ${result.color || 'Gris'}`}</span>
                             </div>
                         </div>
                     </div>

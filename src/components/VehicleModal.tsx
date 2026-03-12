@@ -148,7 +148,7 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                     <div className="flex-1 overflow-y-auto min-h-0">
                         <form id="vehicle-form" onSubmit={handleSubmit} className="p-5 sm:p-6 pb-6 space-y-4 custom-scrollbar">
                         {/* Vehicle Type Selection */}
-                        <div className="grid grid-cols-2 gap-3 mb-6">
+                        <div className="grid grid-cols-3 gap-3 mb-6">
                             <button
                                 type="button"
                                 onClick={() => setFormData({ ...formData, type: "CAR" })}
@@ -160,7 +160,20 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                                 )}
                             >
                                 <Car className="h-8 w-8" />
-                                <span className="text-xs font-bold uppercase tracking-widest">Auto</span>
+                                <span className="text-[10px] font-bold uppercase tracking-tight">Normal</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, type: "TAXI" })}
+                                className={cn(
+                                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                                    formData.type === "TAXI"
+                                        ? "bg-yellow-500/10 border-yellow-500 text-yellow-400"
+                                        : "bg-white/5 border-white/5 text-gray-500 hover:border-white/10 hover:text-gray-400"
+                                )}
+                            >
+                                <Car className="h-8 w-8" />
+                                <span className="text-[10px] font-bold uppercase tracking-tight">Taxi</span>
                             </button>
                             <button
                                 type="button"
@@ -173,7 +186,7 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                                 )}
                             >
                                 <Bike className="h-8 w-8" />
-                                <span className="text-xs font-bold uppercase tracking-widest">Moto</span>
+                                <span className="text-[10px] font-bold uppercase tracking-tight">Moto</span>
                             </button>
                         </div>
 
