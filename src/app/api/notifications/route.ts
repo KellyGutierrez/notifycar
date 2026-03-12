@@ -117,9 +117,21 @@ export async function POST(req: Request) {
         let emergency = { police: "123", transit: "123", general: "123" };
         const userCountry = (vehicle.user?.country || "").trim().toUpperCase();
 
+        const COUNTRY_NAME_TO_CODE: Record<string, string> = {
+            "ARGENTINA": "AR", "BOLIVIA": "BO", "BRASIL": "BR", "BRAZIL": "BR",
+            "CHILE": "CL", "COLOMBIA": "CO", "COSTA RICA": "CR", "CUBA": "CU",
+            "ECUADOR": "EC", "EL SALVADOR": "SV", "ESPAÑA": "ES", "SPAIN": "ES",
+            "ESTADOS UNIDOS": "US", "UNITED STATES": "US", "USA": "US",
+            "GUATEMALA": "GT", "HONDURAS": "HN", "MEXICO": "MX", "MÉXICO": "MX",
+            "NICARAGUA": "NI", "PANAMA": "PA", "PANAMÁ": "PA", "PARAGUAY": "PY",
+            "PERU": "PE", "PERÚ": "PE", "PUERTO RICO": "PR", "URUGUAY": "UY", "VENEZUELA": "VE",
+        }
+
         if (userCountry) {
-            const config = await db.emergencyConfig.findUnique({
-                where: { country: userCountry }
+            // Try exact match first, then normalized ISO code
+            const isoCode = COUNTRY_NAME_TO_CODE[userCountry] || userCountry
+            const config = await db.emergencyConfig.findFirst({
+                where: { country: { in: [userCountry, isoCode] } }
             });
 
             if (config) {
@@ -128,10 +140,6 @@ export async function POST(req: Request) {
                     transit: config.transit,
                     general: config.emergency
                 };
-            } else if (userCountry === "CO" || userCountry === "COLOMBIA") {
-                emergency = { police: "123", transit: "127", general: "123" };
-            } else if (userCountry === "MX" || userCountry === "MEXICO" || userCountry === "MÉXICO") {
-                emergency = { police: "911", transit: "911", general: "911" };
             }
         }
 

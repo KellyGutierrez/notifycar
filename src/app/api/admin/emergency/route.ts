@@ -3,6 +3,48 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { NextResponse } from "next/server"
 
+// Map of country names to their ISO codes
+const COUNTRY_NAME_TO_CODE: Record<string, string> = {
+    "ARGENTINA": "AR",
+    "BOLIVIA": "BO",
+    "BRASIL": "BR",
+    "BRAZIL": "BR",
+    "CHILE": "CL",
+    "COLOMBIA": "CO",
+    "COSTA RICA": "CR",
+    "CUBA": "CU",
+    "ECUADOR": "EC",
+    "EL SALVADOR": "SV",
+    "ESPAÑA": "ES",
+    "SPAIN": "ES",
+    "ESTADOS UNIDOS": "US",
+    "UNITED STATES": "US",
+    "USA": "US",
+    "GUATEMALA": "GT",
+    "HONDURAS": "HN",
+    "MEXICO": "MX",
+    "MÉXICO": "MX",
+    "NICARAGUA": "NI",
+    "PANAMA": "PA",
+    "PANAMÁ": "PA",
+    "PARAGUAY": "PY",
+    "PERU": "PE",
+    "PERÚ": "PE",
+    "PUERTO RICO": "PR",
+    "REPUBLICA DOMINICANA": "DO",
+    "REPÚBLICA DOMINICANA": "DO",
+    "URUGUAY": "UY",
+    "VENEZUELA": "VE",
+}
+
+function normalizeCountry(input: string): string {
+    const upper = input.trim().toUpperCase()
+    // If it's already a 2-letter code, return as is
+    if (upper.length <= 3 && /^[A-Z]+$/.test(upper)) return upper
+    // Try to map full name to code
+    return COUNTRY_NAME_TO_CODE[upper] || upper
+}
+
 export async function GET() {
     const session = await getServerSession(authOptions)
     if (session?.user?.role !== "ADMIN") {
@@ -27,10 +69,13 @@ export async function POST(req: Request) {
 
         if (!country) return new NextResponse("Country required", { status: 400 })
 
+        // Normalize the country to its ISO code to avoid duplicates
+        const normalizedCountry = normalizeCountry(country)
+
         const config = await db.emergencyConfig.upsert({
-            where: { country },
+            where: { country: normalizedCountry },
             update: { police, transit, emergency },
-            create: { country, police, transit, emergency }
+            create: { country: normalizedCountry, police, transit, emergency }
         })
 
         return NextResponse.json(config)
