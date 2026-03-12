@@ -118,7 +118,7 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
     const buttonText = initialData ? "Actualizar" : "Guardar"
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-4 bg-black/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto pt-10 pb-10">
             <div className="bg-gray-900 border border-white/10 w-full max-w-md rounded-[2.5rem] shadow-2xl flex flex-col max-h-[85dvh] overflow-hidden animate-in fade-in zoom-in duration-300 text-white">
                 {/* Header - Fixed */}
                 <div className="shrink-0 flex justify-between items-center p-5 sm:p-6 border-b border-white/10">
@@ -140,7 +140,8 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                 </div>
 
                 {/* Body - Scrollable */}
-                <form id="vehicle-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 pb-10 space-y-4 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto min-h-0">
+                    <form id="vehicle-form" onSubmit={handleSubmit} className="p-5 sm:p-6 pb-6 space-y-4 custom-scrollbar">
                     {/* Vehicle Type Selection */}
                     <div className="grid grid-cols-2 gap-3 mb-6">
                         <button
@@ -273,7 +274,8 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                             </p>
                         </div>
                     )}
-                </form>
+                    </form>
+                </div>
 
                 {/* Footer - Always visible, outside scroll area */}
                 <div className="shrink-0 flex gap-3 p-5 sm:p-6 border-t border-white/10 bg-gray-900 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6">

@@ -357,7 +357,7 @@ export default function CorporateVehiclesPage() {
 
             {/* Modal de Registro / Edición */}
             {isAddModalOpen && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-4 bg-black/80 backdrop-blur-sm">
+                <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto pt-10 pb-10">
                     <div className="bg-[#0A0A0A] border border-white/10 w-full max-w-2xl rounded-[2.5rem] shadow-2xl relative z-10 flex flex-col max-h-[85dvh] overflow-hidden animate-in fade-in zoom-in duration-300">
                         <div className="p-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 animate-gradient-x shrink-0" />
                         
@@ -372,7 +372,8 @@ export default function CorporateVehiclesPage() {
                         </div>
 
                         {/* Scrollable Form */}
-                        <form id="corporate-vehicle-form" onSubmit={handleAddVehicle} className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 custom-scrollbar pb-10">
+                        <div className="flex-1 overflow-y-auto min-h-0">
+                            <form id="corporate-vehicle-form" onSubmit={handleAddVehicle} className="p-6 sm:p-8 space-y-8 custom-scrollbar pb-10">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Info Básica */}
                                 <div className="space-y-6">
@@ -527,6 +528,7 @@ export default function CorporateVehiclesPage() {
                                 </div>
                             </div>
                         </form>
+                    </div>
 
                         {/* Footer */}
                         <div className="p-6 sm:p-8 border-t border-white/10 bg-[#0A0A0A] shrink-0 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] sm:pb-8">
@@ -546,7 +548,7 @@ export default function CorporateVehiclesPage() {
 
             {/* Modal de Notificación */}
             {isNotificationModalOpen && selectedVehicle && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-4 bg-black/80 backdrop-blur-sm">
+                <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto pt-10 pb-10">
                     <div className="bg-[#0A0A0A] border border-white/10 w-full max-w-lg rounded-[2.5rem] shadow-2xl relative z-10 flex flex-col max-h-[85dvh] overflow-hidden animate-in fade-in zoom-in duration-300">
                         <div className="p-1 bg-gradient-to-r from-emerald-500 via-indigo-500 to-emerald-500 animate-gradient-x shrink-0" />
                         
