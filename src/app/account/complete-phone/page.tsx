@@ -99,7 +99,7 @@ export default function CompletePhonePage() {
 
             <div className="w-full max-w-lg bg-white/[0.03] backdrop-blur-2xl rounded-[2.5rem] shadow-2xl border border-white/10 p-10 relative z-10 transition-all duration-500">
                 <div className="text-center mb-10">
-                    <img src="/brand/horizontal-white.png" alt="NotifyCar" className="h-20 w-auto mx-auto mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
+                    <img src="/brand/horizontal-white.png" alt="NotifyCar" className="h-14 w-auto mx-auto mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
                     <h1 className="text-3xl font-black text-white tracking-tight uppercase italic bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
                         Paso Final
                     </h1>

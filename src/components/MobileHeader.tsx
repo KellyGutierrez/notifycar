@@ -79,7 +79,7 @@ export function MobileHeader({
 
                 {/* Brand */}
                 <Link href="/" className="flex items-center gap-2 select-none">
-                    <img src={logo} alt={title} className="h-10 w-auto object-contain" />
+                    <img src={logo} alt={title} className="h-7 w-auto object-contain" />
                 </Link>
 
                 {/* Bell */}
