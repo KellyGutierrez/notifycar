@@ -421,28 +421,37 @@ export default function CorporateVehiclesPage() {
 
                                     <div className="space-y-4">
                                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Tipo de Vehículo</label>
-                                        <div className="relative group">
-                                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                {formData.type === "MOTORCYCLE" ? (
-                                                    <Bike className="h-4 w-4 text-indigo-400" />
-                                                ) : formData.type === "TAXI" ? (
-                                                    <Car className="h-4 w-4 text-yellow-400" />
-                                                ) : (
-                                                    <Car className="h-4 w-4 text-indigo-400" />
+                                        <div className="grid grid-cols-3 gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, type: "CAR" })}
+                                                className={cn(
+                                                    "py-3 rounded-xl border font-bold text-[10px] uppercase transition-all flex flex-col items-center justify-center gap-1",
+                                                    formData.type === "CAR" ? "bg-indigo-600 border-indigo-400 text-white" : "bg-white/5 border-white/10 text-gray-500 hover:bg-white/10"
                                                 )}
-                                            </div>
-                                            <select
-                                                value={formData.type}
-                                                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all font-bold appearance-none cursor-pointer hover:bg-white/10"
                                             >
-                                                <option value="CAR" className="bg-[#0A0A0A] text-white">Particular</option>
-                                                <option value="TAXI" className="bg-[#0A0A0A] text-white">Taxi / Servicio Público</option>
-                                                <option value="MOTORCYCLE" className="bg-[#0A0A0A] text-white">Motocicleta</option>
-                                            </select>
-                                            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-500 group-hover:text-white">
-                                                <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-current"></div>
-                                            </div>
+                                                <Car className="h-4 w-4" /> Normal
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, type: "TAXI" })}
+                                                className={cn(
+                                                    "py-3 rounded-xl border font-bold text-[10px] uppercase transition-all flex flex-col items-center justify-center gap-1",
+                                                    formData.type === "TAXI" ? "bg-yellow-600 border-yellow-400 text-white" : "bg-white/5 border-white/10 text-gray-500 hover:bg-white/10"
+                                                )}
+                                            >
+                                                <Car className="h-4 w-4" /> Taxi
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, type: "MOTORCYCLE" })}
+                                                className={cn(
+                                                    "py-3 rounded-xl border font-bold text-[10px] uppercase transition-all flex flex-col items-center justify-center gap-1",
+                                                    formData.type === "MOTORCYCLE" ? "bg-indigo-600 border-indigo-400 text-white" : "bg-white/5 border-white/10 text-gray-500 hover:bg-white/10"
+                                                )}
+                                            >
+                                                <Bike className="h-4 w-4" /> Moto
+                                            </button>
                                         </div>
 
                                         {/* Toggle Eléctrico */}

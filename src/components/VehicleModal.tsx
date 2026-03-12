@@ -147,31 +147,47 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
                     {/* Body - Scrollable */}
                     <div className="flex-1 overflow-y-auto min-h-0">
                         <form id="vehicle-form" onSubmit={handleSubmit} className="p-5 sm:p-6 pb-6 space-y-4 custom-scrollbar">
-                        <div className="space-y-2 mb-6">
-                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Tipo de Vehículo</label>
-                            <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    {formData.type === "MOTORCYCLE" ? (
-                                        <Bike className="h-4 w-4 text-green-400" />
-                                    ) : formData.type === "TAXI" ? (
-                                        <Car className="h-4 w-4 text-yellow-400" />
-                                    ) : (
-                                        <Car className="h-4 w-4 text-green-400" />
-                                    )}
-                                </div>
-                                <select
-                                    value={formData.type}
-                                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/5 rounded-2xl pl-11 pr-4 py-4 text-white focus:outline-none focus:border-green-500 transition-all font-bold appearance-none cursor-pointer group-hover:bg-white/10"
-                                >
-                                    <option value="CAR" className="bg-[#0A0A0A] text-white">Vehículo Particular</option>
-                                    <option value="TAXI" className="bg-[#0A0A0A] text-white">Taxi / Servicio Público</option>
-                                    <option value="MOTORCYCLE" className="bg-[#0A0A0A] text-white">Motocicleta</option>
-                                </select>
-                                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-500 group-hover:text-white transition-colors">
-                                    <Hash className="h-4 w-4 rotate-90" />
-                                </div>
-                            </div>
+                        {/* Vehicle Type Selection */}
+                        <div className="grid grid-cols-3 gap-3 mb-6">
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, type: "CAR" })}
+                                className={cn(
+                                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                                    formData.type === "CAR"
+                                        ? "bg-green-500/10 border-green-500 text-green-400"
+                                        : "bg-white/5 border-white/5 text-gray-500 hover:border-white/10 hover:text-gray-400"
+                                )}
+                            >
+                                <Car className="h-8 w-8" />
+                                <span className="text-[10px] font-bold uppercase tracking-tight">Normal</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, type: "TAXI" })}
+                                className={cn(
+                                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                                    formData.type === "TAXI"
+                                        ? "bg-yellow-500/10 border-yellow-500 text-yellow-400"
+                                        : "bg-white/5 border-white/5 text-gray-500 hover:border-white/10 hover:text-gray-400"
+                                )}
+                            >
+                                <Car className="h-8 w-8" />
+                                <span className="text-[10px] font-bold uppercase tracking-tight">Taxi</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, type: "MOTORCYCLE" })}
+                                className={cn(
+                                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                                    formData.type === "MOTORCYCLE"
+                                        ? "bg-green-500/10 border-green-500 text-green-400"
+                                        : "bg-white/5 border-white/5 text-gray-500 hover:border-white/10 hover:text-gray-400"
+                                )}
+                            >
+                                <Bike className="h-8 w-8" />
+                                <span className="text-[10px] font-bold uppercase tracking-tight">Moto</span>
+                            </button>
                         </div>
 
                         <div className="space-y-4">
