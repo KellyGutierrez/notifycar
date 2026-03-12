@@ -52,7 +52,7 @@ export async function sendPasswordResetEmail(email: string, name: string, resetU
     </head>
     <body style="font-family: Arial, sans-serif; background:#f9fafb; margin:0; padding:20px;">
       <div style="max-width:520px; margin:0 auto; background:white; border-radius:16px; padding:40px; box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-        <img src="${process.env.NEXTAUTH_URL}/logo.png" alt="NotifyCar" style="height:64px; margin-bottom:24px;" />
+        <img src="${process.env.NEXTAUTH_URL}/brand/horizontal-color.png" alt="NotifyCar" style="height:64px; margin-bottom:24px;" />
         <h2 style="color:#111827; margin:0 0 8px;">Recuperar contraseña</h2>
         <p style="color:#6b7280; margin:0 0 24px;">Hola <strong>${name}</strong>, recibimos una solicitud para restablecer tu contraseña.</p>
         <a href="${resetUrl}" style="display:inline-block; background:#16a34a; color:white; text-decoration:none; padding:14px 28px; border-radius:10px; font-weight:bold; font-size:16px; margin-bottom:24px;">

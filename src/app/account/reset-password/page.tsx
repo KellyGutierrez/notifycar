@@ -54,7 +54,7 @@ function ResetPasswordForm() {
             <div className="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-gray-200/50 p-8 border border-gray-100">
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-flex items-center justify-center mb-6">
-                        <img src="/logo.png" alt="NotifyCar" className="h-20 w-auto object-contain" />
+                        <img src="/brand/horizontal-color.png" alt="NotifyCar" className="h-20 w-auto object-contain" />
                     </Link>
                     <h1 className="text-2xl font-bold text-gray-900">Nueva contraseña</h1>
                     <p className="text-gray-500 text-sm mt-2">Elige una contraseña segura para tu cuenta</p>

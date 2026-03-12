@@ -21,7 +21,7 @@ export function InstitutionalMobileNav() {
             <MobileHeader
                 themeColor="emerald"
                 title="NotifyCar Institucional"
-                logo="/logo_white.png"
+                logo="/brand/horizontal-white.png"
                 notificationsLink="/institutional/notifications"
                 isOpen={drawerOpen}
                 onOpenChange={setDrawerOpen}

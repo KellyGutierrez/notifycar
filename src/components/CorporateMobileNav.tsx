@@ -21,7 +21,7 @@ export function CorporateMobileNav() {
             <MobileHeader
                 themeColor="indigo"
                 title="NotifyCar Corporate"
-                logo="/logo_white.png"
+                logo="/brand/horizontal-white.png"
                 notificationsLink="/corporate/notifications"
                 isOpen={drawerOpen}
                 onOpenChange={setDrawerOpen}

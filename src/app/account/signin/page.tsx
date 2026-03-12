@@ -66,7 +66,7 @@ export default function SignInPage() {
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-flex items-center justify-center mb-6 group">
                         <img
-                            src="/logo.png"
+                            src="/brand/horizontal-color.png"
                             alt="NotifyCar"
                             className="h-24 w-auto object-contain"
                         />

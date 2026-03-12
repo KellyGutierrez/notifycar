@@ -48,7 +48,7 @@ export function AdminSidebar({ isMobile }: AdminSidebarProps) {
             <div className="p-6 flex flex-col items-center gap-2 border-b border-white/5">
                 <Link href="/" className="flex items-center justify-center mb-1">
                     <img
-                        src="/logo_white.png"
+                        src="/brand/vertical-white.png"
                         alt="NotifyCar Admin"
                         className="h-16 w-auto object-contain"
                     />

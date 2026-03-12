@@ -24,7 +24,7 @@ export default async function LandingPage() {
           <Link href="/" className="flex items-center gap-2 group">
             <div className="bg-white/10 p-2 rounded-xl backdrop-blur-sm group-hover:bg-white/20 transition-all">
               <img
-                src="/logo_white.png"
+                src="/brand/horizontal-white.png"
                 alt="NotifyCar"
                 className="h-16 w-auto object-contain"
               />
@@ -259,7 +259,7 @@ export default async function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <Link href="/" className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all duration-500 opacity-50 hover:opacity-100">
               <img
-                src="/logo_white.png"
+                src="/brand/horizontal-white.png"
                 alt="NotifyCar"
                 className="h-12 w-auto object-contain"
               />

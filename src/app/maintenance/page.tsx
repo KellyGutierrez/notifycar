@@ -6,7 +6,7 @@ export default function MaintenancePage() {
             <div className="max-w-2xl w-full text-center space-y-8">
                 <div className="flex justify-center mb-8">
                     <Image
-                        src="/logo.png"
+                        src="/brand/horizontal-white.png"
                         alt="NotifyCar"
                         width={200}
                         height={80}

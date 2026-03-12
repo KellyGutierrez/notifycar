@@ -39,7 +39,7 @@ export function CorporateSidebar({ isMobile }: CorporateSidebarProps) {
             <div className="p-6 flex flex-col items-center gap-2 border-b border-white/5">
                 <Link href="/" className="flex items-center justify-center mb-1">
                     <img
-                        src="/logo_white.png"
+                        src="/brand/vertical-white.png"
                         alt="NotifyCar Corporate"
                         className="h-20 w-auto object-contain"
                     />
