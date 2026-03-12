@@ -121,7 +121,6 @@ export default function TermsPage() {
 
                         <a href="https://rowell.co/" target="_blank" rel="noopener noreferrer" className="pt-10 border-t border-white/5 text-center flex flex-col items-center gap-3 group cursor-pointer">
                             <img src="/rowell_logo.jpg" alt="Rowell" className="h-6 w-6 rounded-md grayscale opacity-20 group-hover:opacity-100 group-hover:grayscale-0 transition-all" />
-                            <p className="text-gray-600 text-sm italic group-hover:text-gray-400 transition-colors">"Rowell SAS: Innovación para un mundo más conectado."</p>
                         </a>
                     </div>
                 </div>
