@@ -267,12 +267,12 @@ export default async function LandingPage() {
 
             <div className="flex flex-col items-center gap-6">
               <div className="flex items-center gap-8">
-                <Link href="/terms" className="text-gray-500 hover:text-white font-medium transition-colors text-sm hover:underline">
+                <a href="/terminos.pdf" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white font-medium transition-colors text-sm hover:underline">
                   Términos
-                </Link>
-                <Link href="/privacy" className="text-gray-500 hover:text-white font-medium transition-colors text-sm hover:underline">
+                </a>
+                <a href="/terminos.pdf" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white font-medium transition-colors text-sm hover:underline">
                   Privacidad
-                </Link>
+                </a>
                 <Link href="/contact" className="text-gray-500 hover:text-white font-medium transition-colors text-sm hover:underline">
                   Contacto
                 </Link>
