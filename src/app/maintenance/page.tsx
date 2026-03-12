@@ -8,9 +8,9 @@ export default function MaintenancePage() {
                     <Image
                         src="/brand/horizontal-white.png"
                         alt="NotifyCar"
-                        width={160}
-                        height={60}
-                        className="h-14 w-auto"
+                        width={200}
+                        height={80}
+                        className="h-20 w-auto"
                     />
                 </div>
 

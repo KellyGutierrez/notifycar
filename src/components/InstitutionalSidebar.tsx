@@ -42,7 +42,7 @@ export function InstitutionalSidebar({ isMobile }: InstitutionalSidebarProps) {
                     <img
                         src="/brand/vertical-white.png"
                         alt="NotifyCar Institutional"
-                        className="h-10 w-auto object-contain"
+                        className="h-16 w-auto object-contain"
                     />
                 </Link>
                 <div className="flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
