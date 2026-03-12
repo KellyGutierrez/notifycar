@@ -368,7 +368,7 @@ function SignUpForm() {
                                 <Check className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100 h-3.5 w-3.5" />
                             </div>
                             <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors select-none leading-tight">
-                                Autorizo el tratamiento de mis datos personales de acuerdo con los <a href="/terminos.pdf" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline font-medium">Términos y Política de Privacidad</a> de NotifyCar para recibir notificaciones vehiculares.
+                                Autorizo el tratamiento de mis datos personales de acuerdo con los <a href="/terminos.pdf" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline font-medium">Términos</a> y la <a href="/privacidad.pdf" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline font-medium">Política de Privacidad</a> de NotifyCar para recibir notificaciones vehiculares.
                             </span>
                         </label>
                     </div>

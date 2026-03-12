@@ -270,7 +270,7 @@ export default async function LandingPage() {
                 <a href="/terminos.pdf" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white font-medium transition-colors text-sm hover:underline">
                   Términos
                 </a>
-                <a href="/terminos.pdf" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white font-medium transition-colors text-sm hover:underline">
+                <a href="/privacidad.pdf" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white font-medium transition-colors text-sm hover:underline">
                   Privacidad
                 </a>
                 <Link href="/contact" className="text-gray-500 hover:text-white font-medium transition-colors text-sm hover:underline">
