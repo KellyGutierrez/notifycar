@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { X, Car, Hash, Palette, Info, Zap, Bike, ShieldAlert, Loader2 } from "lucide-react"
+import { X, Car, Hash, Palette, Zap, Bike, ShieldAlert, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { createPortal } from "react-dom"
 import { cn } from "@/lib/utils"
 
 interface VehicleModalProps {
@@ -73,8 +74,6 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
         }
     }
 
-    if (!isOpen) return null
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
@@ -117,189 +116,207 @@ export default function VehicleModal({ isOpen, onClose, initialData }: VehicleMo
     const description = initialData ? "Actualiza los datos de tu vehículo" : "Completa los datos de tu vehículo"
     const buttonText = initialData ? "Actualizar" : "Guardar"
 
+    if (!isOpen) return null
+
+    // Use portal to avoid clipping by parent stacking contexts (like cards with overflow-hidden)
+    if (typeof document === "undefined") return null
+
     return (
-        <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto pt-10 pb-10">
-            <div className="bg-gray-900 border border-white/10 w-full max-w-md rounded-[2.5rem] shadow-2xl flex flex-col max-h-[85dvh] overflow-hidden animate-in fade-in zoom-in duration-300 text-white">
-                {/* Header - Fixed */}
-                <div className="shrink-0 flex justify-between items-center p-5 sm:p-6 border-b border-white/10">
-                    <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 sm:h-10 sm:w-10 bg-green-500/10 rounded-xl flex items-center justify-center">
-                            <Car className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
+        <Portal>
+            <div className="fixed inset-0 z-[200] flex items-start sm:items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto pt-10 pb-10">
+                <div className="bg-gray-900 border border-white/10 w-full max-w-md rounded-[2.5rem] shadow-2xl flex flex-col max-h-[85dvh] overflow-hidden animate-in fade-in zoom-in duration-300 text-white">
+                    {/* Header - Fixed */}
+                    <div className="shrink-0 flex justify-between items-center p-5 sm:p-6 border-b border-white/10">
+                        <div className="flex items-center gap-3">
+                            <div className="h-9 w-9 sm:h-10 sm:w-10 bg-green-500/10 rounded-xl flex items-center justify-center">
+                                <Car className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
+                            </div>
+                            <div>
+                                <h2 className="text-lg sm:text-xl font-bold">{title}</h2>
+                                <p className="text-[10px] sm:text-xs text-gray-400">{description}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-lg sm:text-xl font-bold">{title}</h2>
-                            <p className="text-[10px] sm:text-xs text-gray-400">{description}</p>
-                        </div>
-                    </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-white/5 rounded-full text-gray-400 hover:text-white transition"
-                    >
-                        <X className="h-5 w-5" />
-                    </button>
-                </div>
-
-                {/* Body - Scrollable */}
-                <div className="flex-1 overflow-y-auto min-h-0">
-                    <form id="vehicle-form" onSubmit={handleSubmit} className="p-5 sm:p-6 pb-6 space-y-4 custom-scrollbar">
-                    {/* Vehicle Type Selection */}
-                    <div className="grid grid-cols-2 gap-3 mb-6">
                         <button
-                            type="button"
-                            onClick={() => setFormData({ ...formData, type: "CAR" })}
-                            className={cn(
-                                "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
-                                formData.type === "CAR"
-                                    ? "bg-green-500/10 border-green-500 text-green-400"
-                                    : "bg-white/5 border-white/5 text-gray-500 hover:border-white/10 hover:text-gray-400"
-                            )}
+                            onClick={onClose}
+                            className="p-2 hover:bg-white/5 rounded-full text-gray-400 hover:text-white transition"
                         >
-                            <Car className="h-8 w-8" />
-                            <span className="text-xs font-bold uppercase tracking-widest">Auto</span>
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setFormData({ ...formData, type: "MOTORCYCLE" })}
-                            className={cn(
-                                "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
-                                formData.type === "MOTORCYCLE"
-                                    ? "bg-green-500/10 border-green-500 text-green-400"
-                                    : "bg-white/5 border-white/5 text-gray-500 hover:border-white/10 hover:text-gray-400"
-                            )}
-                        >
-                            <Bike className="h-8 w-8" />
-                            <span className="text-xs font-bold uppercase tracking-widest">Moto</span>
+                            <X className="h-5 w-5" />
                         </button>
                     </div>
 
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">
-                                Placa (Patente)
-                            </label>
-                            <div className="relative">
-                                <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
-                                <input
-                                    required
-                                    type="text"
-                                    placeholder="ABC-123"
-                                    className={cn(
-                                        "w-full bg-white/5 border rounded-xl py-3 pl-11 pr-10 text-white placeholder:text-gray-600 focus:ring-2 focus:ring-green-500/50 outline-none transition uppercase",
-                                        error && error.includes("placa") ? "border-red-500/50" : "border-white/10"
-                                    )}
-                                    value={formData.plate}
-                                    onChange={(e) => {
-                                        setFormData({ ...formData, plate: e.target.value })
-                                        if (error) setError(null)
-                                    }}
-                                    onBlur={(e) => checkPlate(e.target.value)}
-                                />
-                                {checkingPlate && (
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                        <Loader2 className="h-4 w-4 text-green-500 animate-spin" />
-                                    </div>
+                    {/* Body - Scrollable */}
+                    <div className="flex-1 overflow-y-auto min-h-0">
+                        <form id="vehicle-form" onSubmit={handleSubmit} className="p-5 sm:p-6 pb-6 space-y-4 custom-scrollbar">
+                        {/* Vehicle Type Selection */}
+                        <div className="grid grid-cols-2 gap-3 mb-6">
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, type: "CAR" })}
+                                className={cn(
+                                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                                    formData.type === "CAR"
+                                        ? "bg-green-500/10 border-green-500 text-green-400"
+                                        : "bg-white/5 border-white/5 text-gray-500 hover:border-white/10 hover:text-gray-400"
                                 )}
-                            </div>
+                            >
+                                <Car className="h-8 w-8" />
+                                <span className="text-xs font-bold uppercase tracking-widest">Auto</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, type: "MOTORCYCLE" })}
+                                className={cn(
+                                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                                    formData.type === "MOTORCYCLE"
+                                        ? "bg-green-500/10 border-green-500 text-green-400"
+                                        : "bg-white/5 border-white/5 text-gray-500 hover:border-white/10 hover:text-gray-400"
+                                )}
+                            >
+                                <Bike className="h-8 w-8" />
+                                <span className="text-xs font-bold uppercase tracking-widest">Moto</span>
+                            </button>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">
-                                    Marca
+                                    Placa (Patente)
                                 </label>
-                                <input
-                                    required
-                                    type="text"
-                                    placeholder={formData.type === "MOTORCYCLE" ? "Ej: Honda, Yamaha..." : "Ej: Toyota, BMW..."}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:ring-2 focus:ring-green-500/50 outline-none transition"
-                                    value={formData.brand}
-                                    onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">
-                                    Modelo
-                                </label>
-                                <input
-                                    required
-                                    type="text"
-                                    placeholder={formData.type === "MOTORCYCLE" ? "Ej: CB500X, MT-07..." : "Ej: Corolla, Civic..."}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:ring-2 focus:ring-green-500/50 outline-none transition"
-                                    value={formData.model}
-                                    onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">
-                                Color
-                            </label>
-                            <div className="relative">
-                                <Palette className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
-                                <input
-                                    type="text"
-                                    placeholder="Ej: Rojo, Blanco, Negro..."
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-gray-600 focus:ring-2 focus:ring-green-500/50 outline-none transition"
-                                    value={formData.color}
-                                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="pt-2">
-                            <label className="flex items-center gap-3 cursor-pointer group">
                                 <div className="relative">
+                                    <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
                                     <input
-                                        type="checkbox"
-                                        className="sr-only peer"
-                                        checked={formData.isElectric}
-                                        onChange={(e) => setFormData({ ...formData, isElectric: e.target.checked })}
+                                        required
+                                        type="text"
+                                        placeholder="ABC-123"
+                                        className={cn(
+                                            "w-full bg-white/5 border rounded-xl py-3 pl-11 pr-10 text-white placeholder:text-gray-600 focus:ring-2 focus:ring-green-500/50 outline-none transition uppercase",
+                                            error && error.includes("placa") ? "border-red-500/50" : "border-white/10"
+                                        )}
+                                        value={formData.plate}
+                                        onChange={(e) => {
+                                            setFormData({ ...formData, plate: e.target.value })
+                                            if (error) setError(null)
+                                        }}
+                                        onBlur={(e) => checkPlate(e.target.value)}
                                     />
-                                    <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                    {checkingPlate && (
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                            <Loader2 className="h-4 w-4 text-green-500 animate-spin" />
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Zap className={`h-4 w-4 transition ${formData.isElectric ? 'text-yellow-400' : 'text-gray-500'}`} />
-                                    <span className="text-sm font-medium text-gray-300">¿Es un vehículo eléctrico?</span>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">
+                                        Marca
+                                    </label>
+                                    <input
+                                        required
+                                        type="text"
+                                        placeholder={formData.type === "MOTORCYCLE" ? "Ej: Honda, Yamaha..." : "Ej: Toyota, BMW..."}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:ring-2 focus:ring-green-500/50 outline-none transition"
+                                        value={formData.brand}
+                                        onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                                    />
                                 </div>
-                            </label>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">
+                                        Modelo
+                                    </label>
+                                    <input
+                                        required
+                                        type="text"
+                                        placeholder={formData.type === "MOTORCYCLE" ? "Ej: CB500X, MT-07..." : "Ej: Corolla, Civic..."}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-gray-600 focus:ring-2 focus:ring-green-500/50 outline-none transition"
+                                        value={formData.model}
+                                        onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-1.5 ml-1">
+                                    Color
+                                </label>
+                                <div className="relative">
+                                    <Palette className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
+                                    <input
+                                        type="text"
+                                        placeholder="Ej: Rojo, Blanco, Negro..."
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-gray-600 focus:ring-2 focus:ring-green-500/50 outline-none transition"
+                                        value={formData.color}
+                                        onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="pt-2">
+                                <label className="flex items-center gap-3 cursor-pointer group">
+                                    <div className="relative">
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only peer"
+                                            checked={formData.isElectric}
+                                            onChange={(e) => setFormData({ ...formData, isElectric: e.target.checked })}
+                                        />
+                                        <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Zap className={`h-4 w-4 transition ${formData.isElectric ? 'text-yellow-400' : 'text-gray-500'}`} />
+                                        <span className="text-sm font-medium text-gray-300">¿Es un vehículo eléctrico?</span>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
+
+                        {error && (
+                            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                <ShieldAlert className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                                <p className="text-sm font-bold text-red-500 italic uppercase tracking-tight">
+                                    {error}
+                                </p>
+                            </div>
+                        )}
+                        </form>
                     </div>
 
-                    {error && (
-                        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                            <ShieldAlert className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
-                            <p className="text-sm font-bold text-red-500 italic uppercase tracking-tight">
-                                {error}
-                            </p>
-                        </div>
-                    )}
-                    </form>
-                </div>
-
-                {/* Footer - Always visible, outside scroll area */}
-                <div className="shrink-0 flex gap-3 p-5 sm:p-6 border-t border-white/10 bg-gray-900 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6">
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="flex-1 px-4 py-3.5 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition text-sm"
-                    >
-                        Cancelar
-                    </button>
-                    <button
-                        type="submit"
-                        form="vehicle-form"
-                        disabled={loading}
-                        className="flex-1 px-4 py-3.5 rounded-xl bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:opacity-50 text-white font-bold shadow-lg shadow-green-900/20 transition flex items-center justify-center gap-2 text-sm"
-                    >
-                        {loading ? (
-                            <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        ) : (
-                            buttonText
-                        )}
-                    </button>
+                    {/* Footer - Always visible, outside scroll area */}
+                    <div className="shrink-0 flex gap-3 p-5 sm:p-6 border-t border-white/10 bg-gray-900 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] sm:pb-6">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="flex-1 px-4 py-3.5 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition text-sm"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            form="vehicle-form"
+                            disabled={loading}
+                            className="flex-1 px-4 py-3.5 rounded-xl bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:opacity-50 text-white font-bold shadow-lg shadow-green-900/20 transition flex items-center justify-center gap-2 text-sm"
+                        >
+                            {loading ? (
+                                <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                buttonText
+                            )}
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </Portal>
     )
+}
+
+function Portal({ children }: { children: React.ReactNode }) {
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+        return () => setMounted(false)
+    }, [])
+
+    return mounted ? createPortal(children, document.body) : null
 }
