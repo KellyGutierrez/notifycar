@@ -308,12 +308,12 @@ export default function CorporateVehiclesPage() {
                                     </span>
                                     <span className={cn(
                                         "flex items-center gap-1.5 px-2 py-1 rounded-full border",
-                                        vehicle.type === "TAXI" ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
+                                        (vehicle.type === "TAXI" || vehicle.organizationId) ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
                                         vehicle.type === "MOTORCYCLE" ? "bg-purple-500/10 border-purple-500/20 text-purple-400" :
                                         "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
                                     )}>
-                                        {vehicle.type === "TAXI" ? <Car className="h-3 w-3" /> : vehicle.type === "MOTORCYCLE" ? <Bike className="h-3 w-3" /> : <Car className="h-3 w-3" />}
-                                        {vehicle.type === "TAXI" ? "Taxi" : vehicle.type === "MOTORCYCLE" ? "Moto" : "Particular"}
+                                        {(vehicle.type === "TAXI" || vehicle.organizationId) ? <Car className="h-3 w-3" /> : vehicle.type === "MOTORCYCLE" ? <Bike className="h-3 w-3" /> : <Car className="h-3 w-3" />}
+                                        {(vehicle.type === "TAXI" || vehicle.organizationId) ? "Taxi" : vehicle.type === "MOTORCYCLE" ? "Moto" : "Particular"}
                                     </span>
                                 </div>
 

@@ -131,11 +131,11 @@ export default async function AdminVehiclesPage({ searchParams }: PageProps) {
                                                 </span>
                                                 <span className={cn(
                                                     "flex items-center gap-1.5 px-2 py-1 rounded-full border",
-                                                    vehicle.type === "TAXI" ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
+                                                    (vehicle.type === "TAXI" || vehicle.organizationId) ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
                                                     vehicle.type === "MOTORCYCLE" ? "bg-purple-500/10 border-purple-500/20 text-purple-400" :
                                                     "bg-blue-500/10 border-blue-500/20 text-blue-400"
                                                 )}>
-                                                    {vehicle.type === "TAXI" ? "TAXI" : vehicle.type === "MOTORCYCLE" ? "MOTOCICLETA" : "PARTICULAR"}
+                                                    {(vehicle.type === "TAXI" || vehicle.organizationId) ? "TAXI" : vehicle.type === "MOTORCYCLE" ? "MOTOCICLETA" : "PARTICULAR"}
                                                 </span>
                                                 {vehicle.isElectric && (
                                                     <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -209,11 +209,11 @@ export default async function AdminVehiclesPage({ searchParams }: PageProps) {
                                                 <div className="flex flex-wrap gap-2">
                                                     <span className={cn(
                                                         "text-[10px] font-black px-2 py-0.5 rounded-full border uppercase",
-                                                        vehicle.type === "TAXI" ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
+                                                        (vehicle.type === "TAXI" || vehicle.organizationId) ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
                                                         vehicle.type === "MOTORCYCLE" ? "bg-purple-500/10 border-purple-500/20 text-purple-400" :
                                                         "bg-blue-500/10 border-blue-500/20 text-blue-400"
                                                     )}>
-                                                        {vehicle.type === "TAXI" ? "TAXI" : vehicle.type === "MOTORCYCLE" ? "MOTO" : "PARTICULAR"}
+                                                        {(vehicle.type === "TAXI" || vehicle.organizationId) ? "TAXI" : vehicle.type === "MOTORCYCLE" ? "MOTO" : "PARTICULAR"}
                                                     </span>
                                                     {vehicle.isElectric && (
                                                         <span className="flex items-center gap-1 text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 uppercase">

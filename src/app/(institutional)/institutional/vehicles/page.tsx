@@ -131,11 +131,11 @@ export default function InstitutionalVehiclesPage() {
                                     {vehicle.color || "Sin color"}
                                     <span className={cn(
                                         "px-2 py-0.5 rounded-full text-[8px] border font-black",
-                                        vehicle.type === "TAXI" ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
+                                        (vehicle.type === "TAXI" || vehicle.organizationId) ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
                                         vehicle.type === "MOTORCYCLE" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
                                         "bg-blue-500/10 border-blue-500/20 text-blue-400"
                                     )}>
-                                        {vehicle.type === "TAXI" ? "TAXI" : vehicle.type === "MOTORCYCLE" ? "MOTO" : "PARTICULAR"}
+                                        {(vehicle.type === "TAXI" || vehicle.organizationId) ? "TAXI" : vehicle.type === "MOTORCYCLE" ? "MOTO" : "PARTICULAR"}
                                     </span>
                                 </p>
                             </div>
