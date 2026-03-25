@@ -30,7 +30,9 @@ async function main() {
         { name: "Obstrucción paso", content: "Tu vehículo está obstruyendo el paso y está afectando la circulación.", vehicleType: "ALL", category: "COMMON" },
         { name: "Alarma sonando", content: "La alarma de tu vehículo lleva un tiempo sonando.", vehicleType: "ALL", category: "COMMON" },
         { name: "Llanta baja", content: "Una de las llantas de tu vehículo parece estar baja.", vehicleType: "ALL", category: "COMMON" },
-        { name: "Estacionarias encendidas", content: "Dejaste las luces estacionarias de tu vehículo encendidas.", vehicleType: "ALL", category: "COMMON" },
+        { name: "Llanta desgastada", content: "Una o más llantas de tu vehículo presentan un desgaste excesivo, por favor revísalas por seguridad.", vehicleType: "ALL", category: "COMMON" },
+        { name: "Pico y placa", content: "Tu vehículo se encuentra en zona de restricción de Pico y Placa hoy. Evita sanciones.", vehicleType: "ALL", category: "COMMON" },
+        { name: "Vehículo chocado", content: "Tu vehículo presenta rastro de un golpe o colisión reciente. Por favor, revísalo.", vehicleType: "ALL", category: "URGENT" },
         { name: "Vandalismo", content: "Tu vehículo presenta señales de vandalismo.", vehicleType: "ALL", category: "URGENT" },
 
         // COMBUSTIÓN - ELÉCTRICOS (CAR)
