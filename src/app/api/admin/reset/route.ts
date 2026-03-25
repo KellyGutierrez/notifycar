@@ -39,6 +39,22 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Todas las notificaciones han sido eliminadas" })
         }
 
+        if (action === "CLEANUP_OLD_TEMPLATES") {
+            const result = await db.notificationTemplate.updateMany({
+                where: {
+                    OR: [
+                        { name: { contains: 'estacionaria', mode: 'insensitive' } },
+                        { name: { contains: 'Estacionaria', mode: 'insensitive' } }
+                    ]
+                },
+                data: { isActive: false }
+            })
+            return NextResponse.json({ 
+                message: `Se han desactivado ${result.count} plantillas antiguas`,
+                count: result.count
+            })
+        }
+
         return new NextResponse("Invalid action", { status: 400 })
     } catch (error) {
         console.error("[RESET_POST]", error)

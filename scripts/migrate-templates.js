@@ -75,6 +75,7 @@ Verifica la situación con calma, revisa el entorno antes y evita confrontacione
 NotifyCar · Comunicación inteligente en la vía
 www.notifycar.com`;
 
+    /*
     await prisma.systemSetting.upsert({
         where: { id: "default" },
         update: { messageWrapper: defaultWrapper },
@@ -84,16 +85,36 @@ www.notifycar.com`;
             systemName: "NotifyCar"
         }
     });
+    */
 
     console.log('Migrando plantillas...')
 
-    // Opcional: Desactivar plantillas antiguas que no estén en la nueva lista
-    // IMPORTANTE: Solo desactivamos plantillas GLOBALES (organizationId: null)
+    // Desactivar plantillas antiguas que contengan "estacionaria"
+    console.log('Desactivando plantillas de estacionarias...')
+    await prisma.notificationTemplate.updateMany({
+        where: {
+            OR: [
+                { name: { contains: 'estacionaria', mode: 'insensitive' } },
+                { name: { contains: 'Estacionaria', mode: 'insensitive' } },
+                { name: { contains: 'PRENDIDAS', mode: 'insensitive' } },
+                { name: { contains: 'ENCENDIDAS', mode: 'insensitive' } }
+            ]
+        },
+        data: { isActive: false }
+    })
+
+    console.log('Migrando plantillas nuevas y existentes...')
     const templateNames = templates.map(t => t.name)
+    // También desactivamos las globales que no estén en la lista y no sean de estacionarias
     await prisma.notificationTemplate.updateMany({
         where: {
             organizationId: null,
-            NOT: { name: { in: templateNames } }
+            NOT: { 
+                OR: [
+                    { name: { in: templateNames } },
+                    { name: { contains: 'estacionaria', mode: 'insensitive' } }
+                ]
+             }
         },
         data: { isActive: false }
     })
