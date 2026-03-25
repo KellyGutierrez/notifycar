@@ -44,19 +44,21 @@ export function AdminSidebar({ isMobile }: AdminSidebarProps) {
             "flex flex-col h-full bg-[#050505] backdrop-blur-xl text-white overflow-y-auto custom-scrollbar",
             !isMobile ? "border-r border-cyan-500/10 w-64 hidden md:flex" : "w-full"
         )}>
-            {/* Logo Area */}
-            <div className="p-6 flex flex-col items-center gap-2 border-b border-white/5">
-                <Link href="/" className="flex items-center justify-center mb-1">
-                    <img
-                        src="/brand/vertical-white.png"
-                        alt="NotifyCar Admin"
-                        className="h-16 w-auto object-contain"
-                    />
-                </Link>
-                <span className="text-[10px] text-cyan-500 font-bold tracking-widest uppercase">
-                    Admin Panel
-                </span>
-            </div>
+            {/* Logo Area (Hidden on Mobile as it's provided by MobileHeader) */}
+            {!isMobile && (
+                <div className="p-6 flex flex-col items-center gap-2 border-b border-white/5">
+                    <Link href="/" className="flex items-center justify-center mb-1">
+                        <img
+                            src="/brand/vertical-white.png"
+                            alt="NotifyCar Admin"
+                            className="h-16 w-auto object-contain"
+                        />
+                    </Link>
+                    <span className="text-[10px] text-cyan-500 font-bold tracking-widest uppercase">
+                        Admin Panel
+                    </span>
+                </div>
+            )}
 
             {/* Navigation */}
             <div className="flex-1 py-6 px-3 space-y-1">

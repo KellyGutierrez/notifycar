@@ -20,7 +20,7 @@ export function AdminMobileNav() {
         <>
             <MobileHeader
                 themeColor="cyan"
-                title="NotifyCar Admin"
+                title="Admin"
                 notificationsLink="/admin/notifications"
                 isOpen={drawerOpen}
                 onOpenChange={setDrawerOpen}

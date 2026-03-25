@@ -124,9 +124,9 @@ export function MobileHeader({
                             paddingBottom: "1rem",
                         }}
                     >
-                        <div className="flex items-center gap-2">
-                            <img src={logo} alt={title} className="h-8 w-auto" />
-                            <span className={cn("text-[10px] font-black uppercase tracking-widest", textClass)}>
+                        <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
+                            <img src={logo} alt={title} className="h-8 w-auto shrink-0" />
+                            <span className={cn("text-[9px] font-black uppercase tracking-widest leading-none truncate", textClass)}>
                                 {title}
                             </span>
                         </div>
