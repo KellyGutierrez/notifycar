@@ -4,7 +4,8 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import axios from "axios"
-import { Car, User, Mail, Lock, Loader2 } from "lucide-react"
+import { User, Mail, Lock, Loader2 } from "lucide-react"
+import Image from "next/image"
 
 export default function RegisterPage() {
     const router = useRouter()
@@ -32,9 +33,16 @@ export default function RegisterPage() {
             <div className="w-full max-w-md bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
                 <div className="px-8 py-10">
                     <div className="text-center mb-10">
-                        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600 inline-flex items-center gap-2">
-                            <Car className="text-blue-500 w-8 h-8" /> NotifyCar
-                        </h1>
+                        <div className="flex justify-center mb-3">
+                            <Image
+                                src="/brand/horizontal-color.png"
+                                alt="NotifyCar"
+                                width={240}
+                                height={72}
+                                priority
+                                className="h-16 w-auto"
+                            />
+                        </div>
                         <p className="text-slate-400 mt-2">Crea tu cuenta inteligente hoy</p>
                     </div>
 
