@@ -51,7 +51,7 @@ export function AdminSidebar({ isMobile }: AdminSidebarProps) {
                         <img
                             src="/brand/vertical-color.png"
                             alt="NotifyCar Admin"
-                            className="h-16 w-auto object-contain"
+                            className="h-24 w-auto object-contain"
                         />
                     </Link>
                     <span className="text-[10px] text-cyan-500 font-bold tracking-widest uppercase">

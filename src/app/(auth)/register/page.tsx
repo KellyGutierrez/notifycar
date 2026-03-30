@@ -37,10 +37,10 @@ export default function RegisterPage() {
                             <Image
                                 src="/brand/horizontal-color.png"
                                 alt="NotifyCar"
-                                width={240}
-                                height={72}
+                                width={320}
+                                height={96}
                                 priority
-                                className="h-16 w-auto"
+                                className="h-24 w-auto"
                             />
                         </div>
                         <p className="text-slate-400 mt-2">Crea tu cuenta inteligente hoy</p>

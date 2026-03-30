@@ -68,7 +68,7 @@ export default function SignInPage() {
                         <img
                             src="/brand/horizontal-color.png"
                             alt="NotifyCar"
-                            className="h-11 w-auto object-contain"
+                            className="h-20 w-auto object-contain"
                         />
                     </Link>
                     <h1 className="text-2xl font-bold text-gray-900">Iniciar Sesión</h1>

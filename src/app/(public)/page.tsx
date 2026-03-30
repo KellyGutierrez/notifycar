@@ -26,7 +26,7 @@ export default async function LandingPage() {
               <img
                 src="/brand/horizontal-white.png?v=2"
                 alt="NotifyCar"
-                className="h-8 w-auto object-contain"
+                className="h-14 w-auto object-contain"
               />
             </div>
           </Link>
@@ -261,7 +261,7 @@ export default async function LandingPage() {
               <img
                 src="/brand/horizontal-white.png?v=2"
                 alt="NotifyCar"
-                className="h-8 w-auto object-contain"
+                className="h-12 w-auto object-contain"
               />
             </Link>
 
