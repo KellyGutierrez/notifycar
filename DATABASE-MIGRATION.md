@@ -2,7 +2,7 @@
 
 Esta guía te ayudará a transferir la base de datos de tu PC anterior al nuevo PC local.
 
----
+---   
 
 ## 🎯 **3 Métodos Disponibles**
 
