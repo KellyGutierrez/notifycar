@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚗 NotifyCar - Sistema de Notificaciones Backend
 
-## Getting Started
+NotifyCar es un sistema backend que permite enviar notificaciones automáticas vía WhatsApp cuando se detecta un evento relacionado con un vehículo.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🔧 Tecnologías utilizadas
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- n8n (automatización de flujos)
+- API HTTP (Webhooks)
+- Evolution API (WhatsApp)
+- Next.js (frontend opcional)
+- JSON
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ⚙️ Funcionamiento del Backend
 
-## Learn More
+1. El sistema recibe un request HTTP (POST) con información como:
+   - Placa del vehículo
+   - Número de teléfono
+   - Mensaje personalizado
 
-To learn more about Next.js, take a look at the following resources:
+2. Se valida y procesa la información mediante un flujo automatizado en n8n
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Se construye dinámicamente el mensaje
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. Se envía una notificación en tiempo real vía WhatsApp
 
-## Deploy on Vercel
+5. Se retorna una respuesta con el estado del envío
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📡 Ejemplo de Request
+
+```json
+{
+  "plate": "NWZ170",
+  "phoneNumber": "573104670304",
+  "message": "Alerta automática de vehículo"
+}
