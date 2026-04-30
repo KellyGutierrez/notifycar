@@ -3,7 +3,9 @@
 NotifyCar es un sistema backend que permite enviar notificaciones automáticas vía WhatsApp cuando se detecta un evento relacionado con un vehículo.
 
 ---
+## 📸 Flujo del backend
 
+![Backend Flow](backend-flow.png)
 ## 🔧 Tecnologías utilizadas
 
 - n8n (automatización de flujos)
